@@ -4,7 +4,7 @@
 
 This module generates @property, @method and @mixin tags for DataObjects and DataExtensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
 
-All DataExtensions will be added to the docblock with the @mixin tag.
+All DataExtensions will be added to the docblock with the @mixin tag. 
 
 The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
 
