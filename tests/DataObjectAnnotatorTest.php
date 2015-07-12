@@ -21,6 +21,10 @@ class DataObjectAnnotatorTest extends SapphireTest
         Config::inst()->update('DataObjectAnnotator', 'enabled', true);
         Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
+        Config::inst()->update('DataObjectAnnotatorTest_Team' , 'extensions',
+            array('DataObjectAnnotatorTest_Team_Extension')
+        );
+
         $this->annotator = MockDataObjectAnnotator::create();
     }
 
@@ -30,8 +34,6 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testModuleIsAllowed()
     {
-        Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-
         $this->assertFalse($this->annotator->moduleIsAllowed('framework'));
         $this->assertTrue($this->annotator->moduleIsAllowed('mysite'));
         $this->assertTrue($this->annotator->moduleIsAllowed('ideannotator'));
