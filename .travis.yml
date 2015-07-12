@@ -1,0 +1,20 @@
+before_script:
+- composer self-update
+- phpenv rehash
+- git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
+- php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
+- cd ~/builds/ss
+language: php
+php:
+- 5.3
+matrix:
+  include:
+  - php: 5.4
+    env: DB=MYSQL CORE_RELEASE=master
+script:
+- vendor/bin/phpunit ideannotator/tests/
+env:
+  matrix:
+  - DB=MYSQL CORE_RELEASE=3.1
+  global:
+    secure: HJ7sHJww/NX3PPVGjy0ggZyZSLoAdGB4BZJ0UEnIDNhR1fZ1aF4pAEA1K5cvksV9FGCbQ9Z/2JfRk8csDgWIybkBuckZsj+7yjd8u6AEPLKve+GA/Z3iN21jrDZiCC/gugAWJl7OdmR+64bFBjHbvZzYUusjSjpSRO5EqqWPgWA=
