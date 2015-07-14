@@ -64,6 +64,10 @@ Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite',
 ```
 or
 ```yml
+---
+Only:
+    environment: 'dev'
+---
 DataObjectAnnotator:
     enabled_modules:
       - mysite
