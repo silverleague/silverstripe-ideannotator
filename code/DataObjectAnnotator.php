@@ -279,7 +279,7 @@ class DataObjectAnnotator extends Object
             }
         }
         if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName) {
+            foreach ($fields as $fieldName => $dataObjectName) {
                 $str .= " * @method ManyManyList|".$dataObjectName."[] $fieldName\n";
             }
         }
