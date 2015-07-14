@@ -80,7 +80,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         // has_many relation
         $this->assertTrue((bool)strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams'));
         // many_many relation
-        $this->assertTrue((bool)strpos($content, '@method ManyManyList|Player[] Players'));
+        $this->assertTrue((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players'));
         // DataExtension
         $this->assertTrue((bool)strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension'));
     }
