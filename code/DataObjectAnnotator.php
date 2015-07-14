@@ -208,7 +208,7 @@ class DataObjectAnnotator extends Object
             $properties       = "\n/**\n * " . $startTag . "\n"
                 . $properties
                 . " * " . $endTag . "\n"
-                . " */\n\n$classDeclaration";
+                . " */\n$classDeclaration";
             return str_replace($classDeclaration, $properties, $fileContent);
         }
     }
@@ -227,7 +227,7 @@ class DataObjectAnnotator extends Object
             $replace = "/\n\/\*\*\n \* " . $startTag . "\n"
                 . "([\s\S]*?)"
                 . " \* $endTag"
-                . "\n \*\/\n\n/";
+                . "\n \*\/\n/";
 
             $fileContent = preg_replace($replace, "", $fileContent);
         }
