@@ -78,9 +78,9 @@ class DataObjectAnnotatorTest extends SapphireTest
         // had_one relation
         $this->assertTrue((bool)strpos($content, '@method DataObjectAnnotatorTest_Player Captain'));
         // has_many relation
-        $this->assertTrue((bool)strpos($content, '@method DataList SubTeams'));
+        $this->assertTrue((bool)strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams'));
         // many_many relation
-        $this->assertTrue((bool)strpos($content, '@method ManyManyList Players'));
+        $this->assertTrue((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players'));
         // DataExtension
         $this->assertTrue((bool)strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension'));
     }
@@ -99,8 +99,8 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertFalse(strpos($content, '@property int VisitCount'));
         $this->assertFalse(strpos($content, '@property int CaptainID'));
         $this->assertFalse(strpos($content, '@method DataObjectAnnotatorTest_Player Captain'));
-        $this->assertFalse(strpos($content, '@method DataList SubTeams'));
-        $this->assertFalse(strpos($content, '@method ManyManyList Players'));
+        $this->assertFalse(strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams'));
+        $this->assertFalse(strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players'));
         $this->assertFalse(strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension'));
     }
 

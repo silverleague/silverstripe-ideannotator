@@ -244,45 +244,52 @@ class DataObjectAnnotator extends Object
     {
         $str = '';
         if ($fields = Config::inst()->get($className, 'db', Config::UNINHERITED)) {
-            foreach ($fields as $k => $v) {
+            foreach ($fields as $fieldName => $dataObjectName) {
                 $prop = 'string';
 
-                $fieldObj = Object::create_from_string($v, $k);
+                $fieldObj = Object::create_from_string($dataObjectName, $fieldName);
 
-                if (is_a($fieldObj, 'Int') || is_a($fieldObj, 'Boolean')) {
+                if (is_a($fieldObj, 'Int')) {
                     $prop = 'int';
+                } elseif(is_a($fieldObj, 'Boolean')) {
+                    $prop = 'boolean';
                 } elseif (is_a($fieldObj, 'Float') || is_a($fieldObj, 'Decimal')) {
                     $prop = 'float';
                 }
-                $str .= " * @property $prop $k\n";
+                $str .= " * @property $prop $fieldName\n";
             }
         }
         if ($fields = Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
-            foreach ($fields as $k => $v) {
-                $str .= " * @property int {$k}ID\n";
+            foreach ($fields as $fieldName => $dataObjectName) {
+                $str .= " * @property int {$fieldName}ID\n";
             }
-            foreach ($fields as $k => $v) {
-                $str .= " * @method $v $k\n";
+            foreach ($fields as $fieldName => $dataObjectName) {
+                $str .= " * @method $dataObjectName $fieldName\n";
             }
         }
         if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
-            foreach ($fields as $k => $v) {
-                $str .= " * @method DataList $k\n";
+            foreach ($fields as $fieldName => $dataObjectName) {
+                $str .= " * @method DataList|".$dataObjectName."[] $fieldName\n";
             }
         }
         if ($fields = Config::inst()->get($className, 'many_many', Config::UNINHERITED)) {
-            foreach ($fields as $k => $v) {
-                $str .= " * @method ManyManyList $k\n";
+            foreach ($fields as $fieldName => $dataObjectName) {
+                $str .= " * @method ManyManyList|".$dataObjectName."[] $fieldName\n";
+            }
+        }
+        if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
+            foreach ($fields as $fieldName => $dataObjectName) {
+                $str .= " * @method ManyManyList|".$dataObjectName."[] $fieldName\n";
             }
         }
         if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
-            foreach ($fields as $k => $v) {
-                $str .= " * @method ManyManyList $k\n";
+            foreach ($fields as $fieldName => $dataObjectName) {
+                $str .= " * @method ManyManyList|".$dataObjectName."[] $fieldName\n";
             }
         }
         if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
-            foreach ($fields as $k) {
-                $str .= " * @mixin $k\n";
+            foreach ($fields as $fieldName) {
+                $str .= " * @mixin $fieldName\n";
             }
         }
         return $str;
