@@ -51,7 +51,9 @@ This module is disabled by default and I recommend to only enable this module in
 You can do this, by using something like this in your mysite/_config.php :
 
 ```php
-if($_SERVER['HTTP_HOST'] == 'mysite.local.dev') {
+$server = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
+
+if($server == 'mysite.local.dev') {
     Config::inst()->update('DataObjectAnnotator', 'enabled', true);
 }
 ```
