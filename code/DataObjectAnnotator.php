@@ -12,6 +12,8 @@
  * It is advisable to only enable it in your local dev environment,
  * so the files won't change on a production server when you run dev/build
  */
+
+/** @noinspection MissingClassSpec */
 class DataObjectAnnotator extends Object
 {
 
