@@ -13,7 +13,6 @@
  * so the files won't change on a production server when you run dev/build
  */
 
-/** @noinspection MissingClassSpec */
 class DataObjectAnnotator extends Object
 {
 
