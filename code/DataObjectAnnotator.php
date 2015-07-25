@@ -31,15 +31,13 @@ class DataObjectAnnotator extends Object
      * @config
      * Enable generation from @see Annotatable and @see DataObjectAnnotatorTask
      */
-    private static /** @noinspection PhpUnusedPrivateFieldInspection */
-        $enabled = false;
+    private static $enabled = false;
 
     /**
      * @config
      * Enable modules that are allowed to have generated docblocks for DataObjects and DataExtensions
      */
-    private static /** @noinspection PhpUnusedPrivateFieldInspection */
-        $enabled_modules = array('mysite');
+    private static $enabled_modules = array('mysite');
 
     /**
      * @param            $moduleName
