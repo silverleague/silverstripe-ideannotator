@@ -13,7 +13,6 @@
  * so the files won't change on a production server when you run dev/build
  */
 
-/** @noinspection MissingClassSpec */
 class DataObjectAnnotator extends Object
 {
 
@@ -40,6 +39,26 @@ class DataObjectAnnotator extends Object
     private static $enabled_modules = array('mysite');
 
     /**
+     * @var string
+     * Overall string for dataset.
+     */
+    protected $resultString = '';
+
+    /**
+     * @var array
+     * Available properties to generate docblocks for.
+     */
+    protected $propertyTypes = array(
+        'DB',
+        'HasOne',
+        'HasMany',
+        'ManyMany',
+        'BelongsManyMany',
+        'BelongsTo',
+        'Extensions',
+    );
+
+    /**
      * @param            $moduleName
      * @param bool|false $undo
      *
@@ -57,11 +76,13 @@ class DataObjectAnnotator extends Object
         $classNames = ClassInfo::subclassesFor('DataObject');
         foreach ($classNames as $className) {
             $this->annotateDataObject($className, $undo);
+            $this->resultString = '';
         }
 
         $classNames = ClassInfo::subclassesFor('DataExtension');
         foreach ($classNames as $className) {
             $this->annotateDataObject($className, $undo);
+            $this->resultString = '';
         }
 
         return null;
@@ -205,9 +226,9 @@ class DataObjectAnnotator extends Object
      */
     protected function getFileContentWithAnnotations($fileContent, $className)
     {
-        $properties = $this->generateORMProperties($className);
+        $this->generateORMProperties($className);
 
-        if (!$properties) {
+        if (!$this->resultString) {
             return null;
         }
 
@@ -215,13 +236,13 @@ class DataObjectAnnotator extends Object
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replacement = $startTag . "\n" . $properties . " * " . $endTag;
+            $replacement = $startTag . "\n" . $this->resultString . " * " . $endTag;
 
             return preg_replace("/$startTag([\s\S]*?)$endTag/", $replacement, $fileContent);
         } else {
             $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
             $properties = "\n/**\n * " . $startTag . "\n"
-                . $properties
+                . $this->resultString
                 . " * " . $endTag . "\n"
                 . " */\n$classDeclaration";
 
@@ -261,25 +282,22 @@ class DataObjectAnnotator extends Object
      */
     protected function generateORMProperties($className)
     {
-        $str = $this->generateORMDBProperties($className, '');
-        $str .= $this->generateORMHasOneProperties($className, '');
-        $str .= $this->generateORMHasManyProperties($className, '');
-        $str .= $this->generateORMManyManyProperties($className, '');
-        $str .= $this->generateORMBelongsManyManyProperties($className, '');
-        $str .= $this->generateORMBelongsToProperties($className, '');
-        $str .= $this->generateORMExtensionsProperties($className, '');
-
-        return $str;
+        /*
+         * Loop the available types and generate the ORM property.
+         */
+        foreach ($this->propertyTypes as $type) {
+            $function = 'generateORM' . $type . 'Properties';
+            $this->$function($className);
+        }
     }
 
     /**
      * Generate the $db property values.
      *
      * @param DataObject|DataExtension $className
-     * @param string $str
      * @return string
      */
-    protected function generateORMDBProperties($className, $str)
+    protected function generateORMDBProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'db', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
@@ -294,121 +312,115 @@ class DataObjectAnnotator extends Object
                 } elseif (is_a($fieldObj, 'Float') || is_a($fieldObj, 'Decimal')) {
                     $prop = 'float';
                 }
-                $str .= " * @property $prop $fieldName\n";
+                $this->resultString .= " * @property $prop $fieldName\n";
             }
         }
 
-        return $str;
+        return true;
     }
 
     /**
      * Generate the $belongs_to property values.
      *
      * @param DataObject|DataExtension $className
-     * @param string $str
      * @return string
      */
-    protected function generateORMBelongsToProperties($className, $str)
+    protected function generateORMBelongsToProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $str .= " * @property " . $dataObjectName . " $fieldName\n";
+                $this->resultString .= " * @property " . $dataObjectName . " $fieldName\n";
             }
         }
 
-        return $str;
+        return true;
     }
 
     /**
      * Generate the $has_one property and method values.
      *
      * @param DataObject|DataExtension $className
-     * @param string $str
      * @return string
      */
-    protected function generateORMHasOneProperties($className, $str)
+    protected function generateORMHasOneProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $str .= " * @property int {$fieldName}ID\n";
+                $this->resultString .= " * @property int {$fieldName}ID\n";
             }
             foreach ($fields as $fieldName => $dataObjectName) {
-                $str .= " * @method $dataObjectName $fieldName\n";
+                $this->resultString .= " * @method $dataObjectName $fieldName\n";
             }
         }
 
-        return $str;
+        return true;
     }
 
     /**
      * Generate the $has_many method values.
      *
      * @param DataObject|DataExtension $className
-     * @param string $str
      * @return string
      */
-    protected function generateORMHasManyProperties($className, $str)
+    protected function generateORMHasManyProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $str .= " * @method DataList|" . $dataObjectName . "[] $fieldName\n";
+                $this->resultString .= " * @method DataList|" . $dataObjectName . "[] $fieldName\n";
             }
         }
 
-        return $str;
+        return true;
     }
 
     /**
      * Generate the $many_many method values.
      *
      * @param DataObject|DataExtension $className
-     * @param string $str
      * @return string
      */
-    protected function generateORMManyManyProperties($className, $str)
+    protected function generateORMManyManyProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'many_many', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $str .= " * @method ManyManyList|" . $dataObjectName . "[] $fieldName\n";
+                $this->resultString .= " * @method ManyManyList|" . $dataObjectName . "[] $fieldName\n";
             }
         }
 
-        return $str;
+        return true;
     }
 
     /**
      * Generate the $belongs_many_many method values.
      *
      * @param DataObject|DataExtension $className
-     * @param string $str
      * @return string
      */
-    protected function generateORMBelongsManyManyProperties($className, $str)
+    protected function generateORMBelongsManyManyProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $str .= " * @method ManyManyList|" . $dataObjectName . "[] $fieldName\n";
+                $this->resultString .= " * @method ManyManyList|" . $dataObjectName . "[] $fieldName\n";
             }
         }
 
-        return $str;
+        return true;
     }
 
     /**
      * Generate the mixins for DataExtensions
      *
      * @param DataObject|DataExtension $className
-     * @param string $str
      * @return string
      */
-    protected function generateORMExtensionsProperties($className, $str)
+    protected function generateORMExtensionsProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
             foreach ($fields as $fieldName) {
-                $str .= " * @mixin $fieldName\n";
+                $this->resultString .= " * @mixin $fieldName\n";
             }
         }
 
-        return $str;
+        return true;
     }
 }
