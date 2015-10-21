@@ -43,6 +43,7 @@ class DataObjectAnnotator extends Object
      * Available properties to generate docblocks for.
      */
     protected static $propertyTypes = array(
+        'Owner',
         'DB',
         'HasOne',
         'BelongsTo',
@@ -51,6 +52,12 @@ class DataObjectAnnotator extends Object
         'BelongsManyMany',
         'Extensions',
     );
+
+    /**
+     * List of all objects, so we can find the extensions.
+     * @var array
+     */
+    protected $objectList = array();
 
     /**
      * @var string
@@ -73,6 +80,7 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
+        $this->objectList = ClassInfo::subclassesFor('Object');
         $classNames = ClassInfo::subclassesFor('DataObject');
         foreach ($classNames as $className) {
             $this->annotateDataObject($className, $undo);
@@ -103,6 +111,7 @@ class DataObjectAnnotator extends Object
         }
 
         $filePath = $this->getClassFilePath($className);
+        $this->objectList = ClassInfo::subclassesFor('Object');
 
         if (!$filePath) {
             return false;
@@ -219,8 +228,8 @@ class DataObjectAnnotator extends Object
     /**
      * Get the file and have the ORM Properties generated.
      *
-     * @param $fileContent
-     * @param $className
+     * @param String $fileContent
+     * @param String $className
      *
      * @return mixed|void
      */
@@ -276,7 +285,7 @@ class DataObjectAnnotator extends Object
 
 
     /**
-     * @param $className DataObject|DataExtension
+     * @param String $className
      *
      * @return string
      */
@@ -290,6 +299,31 @@ class DataObjectAnnotator extends Object
             $this->{$function}($className);
         }
     }
+
+    /**
+     * Generate the Owner-properties for extensions.
+     *
+     * @param string $className
+     */
+    protected function generateORMOwnerProperties($className) {
+        $owners = array();
+        foreach($this->objectList as $class) {
+            if(in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
+                $owners[] = $class;
+            }
+        }
+        if(count($owners)) {
+            $this->resultString .= ' * @property ';
+            foreach ($owners as $key => $owner) {
+                if ($key > 0) {
+                    $this->resultString .= '|';
+                }
+                $this->resultString .= "$owner";
+            }
+            $this->resultString .= "|$className owner\n";
+        }
+    }
+
 
     /**
      * Generate the $db property values.
