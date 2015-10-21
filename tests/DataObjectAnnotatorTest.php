@@ -21,7 +21,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         Config::inst()->update('DataObjectAnnotator', 'enabled', true);
         Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
-        Config::inst()->update('DataObjectAnnotatorTest_Team' , 'extensions',
+        Config::inst()->update('DataObjectAnnotatorTest_Team', 'extensions',
             array('DataObjectAnnotatorTest_Team_Extension')
         );
 
@@ -65,7 +65,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testFileContentWithAnnotations()
     {
         $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
-        $content  = $this->annotator->getFileContentWithAnnotations(file_get_contents($filePath),
+        $content = $this->annotator->getFileContentWithAnnotations(file_get_contents($filePath),
             'DataObjectAnnotatorTest_Team');
 
         $this->assertTrue((bool)strpos($content, DataObjectAnnotator::STARTTAG));
@@ -91,7 +91,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testFileContentWithoutAnnotations()
     {
         $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
-        $content  = $this->annotator->getFileContentWithoutAnnotations(file_get_contents($filePath));
+        $content = $this->annotator->getFileContentWithoutAnnotations(file_get_contents($filePath));
 
         $this->assertFalse(strpos($content, DataObjectAnnotator::STARTTAG));
         $this->assertFalse(strpos($content, DataObjectAnnotator::ENDTAG));
@@ -109,10 +109,10 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testFileIsTheSameAfterUndoAnnotate()
     {
-        $filePath  = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
-        $original  = file_get_contents($filePath);
+        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $original = file_get_contents($filePath);
         $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
-        $undone    = $this->annotator->getFileContentWithoutAnnotations($annotated);
+        $undone = $this->annotator->getFileContentWithoutAnnotations($annotated);
 
         $this->assertEquals($original, $undone);
     }
@@ -122,13 +122,21 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testNothingHasChangedAfterSecondAnnotation()
     {
-        $filePath  = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
-        $original  = file_get_contents($filePath);
-        $firstRun  = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
+        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $original = file_get_contents($filePath);
+        $firstRun = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
         $secondRun = $this->annotator->getFileContentWithAnnotations($firstRun, 'DataObjectAnnotatorTest_Team');
         $this->assertEquals($firstRun, $secondRun);
+    }
 
-        $firstRun  = $this->annotator->getFileContentWithoutAnnotations($original, 'DataObjectAnnotatorTest_Team');
+    /**
+     * Test that nothing has changed after running the getWithoutAnnotations
+     */
+    public function testNothingHasChangedAfterSecondWithoutAnnotation()
+    {
+        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $original = file_get_contents($filePath);
+        $firstRun = $this->annotator->getFileContentWithoutAnnotations($original, 'DataObjectAnnotatorTest_Team');
         $secondRun = $this->annotator->getFileContentWithoutAnnotations($firstRun, 'DataObjectAnnotatorTest_Team');
         $this->assertEquals($firstRun, $secondRun);
     }
@@ -138,8 +146,8 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testAnnotateDataExtension()
     {
-        $filePath  = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team_Extension');
-        $original  = file_get_contents($filePath);
+        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team_Extension');
+        $original = file_get_contents($filePath);
         $annotated = $this->annotator->getFileContentWithAnnotations($original,
             'DataObjectAnnotatorTest_Team_Extension');
 
