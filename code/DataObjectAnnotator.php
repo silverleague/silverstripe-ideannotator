@@ -310,7 +310,8 @@ class DataObjectAnnotator extends Object
     protected function generateORMOwnerProperties($className) {
         $owners = array();
         foreach($this->objectList as $class) {
-            if(in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
+            $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
+            if($config !== null && in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
                 $owners[] = $class;
             }
         }
