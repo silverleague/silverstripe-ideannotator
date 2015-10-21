@@ -235,6 +235,8 @@ class DataObjectAnnotator extends Object
      */
     protected function getFileContentWithAnnotations($fileContent, $className)
     {
+        /* Reset the resultString before we continue. Otherwise, it might double-up. */
+        $this->resultString = '';
         $this->generateORMProperties($className);
 
         if (!$this->resultString) {
@@ -252,8 +254,8 @@ class DataObjectAnnotator extends Object
             $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
             $properties = "\n/**\n * " . $startTag . "\n"
                 . $this->resultString
-                . ' * ' . $endTag . "\n"
-                . ' */\n$classDeclaration';
+                . " * " . $endTag . "\n"
+                . " */\n$classDeclaration";
 
             return str_replace($classDeclaration, $properties, $fileContent);
         }
