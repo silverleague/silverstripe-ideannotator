@@ -1,6 +1,8 @@
 ---
 Name: ideannotator
-After: 'framework/*','cms/*'
+After:
+  - 'framework/*'
+  - 'cms/*'
 ---
 DataObject:
   extensions:
