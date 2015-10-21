@@ -12,7 +12,6 @@
  * It is advisable to only enable it in your local dev environment,
  * so the files won't change on a production server when you run dev/build
  */
-
 class DataObjectAnnotator extends Object
 {
 
@@ -54,16 +53,37 @@ class DataObjectAnnotator extends Object
     );
 
     /**
-     * List of all objects, so we can find the extensions.
+     * All classes that subclass DataObject
      * @var array
      */
-    protected $objectList = array();
+    protected $classes;
+
+    /**
+     * All classes that subclass Object
+     * @var array
+     */
+    protected $extensionClasses;
+
+    /**
+     * All classes that subclass DataExtension
+     * @var array
+     */
+    protected $dataExtensions;
 
     /**
      * @var string
      * Overall string for dataset.
      */
     protected $resultString = '';
+
+    public function __construct()
+    {
+        $this->classes = ClassInfo::subclassesFor('DataObject');
+        $this->extensionClasses = ClassInfo::subclassesFor('Object');
+        $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
+
+        parent::__construct();
+    }
 
     /**
      * @param            $moduleName
@@ -80,15 +100,12 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
-        $this->objectList = ClassInfo::subclassesFor('Object');
-        $classNames = ClassInfo::subclassesFor('DataObject');
-        foreach ($classNames as $className) {
+        foreach ($this->classes as $className) {
             $this->annotateDataObject($className, $undo);
             $this->resultString = ''; // Reset the result after each class
         }
 
-        $classNames = ClassInfo::subclassesFor('DataExtension');
-        foreach ($classNames as $className) {
+        foreach ($this->dataExtensions as $className) {
             $this->annotateDataObject($className, $undo);
             $this->resultString = '';
         }
@@ -111,7 +128,6 @@ class DataObjectAnnotator extends Object
         }
 
         $filePath = $this->getClassFilePath($className);
-        $this->objectList = ClassInfo::subclassesFor('Object');
 
         if (!$filePath) {
             return false;
@@ -254,7 +270,7 @@ class DataObjectAnnotator extends Object
             $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
             $properties = "\n/**\n * " . $startTag . "\n"
                 . $this->resultString
-                . " * " . $endTag . "\n"
+                . ' * ' . $endTag . "\n"
                 . " */\n$classDeclaration";
 
             return str_replace($classDeclaration, $properties, $fileContent);
@@ -307,15 +323,16 @@ class DataObjectAnnotator extends Object
      *
      * @param string $className
      */
-    protected function generateORMOwnerProperties($className) {
+    protected function generateORMOwnerProperties($className)
+    {
         $owners = array();
-        foreach($this->objectList as $class) {
+        foreach ($this->extensionClasses as $class) {
             $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
-            if($config !== null && in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
+            if ($config !== null && in_array($className, $config, null)) {
                 $owners[] = $class;
             }
         }
-        if(count($owners)) {
+        if (count($owners)) {
             $this->resultString .= ' * @property ';
             foreach ($owners as $key => $owner) {
                 if ($key > 0) {
