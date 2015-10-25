@@ -52,6 +52,8 @@ class DataObjectAnnotator extends Object
         'Extensions',
     );
 
+    protected $annotatePermissionChecker;
+
     /**
      * All classes that subclass DataObject
      * @var array
@@ -81,12 +83,11 @@ class DataObjectAnnotator extends Object
         $this->classes = ClassInfo::subclassesFor('DataObject');
         $this->extensionClasses = ClassInfo::subclassesFor('Object');
         $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-
-        parent::__construct();
+        $this->annotatePermissionChecker = new AnnotatePermissionChecker();
     }
 
     /**
-     * @param            $moduleName
+     * @param string $moduleName
      * @param bool|false $undo
      *
      * Generate docblock for all subclasses of DataObjects and DataExtenions
@@ -96,7 +97,7 @@ class DataObjectAnnotator extends Object
      */
     public function annotateModule($moduleName, $undo = false)
     {
-        if (!$this->moduleIsAllowed($moduleName)) {
+        if (!$this->annotatePermissionChecker->moduleIsAllowed($moduleName)) {
             return false;
         }
 
@@ -114,7 +115,7 @@ class DataObjectAnnotator extends Object
     }
 
     /**
-     * @param            $className
+     * @param string     $className
      * @param bool|false $undo
      *
      * Generate docblock for a single subclass of DataObject or DataExtenions
@@ -123,11 +124,11 @@ class DataObjectAnnotator extends Object
      */
     public function annotateDataObject($className, $undo = false)
     {
-        if (!$this->classNameIsAllowed($className)) {
+        if (!$this->annotatePermissionChecker->classNameIsAllowed($className)) {
             return false;
         }
 
-        $filePath = $this->getClassFilePath($className);
+        $filePath = $this->annotatePermissionChecker->getClassFilePath($className);
 
         if (!$filePath) {
             return false;
@@ -156,11 +157,11 @@ class DataObjectAnnotator extends Object
      */
     public function undoDataObject($className)
     {
-        if (!$this->classNameIsAllowed($className)) {
+        if (!$this->annotatePermissionChecker->classNameIsAllowed($className)) {
             return false;
         }
 
-        $filePath = $this->getClassFilePath($className);
+        $filePath = $this->annotatePermissionChecker->getClassFilePath($className);
 
         if (!$filePath) {
             return false;
@@ -175,7 +176,7 @@ class DataObjectAnnotator extends Object
      * Performs the actual file writing
      * @param $filePath
      */
-    protected function removePHPDocBlock($filePath)
+    private function removePHPDocBlock($filePath)
     {
         $original = file_get_contents($filePath);
         $reverted = $this->getFileContentWithoutAnnotations($original);
@@ -183,62 +184,6 @@ class DataObjectAnnotator extends Object
         if ($reverted && $reverted !== $original) {
             file_put_contents($filePath, $reverted);
         }
-    }
-
-    /**
-     * Check if a DataObject or DataExtension subclass is allowed by checking if the file
-     * is in the $allowed_modules array
-     * The permission is checked by matching the filePath and modulePath
-     *
-     * @param $className
-     *
-     * @return bool
-     */
-    protected function classNameIsAllowed($className)
-    {
-        if (is_subclass_of($className, 'DataObject') || is_subclass_of($className, 'DataExtension')) {
-
-            $filePath = $this->getClassFilePath($className);
-            $allowedModules = Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
-
-            foreach ($allowedModules as $moduleName) {
-                $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
-                if (substr($filePath, 0, strlen($modulePath)) === $modulePath) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if a module is in the $allowed_modules array
-     *
-     * @param $moduleName
-     *
-     * @return bool
-     */
-    protected function moduleIsAllowed($moduleName)
-    {
-        return in_array($moduleName, Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
-    }
-
-    /**
-     * @param $className
-     *
-     * @return string
-     */
-    protected function getClassFilePath($className)
-    {
-        $reflector = new ReflectionClass($className);
-        $filePath = $reflector->getFileName();
-
-        if (is_writable($filePath)) {
-            return $filePath;
-        }
-
-        return false;
     }
 
     /**
@@ -251,8 +196,6 @@ class DataObjectAnnotator extends Object
      */
     protected function getFileContentWithAnnotations($fileContent, $className)
     {
-        /* Reset the resultString before we continue. Otherwise, it might double-up. */
-        $this->resultString = '';
         $this->generateORMProperties($className);
 
         if (!$this->resultString) {
@@ -309,6 +252,11 @@ class DataObjectAnnotator extends Object
      */
     protected function generateORMProperties($className)
     {
+        /*
+         * Start with an empty resultstring before generation
+         */
+        $this->resultString = '';
+
         /*
          * Loop the available types and generate the ORM property.
          */
