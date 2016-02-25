@@ -75,9 +75,9 @@ DataObjectAnnotator:
 ````
 
 ##Installation
-Either run ```composer require axyr/silverstripe-ideannotator```
+Either run ```composer require axyr/silverstripe-ideannotator --dev```
 
-Or add ```axyr/silverstripe-ideannotator: "dev-master"``` to your composer.json file
+Or add ```axyr/silverstripe-ideannotator: "dev-master"``` to `require-dev` in your composer.json file
 
 Or download and add it to your root directory.
 
