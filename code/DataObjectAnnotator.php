@@ -247,14 +247,14 @@ class DataObjectAnnotator extends Object
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replacement = $startTag . "\n" . $this->resultString . ' * ' . $endTag;
+            $replacement = $startTag . "\n * \n" . $this->resultString . " * \n * " . $endTag;
 
             return preg_replace("/$startTag([\s\S]*?)$endTag/", $replacement, $fileContent);
         } else {
             $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
-            $properties = "\n/**\n * " . $startTag . "\n"
+            $properties = "\n/**\n * " . $startTag . "\n * \n"
                 . $this->resultString
-                . " * " . $endTag . "\n"
+                . " * \n *  \n * " . $endTag . "\n"
                 . " */\n$classDeclaration";
 
             return str_replace($classDeclaration, $properties, $fileContent);
@@ -274,7 +274,7 @@ class DataObjectAnnotator extends Object
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replace = "/\n\/\*\*\n \* " . $startTag . "\n"
+            $replace = "/\n\/\*\* \n \* " . $startTag . "\n"
                 . "([\s\S]*?)"
                 . " \* $endTag"
                 . "\n \*\/\n/";
@@ -385,6 +385,7 @@ class DataObjectAnnotator extends Object
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= " * @property int {$fieldName}ID\n";
             }
+            $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= " * @method $dataObjectName $fieldName\n";
             }
@@ -402,6 +403,7 @@ class DataObjectAnnotator extends Object
     protected function generateORMHasManyProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
+            $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= ' * @method DataList|' . $dataObjectName . "[] $fieldName\n";
             }
@@ -453,6 +455,7 @@ class DataObjectAnnotator extends Object
     protected function generateORMExtensionsProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
+            $this->resultString .= " * \n";
             foreach ($fields as $fieldName) {
                 $this->resultString .= " * @mixin $fieldName\n";
             }
