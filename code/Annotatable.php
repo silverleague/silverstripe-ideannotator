@@ -9,14 +9,14 @@ class Annotatable extends DataExtension
 {
     /**
      * This is the base function on which annotations are started.
-     * 
+     *
      * @todo rewrite this. It's not actually a requireDefaultRecords. But it's the only place to hook into the build-process to start the annotation process.
      * @return bool
      */
     public function requireDefaultRecords()
     {
         $skipAnnotation = filter_input(INPUT_GET, 'skipannotation');
-        if (!Config::inst()->get('DataObjectAnnotator', 'enabled') || $skipAnnotation !== null) {
+        if ($skipAnnotation !== null || !Config::inst()->get('DataObjectAnnotator', 'enabled')) {
             return false;
         }
 
@@ -29,5 +29,7 @@ class Annotatable extends DataExtension
                 $annotator->annotateDataObject($extension);
             }
         }
+
+        return null;
     }
 }

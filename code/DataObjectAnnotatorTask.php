@@ -14,15 +14,15 @@ class DataObjectAnnotatorTask extends BuildTask
             return false;
         }
 
-        $className  = $request->getVar('dataobject');
+        $className = $request->getVar('dataobject');
         $moduleName = $request->getVar('module');
-        $undo       = $request->getVar('undo');
+        $undo = $request->getVar('undo');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
-        if($className) {
+        if ($className) {
             $annotator->annotateDataObject($className, $undo);
-        }elseif($moduleName) {
+        } elseif ($moduleName) {
             $annotator->annotateModule($moduleName, $undo);
         }
     }

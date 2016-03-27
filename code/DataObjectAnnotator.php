@@ -12,7 +12,6 @@
  * It is advisable to only enable it in your local dev environment,
  * so the files won't change on a production server when you run dev/build
  */
-
 class DataObjectAnnotator extends Object
 {
 
@@ -55,6 +54,7 @@ class DataObjectAnnotator extends Object
 
     /**
      * List of all objects, so we can find the extensions.
+     *
      * @var array
      */
     protected $objectList = array();
@@ -135,6 +135,7 @@ class DataObjectAnnotator extends Object
      * Revert the file to its original state without the generated docblock from this module
      *
      * @param $className
+     *
      * @see removePHPDocBlock
      * @return bool
      */
@@ -157,6 +158,7 @@ class DataObjectAnnotator extends Object
 
     /**
      * Performs the actual file writing
+     *
      * @param $filePath
      */
     protected function removePHPDocBlock($filePath)
@@ -307,15 +309,16 @@ class DataObjectAnnotator extends Object
      *
      * @param string $className
      */
-    protected function generateORMOwnerProperties($className) {
+    protected function generateORMOwnerProperties($className)
+    {
         $owners = array();
-        foreach($this->objectList as $class) {
+        foreach ($this->objectList as $class) {
             $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
-            if($config !== null && in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
+            if ($config !== null && in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
                 $owners[] = $class;
             }
         }
-        if(count($owners)) {
+        if (count($owners)) {
             $this->resultString .= ' * @property ';
             foreach ($owners as $key => $owner) {
                 if ($key > 0) {
@@ -332,6 +335,7 @@ class DataObjectAnnotator extends Object
      * Generate the $db property values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMDBProperties($className)
@@ -360,6 +364,7 @@ class DataObjectAnnotator extends Object
      * Generate the $belongs_to property values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMBelongsToProperties($className)
@@ -377,6 +382,7 @@ class DataObjectAnnotator extends Object
      * Generate the $has_one property and method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMHasOneProperties($className)
@@ -398,6 +404,7 @@ class DataObjectAnnotator extends Object
      * Generate the $has_many method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMHasManyProperties($className)
@@ -416,6 +423,7 @@ class DataObjectAnnotator extends Object
      * Generate the $many_many method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMManyManyProperties($className)
@@ -433,6 +441,7 @@ class DataObjectAnnotator extends Object
      * Generate the $belongs_many_many method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMBelongsManyManyProperties($className)
@@ -450,6 +459,7 @@ class DataObjectAnnotator extends Object
      * Generate the mixins for DataExtensions
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMExtensionsProperties($className)

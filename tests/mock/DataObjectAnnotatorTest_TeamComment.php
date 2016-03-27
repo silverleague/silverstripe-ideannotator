@@ -4,7 +4,7 @@
 class DataObjectAnnotatorTest_TeamComment extends DataObject implements TestOnly
 {
     private static $db = array(
-        'Name' => 'Varchar',
+        'Name'    => 'Varchar',
         'Comment' => 'Text'
     );
 
