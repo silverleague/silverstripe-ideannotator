@@ -3,7 +3,7 @@
 class DataObjectAnnotatorTest_Player extends Member implements TestOnly
 {
     private static $db = array(
-        'IsRetired' => 'Boolean',
+        'IsRetired'   => 'Boolean',
         'ShirtNumber' => 'Varchar',
     );
 

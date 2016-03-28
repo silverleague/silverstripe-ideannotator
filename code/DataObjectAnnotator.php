@@ -67,7 +67,8 @@ class DataObjectAnnotator extends Object
     protected $extensionClasses;
 
     /**
-     * All classes that subclass DataExtension
+     * List of all objects, so we can find the extensions.
+     *
      * @var array
      */
     protected $dataExtensions;
@@ -80,10 +81,11 @@ class DataObjectAnnotator extends Object
 
     public function __construct()
     {
+        parent::__construct();
         $this->classes = ClassInfo::subclassesFor('DataObject');
         $this->extensionClasses = ClassInfo::subclassesFor('Object');
         $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-        $this->annotatePermissionChecker = new AnnotatePermissionChecker();
+        $this->annotatePermissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
     }
 
     /**
@@ -152,6 +154,7 @@ class DataObjectAnnotator extends Object
      * Revert the file to its original state without the generated docblock from this module
      *
      * @param $className
+     *
      * @see removePHPDocBlock
      * @return bool
      */
@@ -174,6 +177,7 @@ class DataObjectAnnotator extends Object
 
     /**
      * Performs the actual file writing
+     *
      * @param $filePath
      */
     private function removePHPDocBlock($filePath)
@@ -206,14 +210,14 @@ class DataObjectAnnotator extends Object
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replacement = $startTag . "\n" . $this->resultString . ' * ' . $endTag;
+            $replacement = $startTag . "\n * \n" . $this->resultString . " * \n * " . $endTag;
 
             return preg_replace("/$startTag([\s\S]*?)$endTag/", $replacement, $fileContent);
         } else {
             $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
-            $properties = "\n/**\n * " . $startTag . "\n"
+            $properties = "\n/**\n * " . $startTag . "\n * \n"
                 . $this->resultString
-                . ' * ' . $endTag . "\n"
+                . " * \n * " . $endTag . "\n"
                 . " */\n$classDeclaration";
 
             return str_replace($classDeclaration, $properties, $fileContent);
@@ -233,11 +237,11 @@ class DataObjectAnnotator extends Object
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replace = "/\n\/\*\*\n \* " . $startTag . "\n"
-                . "([\s\S]*?)"
-                . " \* $endTag"
-                . "\n \*\/\n/";
-
+            $replace = "/\n\/\*\*\n"
+                    . " \* $startTag\n"
+                    . "([\s\S]*?)"
+                    . " \* $endTag\n"
+                    . " \*\/\n/";
             $fileContent = preg_replace($replace, '', $fileContent);
         }
 
@@ -276,7 +280,7 @@ class DataObjectAnnotator extends Object
         $owners = array();
         foreach ($this->extensionClasses as $class) {
             $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
-            if ($config !== null && in_array($className, $config, null)) {
+            if ($config !== null && in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
                 $owners[] = $class;
             }
         }
@@ -286,7 +290,7 @@ class DataObjectAnnotator extends Object
                 if ($key > 0) {
                     $this->resultString .= '|';
                 }
-                $this->resultString .= "$owner";
+                $this->resultString .= $owner;
             }
             $this->resultString .= "|$className owner\n";
         }
@@ -297,6 +301,7 @@ class DataObjectAnnotator extends Object
      * Generate the $db property values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMDBProperties($className)
@@ -307,11 +312,14 @@ class DataObjectAnnotator extends Object
 
                 $fieldObj = Object::create_from_string($dataObjectName, $fieldName);
 
-                if (is_a($fieldObj, 'Int')) {
+                if ($fieldObj instanceof Int || $fieldObj instanceof DBInt) {
                     $prop = 'int';
-                } elseif (is_a($fieldObj, 'Boolean')) {
+                } elseif ($fieldObj instanceof Boolean) {
                     $prop = 'boolean';
-                } elseif (is_a($fieldObj, 'Float') || is_a($fieldObj, 'Decimal')) {
+                } elseif ($fieldObj instanceof Float ||
+                    $fieldObj instanceof DBFloat ||
+                    $fieldObj instanceof Decimal
+                ) {
                     $prop = 'float';
                 }
                 $this->resultString .= " * @property $prop $fieldName\n";
@@ -325,6 +333,7 @@ class DataObjectAnnotator extends Object
      * Generate the $belongs_to property values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMBelongsToProperties($className)
@@ -342,6 +351,7 @@ class DataObjectAnnotator extends Object
      * Generate the $has_one property and method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMHasOneProperties($className)
@@ -350,6 +360,7 @@ class DataObjectAnnotator extends Object
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= " * @property int {$fieldName}ID\n";
             }
+            $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= " * @method $dataObjectName $fieldName\n";
             }
@@ -362,11 +373,13 @@ class DataObjectAnnotator extends Object
      * Generate the $has_many method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMHasManyProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
+            $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= ' * @method DataList|' . $dataObjectName . "[] $fieldName\n";
             }
@@ -379,6 +392,7 @@ class DataObjectAnnotator extends Object
      * Generate the $many_many method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMManyManyProperties($className)
@@ -396,6 +410,7 @@ class DataObjectAnnotator extends Object
      * Generate the $belongs_many_many method values.
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMBelongsManyManyProperties($className)
@@ -413,11 +428,13 @@ class DataObjectAnnotator extends Object
      * Generate the mixins for DataExtensions
      *
      * @param DataObject|DataExtension $className
+     *
      * @return string
      */
     protected function generateORMExtensionsProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
+            $this->resultString .= " * \n";
             foreach ($fields as $fieldName) {
                 $this->resultString .= " * @mixin $fieldName\n";
             }

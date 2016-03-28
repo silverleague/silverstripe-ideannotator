@@ -11,12 +11,12 @@ class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
 {
 
     private static $db = array(
-        'Title' => 'Varchar',
+        'Title'      => 'Varchar',
         'VisitCount' => 'Int'
     );
 
     private static $has_one = array(
-        "Captain" => 'DataObjectAnnotatorTest_Player',
+        "Captain"            => 'DataObjectAnnotatorTest_Player',
         'HasOneRelationship' => 'DataObjectAnnotatorTest_Player',
     );
 
@@ -30,4 +30,4 @@ class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
     );
 }
 
-Config::inst()->update('DataObjectAnnotatorTest_Team' , 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));
+Config::inst()->update('DataObjectAnnotatorTest_Team', 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));
