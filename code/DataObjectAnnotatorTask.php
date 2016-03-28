@@ -18,10 +18,10 @@ class DataObjectAnnotatorTask extends BuildTask
             return false;
         }
 
-        $permissionHelper = new AnnotatePermissionChecker();
-        $className        = $request->getVar('dataobject');
-        $moduleName       = $request->getVar('module');
-        $undo             = $request->getVar('undo');
+        $permissionHelper = Injector::inst()->get('AnnotatePermissionChecker');
+        $className = $request->getVar('dataobject');
+        $moduleName = $request->getVar('module');
+        $undo = $request->getVar('undo');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
