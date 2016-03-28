@@ -10,7 +10,7 @@ class DataObjectAnnotatorTask extends BuildTask
     /**
      * @param $request SS_HTTPRequest
      *
-     * @return bool || void
+     * @return null
      */
     public function run($request)
     {
@@ -30,6 +30,8 @@ class DataObjectAnnotatorTask extends BuildTask
         } elseif ($moduleName && $permissionHelper->moduleIsAllowed($moduleName)) {
             $annotator->annotateModule($moduleName, $undo);
         }
+
+        return null;
     }
 
 }

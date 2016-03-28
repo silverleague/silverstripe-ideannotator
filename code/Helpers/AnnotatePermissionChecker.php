@@ -20,12 +20,12 @@ class AnnotatePermissionChecker
     {
         if (is_subclass_of($className, 'DataObject') || is_subclass_of($className, 'DataExtension')) {
 
-            $filePath = self::getClassFilePath($className);
+            $filePath = $this->getClassFilePath($className);
             $allowedModules = Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
 
             foreach ($allowedModules as $moduleName) {
                 $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
-                if (substr($filePath, 0, strlen($modulePath)) === $modulePath) {
+                if (0 === strpos($filePath, $modulePath)) {
                     return true;
                 }
             }
@@ -36,6 +36,7 @@ class AnnotatePermissionChecker
 
     /**
      * Check if a module is in the $allowed_modules array
+     * Required for the buildTask.
      *
      * @param $moduleName
      *

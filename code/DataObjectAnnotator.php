@@ -217,7 +217,7 @@ class DataObjectAnnotator extends Object
             $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
             $properties = "\n/**\n * " . $startTag . "\n * \n"
                 . $this->resultString
-                . " * \n *  \n * " . $endTag . "\n"
+                . " * \n * " . $endTag . "\n"
                 . " */\n$classDeclaration";
 
             return str_replace($classDeclaration, $properties, $fileContent);
@@ -237,11 +237,11 @@ class DataObjectAnnotator extends Object
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replace = "/\n\/\*\* \n \* " . $startTag . "\n"
-                . "([\s\S]*?)"
-                . " \* $endTag"
-                . "\n \*\/\n/";
-
+            $replace = "/\n\/\*\*\n"
+                    . " \* $startTag\n"
+                    . "([\s\S]*?)"
+                    . " \* $endTag\n"
+                    . " \*\/\n/";
             $fileContent = preg_replace($replace, '', $fileContent);
         }
 

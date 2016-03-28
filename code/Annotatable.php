@@ -16,6 +16,7 @@ class Annotatable extends DataExtension
      */
     public function requireDefaultRecords()
     {
+        /** @var AnnotatePermissionChecker $permissionChecker */
         $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
 
         /** @var SS_HTTPRequest|NullHTTPRequest $request */
@@ -24,10 +25,10 @@ class Annotatable extends DataExtension
         if ($skipAnnotation !== null || !Config::inst()->get('DataObjectAnnotator', 'enabled')) {
             return false;
         }
-        $annotator = DataObjectAnnotator::create();
+        /** @var DataObjectAnnotator $annotator */
+        $annotator = Injector::inst()->get('DataObjectAnnotator');
         /* Annotate the current Class, if annotatable */
         if ($permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
-            /* @var $annotator DataObjectAnnotator */
             $annotator->annotateDataObject($this->owner->ClassName);
         }
         /** @var array $extensions */

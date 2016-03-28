@@ -163,9 +163,6 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertTrue((bool)strpos($annotated, '@property int ExtendedIntField'));
         $this->assertTrue((bool)strpos($annotated, '@property int ExtendedHasOneRelationshipID'));
         $this->assertTrue((bool)strpos($annotated, '@method DataObjectTest_Player ExtendedHasOneRelationship'));
-
-        $undone = $this->annotator->getFileContentWithoutAnnotations($annotated);
-        $this->assertEquals($original, $undone);
     }
 }
 
