@@ -5,9 +5,28 @@
  *
  * Annotate the provided DataObjects for autocompletion purposes.
  * Start annotation, if skipannotation is not set and the annotator is enabled.
+ *
+ * @property DataObject|Annotatable owner
  */
 class Annotatable extends DataExtension
 {
+
+    /**
+     * @var DataObjectAnnotator
+     */
+    protected $annotator;
+
+    /**
+     * @var AnnotatePermissionChecker
+     */
+    protected $permissionChecker;
+
+    public function __construct() {
+        parent::__construct();
+        $this->annotator = Injector::inst()->get('DataObjectAnnotator');
+        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+
+    }
     /**
      * This is the base function on which annotations are started.
      *
@@ -16,8 +35,6 @@ class Annotatable extends DataExtension
      */
     public function requireDefaultRecords()
     {
-        /** @var AnnotatePermissionChecker $permissionChecker */
-        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
 
         /** @var SS_HTTPRequest|NullHTTPRequest $request */
         $request = Controller::curr()->getRequest();
@@ -25,19 +42,19 @@ class Annotatable extends DataExtension
         if ($skipAnnotation !== null || !Config::inst()->get('DataObjectAnnotator', 'enabled')) {
             return false;
         }
-        /** @var DataObjectAnnotator $annotator */
-        $annotator = Injector::inst()->get('DataObjectAnnotator');
+
         /* Annotate the current Class, if annotatable */
-        if ($permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
-            $annotator->annotateDataObject($this->owner->ClassName);
+        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
+            $this->annotator->annotateDataObject($this->owner->ClassName);
         }
+
         /** @var array $extensions */
         $extensions = Config::inst()->get($this->owner->ClassName, 'extensions', Config::UNINHERITED);
         /* Annotate the extensions for this Class, if annotatable */
         if ($extensions) {
             foreach ($extensions as $extension) {
-                if ($permissionChecker->classNameIsAllowed($extension)) {
-                    $annotator->annotateDataObject($extension);
+                if ($this->permissionChecker->classNameIsAllowed($extension)) {
+                    $this->annotator->annotateDataObject($extension);
                 }
             }
         }
