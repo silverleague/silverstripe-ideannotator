@@ -1,6 +1,10 @@
 <?php
 
-
+/**
+ * Class DataObjectAnnotatorTask
+ *
+ * Task to add or remove annotations from a module or dataobject
+ */
 class DataObjectAnnotatorTask extends BuildTask
 {
     /**
@@ -13,17 +17,18 @@ class DataObjectAnnotatorTask extends BuildTask
         if (!Config::inst()->get('DataObjectAnnotator', 'enabled')) {
             return false;
         }
-
-        $className  = $request->getVar('dataobject');
-        $moduleName = $request->getVar('module');
-        $undo       = $request->getVar('undo');
+        $permissionHelper = new AnnotatePermissionChecker();
+        $className        = $request->getVar('dataobject');
+        $moduleName       = $request->getVar('module');
+        $undo             = $request->getVar('undo');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
-        if($className) {
+        if ($className && $permissionHelper->classNameIsAllowed($className)) {
             $annotator->annotateDataObject($className, $undo);
-        }elseif($moduleName) {
+        } elseif ($moduleName && $permissionHelper->moduleIsAllowed($moduleName)) {
             $annotator->annotateModule($moduleName, $undo);
         }
     }
+
 }
