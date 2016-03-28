@@ -3,6 +3,7 @@
 
 /**
  * Class DataObjectAnnotatorTest
+ * @mixin PHPUnit_Framework_TestCase
  */
 class DataObjectAnnotatorTest extends SapphireTest
 {
