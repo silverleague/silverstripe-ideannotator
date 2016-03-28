@@ -290,7 +290,7 @@ class DataObjectAnnotator extends Object
                 if ($key > 0) {
                     $this->resultString .= '|';
                 }
-                $this->resultString .= "$owner";
+                $this->resultString .= $owner;
             }
             $this->resultString .= "|$className owner\n";
         }
@@ -312,11 +312,14 @@ class DataObjectAnnotator extends Object
 
                 $fieldObj = Object::create_from_string($dataObjectName, $fieldName);
 
-                if (is_a($fieldObj, 'Int')) {
+                if ($fieldObj instanceof Int || $fieldObj instanceof DBInt) {
                     $prop = 'int';
-                } elseif (is_a($fieldObj, 'Boolean')) {
+                } elseif ($fieldObj instanceof Boolean) {
                     $prop = 'boolean';
-                } elseif (is_a($fieldObj, 'Float') || is_a($fieldObj, 'Decimal')) {
+                } elseif ($fieldObj instanceof Float ||
+                    $fieldObj instanceof DBFloat ||
+                    $fieldObj instanceof Decimal
+                ) {
                     $prop = 'float';
                 }
                 $this->resultString .= " * @property $prop $fieldName\n";
