@@ -8,9 +8,14 @@ class DataObjectAnnotatorTest extends SapphireTest
 {
 
     /**
-     * @var $annotator MockDataObjectAnnotator
+     * @var MockDataObjectAnnotator
      */
     private $annotator = null;
+
+    /**
+     * @var AnnotatePermissionChecker $annotatorHelper
+     */
+    private $annotatorHelper = null;
 
     /**
      * Setup Defaults
@@ -26,6 +31,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         );
 
         $this->annotator = MockDataObjectAnnotator::create();
+        $this->annotatorHelper = new AnnotatePermissionChecker();
     }
 
     /**
@@ -34,9 +40,9 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testModuleIsAllowed()
     {
-        $this->assertFalse($this->annotator->moduleIsAllowed('framework'));
-        $this->assertTrue($this->annotator->moduleIsAllowed('mysite'));
-        $this->assertTrue($this->annotator->moduleIsAllowed('ideannotator'));
+        $this->assertFalse($this->annotatorHelper->moduleIsAllowed('framework'));
+        $this->assertTrue($this->annotatorHelper->moduleIsAllowed('mysite'));
+        $this->assertTrue($this->annotatorHelper->moduleIsAllowed('ideannotator'));
     }
 
     /**
@@ -45,16 +51,16 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testDataObjectIsAllowed()
     {
-        $this->assertTrue($this->annotator->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
-        $this->assertTrue($this->annotator->classNameIsAllowed('DataObjectAnnotatorTest_Team_Extension'));
+        $this->assertTrue($this->annotatorHelper->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
+        $this->assertTrue($this->annotatorHelper->classNameIsAllowed('DataObjectAnnotatorTest_Team_Extension'));
 
-        $this->assertFalse($this->annotator->classNameIsAllowed('DataObject'));
-        $this->assertFalse($this->annotator->classNameIsAllowed('File'));
+        $this->assertFalse($this->annotatorHelper->classNameIsAllowed('DataObject'));
+        $this->assertFalse($this->annotatorHelper->classNameIsAllowed('File'));
 
         Config::inst()->remove('DataObjectAnnotator', 'enabled_modules');
         Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite'));
 
-        $this->assertFalse($this->annotator->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
+        $this->assertFalse($this->annotatorHelper->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
     }
 
     /**
@@ -64,7 +70,7 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testFileContentWithAnnotations()
     {
-        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
         $content = $this->annotator->getFileContentWithAnnotations(file_get_contents($filePath),
             'DataObjectAnnotatorTest_Team');
 
@@ -90,7 +96,7 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testFileContentWithoutAnnotations()
     {
-        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
         $content = $this->annotator->getFileContentWithoutAnnotations(file_get_contents($filePath));
 
         $this->assertFalse(strpos($content, DataObjectAnnotator::STARTTAG));
@@ -109,7 +115,7 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testFileIsTheSameAfterUndoAnnotate()
     {
-        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
         $undone = $this->annotator->getFileContentWithoutAnnotations($annotated);
@@ -122,7 +128,7 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testNothingHasChangedAfterSecondAnnotation()
     {
-        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
         $original = file_get_contents($filePath);
         $firstRun = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
         $secondRun = $this->annotator->getFileContentWithAnnotations($firstRun, 'DataObjectAnnotatorTest_Team');
@@ -134,10 +140,10 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testNothingHasChangedAfterSecondWithoutAnnotation()
     {
-        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
         $original = file_get_contents($filePath);
-        $firstRun = $this->annotator->getFileContentWithoutAnnotations($original, 'DataObjectAnnotatorTest_Team');
-        $secondRun = $this->annotator->getFileContentWithoutAnnotations($firstRun, 'DataObjectAnnotatorTest_Team');
+        $firstRun = $this->annotator->getFileContentWithoutAnnotations($original);
+        $secondRun = $this->annotator->getFileContentWithoutAnnotations($firstRun);
         $this->assertEquals($firstRun, $secondRun);
     }
 
@@ -146,20 +152,17 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testAnnotateDataExtension()
     {
-        $filePath = $this->annotator->getClassFilePath('DataObjectAnnotatorTest_Team_Extension');
+        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team_Extension');
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->getFileContentWithAnnotations($original,
-            'DataObjectAnnotatorTest_Team_Extension');
+        $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team_Extension');
 
         $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
         $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
+        $this->assertTrue((bool)strpos($annotated, '@property DataObjectAnnotatorTest_Team|DataObjectAnnotatorTest_Team_Extension owner'));
         $this->assertTrue((bool)strpos($annotated, '@property string ExtendedVarcharField'));
         $this->assertTrue((bool)strpos($annotated, '@property int ExtendedIntField'));
         $this->assertTrue((bool)strpos($annotated, '@property int ExtendedHasOneRelationshipID'));
         $this->assertTrue((bool)strpos($annotated, '@method DataObjectTest_Player ExtendedHasOneRelationship'));
-
-        $undone = $this->annotator->getFileContentWithoutAnnotations($annotated);
-        $this->assertEquals($original, $undone);
     }
 }
 
@@ -170,25 +173,6 @@ class DataObjectAnnotatorTest extends SapphireTest
  */
 class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
 {
-    /**
-     * @param $className
-     *
-     * @return bool
-     */
-    public function classNameIsAllowed($className)
-    {
-        return parent::classNameIsAllowed($className);
-    }
-
-    /**
-     * @param $moduleName
-     *
-     * @return bool
-     */
-    public function moduleIsAllowed($moduleName)
-    {
-        return parent::moduleIsAllowed($moduleName);
-    }
 
     /**
      * @param $fileContent
@@ -211,13 +195,4 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
         return parent::getFileContentWithoutAnnotations($fileContent);
     }
 
-    /**
-     * @param $className
-     *
-     * @return string
-     */
-    public function getClassFilePath($className)
-    {
-        return parent::getClassFilePath($className);
-    }
 }
