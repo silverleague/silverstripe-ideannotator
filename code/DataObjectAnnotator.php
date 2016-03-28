@@ -81,10 +81,11 @@ class DataObjectAnnotator extends Object
 
     public function __construct()
     {
+        parent::__construct();
         $this->classes = ClassInfo::subclassesFor('DataObject');
         $this->extensionClasses = ClassInfo::subclassesFor('Object');
         $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-        $this->annotatePermissionChecker = new AnnotatePermissionChecker();
+        $this->annotatePermissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
     }
 
     /**
@@ -277,7 +278,7 @@ class DataObjectAnnotator extends Object
     protected function generateORMOwnerProperties($className)
     {
         $owners = array();
-        foreach ($this->objectList as $class) {
+        foreach ($this->extensionClasses as $class) {
             $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
             if ($config !== null && in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
                 $owners[] = $class;

@@ -16,8 +16,8 @@ class Annotatable extends DataExtension
      */
     public function requireDefaultRecords()
     {
-        $permissionChecker = new AnnotatePermissionChecker();
-        
+        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+
         /** @var SS_HTTPRequest|NullHTTPRequest $request */
         $request = Controller::curr()->getRequest();
         $skipAnnotation = $request->getVar('skipannotation');
