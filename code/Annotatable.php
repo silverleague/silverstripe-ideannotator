@@ -4,6 +4,7 @@
  * Class Annotatable
  *
  * Annotate the provided DataObjects for autocompletion purposes.
+ * Start annotation, if skipannotation is not set and the annotator is enabled.
  */
 class Annotatable extends DataExtension
 {
@@ -15,18 +16,28 @@ class Annotatable extends DataExtension
      */
     public function requireDefaultRecords()
     {
-        $skipAnnotation = filter_input(INPUT_GET, 'skipannotation');
+        $permissionChecker = new AnnotatePermissionChecker();
+        
+        /** @var SS_HTTPRequest|NullHTTPRequest $request */
+        $request = Controller::curr()->getRequest();
+        $skipAnnotation = $request->getVar('skipannotation');
         if ($skipAnnotation !== null || !Config::inst()->get('DataObjectAnnotator', 'enabled')) {
             return false;
         }
-
-        /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
-        $annotator->annotateDataObject($this->owner->ClassName);
-
-        if ($extensions = Config::inst()->get($this->owner->ClassName, 'extensions', Config::UNINHERITED)) {
+        /* Annotate the current Class, if annotatable */
+        if ($permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
+            /* @var $annotator DataObjectAnnotator */
+            $annotator->annotateDataObject($this->owner->ClassName);
+        }
+        /** @var array $extensions */
+        $extensions = Config::inst()->get($this->owner->ClassName, 'extensions', Config::UNINHERITED);
+        /* Annotate the extensions for this Class, if annotatable */
+        if ($extensions) {
             foreach ($extensions as $extension) {
-                $annotator->annotateDataObject($extension);
+                if ($permissionChecker->classNameIsAllowed($extension)) {
+                    $annotator->annotateDataObject($extension);
+                }
             }
         }
 
