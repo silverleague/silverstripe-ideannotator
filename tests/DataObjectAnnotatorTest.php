@@ -3,6 +3,14 @@
 
 /**
  * Class DataObjectAnnotatorTest
+ *
+ * Several tests to make sure the Annotator does it's job correctly
+ *
+ * @method assertTrue() assertTrue(boolean)
+ * @method assertFalse() assertFalse(boolean)
+ * @method assertEquals() assertEquals($expected, $result)
+ *
+ * @mixin PHPUnit_Framework_TestCase
  */
 class DataObjectAnnotatorTest extends SapphireTest
 {
@@ -77,16 +85,16 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertTrue((bool)strpos($content, DataObjectAnnotator::STARTTAG));
         $this->assertTrue((bool)strpos($content, DataObjectAnnotator::ENDTAG));
         // database fields
-        $this->assertTrue((bool)strpos($content, '@property string Title'));
-        $this->assertTrue((bool)strpos($content, '@property int VisitCount'));
+        $this->assertTrue((bool)strpos($content, '@property string $Title'));
+        $this->assertTrue((bool)strpos($content, '@property int $VisitCount'));
         // has_one ID
-        $this->assertTrue((bool)strpos($content, '@property int CaptainID'));
+        $this->assertTrue((bool)strpos($content, '@property int $CaptainID'));
         // had_one relation
-        $this->assertTrue((bool)strpos($content, '@method DataObjectAnnotatorTest_Player Captain'));
+        $this->assertTrue((bool)strpos($content, '@method DataObjectAnnotatorTest_Player Captain()'));
         // has_many relation
-        $this->assertTrue((bool)strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams'));
+        $this->assertTrue((bool)strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()'));
         // many_many relation
-        $this->assertTrue((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players'));
+        $this->assertTrue((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players()'));
         // DataExtension
         $this->assertTrue((bool)strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension'));
     }
@@ -101,13 +109,13 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $this->assertFalse(strpos($content, DataObjectAnnotator::STARTTAG));
         $this->assertFalse(strpos($content, DataObjectAnnotator::ENDTAG));
-        $this->assertFalse(strpos($content, '@property string Title'));
-        $this->assertFalse(strpos($content, '@property int VisitCount'));
-        $this->assertFalse(strpos($content, '@property int CaptainID'));
-        $this->assertFalse(strpos($content, '@method DataObjectAnnotatorTest_Player Captain'));
-        $this->assertFalse(strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams'));
-        $this->assertFalse(strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players'));
-        $this->assertFalse(strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension'));
+        $this->assertFalse(strpos($content, '@property string $Title'));
+        $this->assertFalse(strpos($content, '@property int $VisitCount'));
+        $this->assertFalse(strpos($content, '@property int $CaptainID'));
+        $this->assertFalse(strpos($content, '@method DataObjectAnnotatorTest_Player Captain()'));
+        $this->assertFalse(strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()'));
+        $this->assertFalse(strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players()'));
+        $this->assertFalse(strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension()'));
     }
 
     /**
@@ -158,11 +166,11 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
         $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
-        $this->assertTrue((bool)strpos($annotated, '@property DataObjectAnnotatorTest_Team|DataObjectAnnotatorTest_Team_Extension owner'));
-        $this->assertTrue((bool)strpos($annotated, '@property string ExtendedVarcharField'));
-        $this->assertTrue((bool)strpos($annotated, '@property int ExtendedIntField'));
-        $this->assertTrue((bool)strpos($annotated, '@property int ExtendedHasOneRelationshipID'));
-        $this->assertTrue((bool)strpos($annotated, '@method DataObjectTest_Player ExtendedHasOneRelationship'));
+        $this->assertTrue((bool)strpos($annotated, '@property DataObjectAnnotatorTest_Team|DataObjectAnnotatorTest_Team_Extension $owner'));
+        $this->assertTrue((bool)strpos($annotated, '@property string $ExtendedVarcharField'));
+        $this->assertTrue((bool)strpos($annotated, '@property int $ExtendedIntField'));
+        $this->assertTrue((bool)strpos($annotated, '@property int $ExtendedHasOneRelationshipID'));
+        $this->assertTrue((bool)strpos($annotated, '@method DataObjectTest_Player ExtendedHasOneRelationship()'));
     }
 }
 

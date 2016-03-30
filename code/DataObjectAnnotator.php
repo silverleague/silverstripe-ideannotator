@@ -346,8 +346,9 @@ class DataObjectAnnotator extends Object
     protected function generateORMBelongsToProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
+            $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @property ' . $dataObjectName . " \$$fieldName\n";
+                $this->resultString .= ' * @method ' . $dataObjectName . " \$$fieldName\n";
             }
         }
 
@@ -367,7 +368,6 @@ class DataObjectAnnotator extends Object
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= " * @property int \${$fieldName}ID\n";
             }
-            $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->resultString .= " * @method $dataObjectName $fieldName()\n";
             }

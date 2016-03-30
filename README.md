@@ -4,7 +4,7 @@
 
 This module generates @property, @method and @mixin tags for DataObjects and DataExtensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
 
-All DataExtensions will be added to the docblock with the @mixin tag. 
+All DataExtensions will be added to the docblock with the @mixin tag.
 
 The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
 
@@ -63,7 +63,8 @@ You can add extra module folders with the following config setting :
 Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite', 'otherfolderinsiteroot'));
 ```
 or
-```yml
+```
+yml
 ---
 Only:
     environment: 'dev'
@@ -81,6 +82,8 @@ Or add ```axyr/silverstripe-ideannotator: "dev-master"``` to `require-dev` in yo
 
 Or download and add it to your root directory.
 
+##APIDocs
+[Firesphere's github.io domain](https://firesphere.github.io/ideannotator/)
 ##Caution
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...
 I tried to add complete UnitTests, but I can't garantuee every situation is covered.
