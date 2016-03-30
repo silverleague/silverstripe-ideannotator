@@ -3,10 +3,12 @@
 /**
  * Class Annotatable
  *
- * Annotate the provided DataObjects for autocompletion purposes.
+ * Annotate extension for the provided DataObjects for autocompletion purposes.
  * Start annotation, if skipannotation is not set and the annotator is enabled.
  *
- * @property DataObject|Annotatable owner
+ * @package IDEAnnotator
+ *
+ * @property DataObject|Annotatable $owner
  */
 class Annotatable extends DataExtension
 {
@@ -43,11 +45,29 @@ class Annotatable extends DataExtension
             return false;
         }
 
+        $this->generateClassAnnotations();
+        $this->generateExtensionAnnotations();
+
+        return null;
+    }
+
+    /**
+     * Generate class own annotations
+     */
+    private function generateClassAnnotations()
+    {
         /* Annotate the current Class, if annotatable */
         if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
             $this->annotator->annotateDataObject($this->owner->ClassName);
+            DB::alteration_message($this->owner->ClassName . ' Annotated', 'created');
         }
+    }
 
+    /**
+     * Generate class Extension annotations
+     */
+    private function generateExtensionAnnotations()
+    {
         /** @var array $extensions */
         $extensions = Config::inst()->get($this->owner->ClassName, 'extensions', Config::UNINHERITED);
         /* Annotate the extensions for this Class, if annotatable */
@@ -55,10 +75,9 @@ class Annotatable extends DataExtension
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
                     $this->annotator->annotateDataObject($extension);
+                    DB::alteration_message($extension . ' Annotated', 'created');
                 }
             }
         }
-
-        return null;
     }
 }

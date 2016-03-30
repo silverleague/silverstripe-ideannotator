@@ -3,7 +3,10 @@
 /**
  * Class AnnotatePermissionChecker
  *
- * Helper to check if the class called can be annotated
+ * Helperclass to check if the current class or module is allowed to be annotated.
+ * This is abstracted from @see DataObjectAnnotator to separate and clean up.
+ * 
+ * @package IDEAnnotator/Helpers
  */
 class AnnotatePermissionChecker
 {
