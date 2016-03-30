@@ -11,6 +11,8 @@
  * The generation is disabled by default.
  * It is advisable to only enable it in your local dev environment,
  * so the files won't change on a production server when you run dev/build
+ *
+ * @package IDEAnnotator
  */
 class DataObjectAnnotator extends Object
 {
@@ -28,12 +30,14 @@ class DataObjectAnnotator extends Object
     /**
      * @config
      * Enable generation from @see Annotatable and @see DataObjectAnnotatorTask
+     * @var bool
      */
     private static $enabled = false;
 
     /**
      * @config
      * Enable modules that are allowed to have generated docblocks for DataObjects and DataExtensions
+     * @var array
      */
     private static $enabled_modules = array('mysite');
 
@@ -52,7 +56,10 @@ class DataObjectAnnotator extends Object
         'Extensions',
     );
 
-    protected $annotatePermissionChecker;
+    /**
+     * @var AnnotatePermissionChecker
+     */
+    private $permissionChecker;
 
     /**
      * All classes that subclass DataObject
@@ -85,7 +92,7 @@ class DataObjectAnnotator extends Object
         $this->classes = ClassInfo::subclassesFor('DataObject');
         $this->extensionClasses = ClassInfo::subclassesFor('Object');
         $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-        $this->annotatePermissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
     }
 
     /**
@@ -99,7 +106,7 @@ class DataObjectAnnotator extends Object
      */
     public function annotateModule($moduleName, $undo = false)
     {
-        if (!$this->annotatePermissionChecker->moduleIsAllowed($moduleName)) {
+        if (!$this->permissionChecker->moduleIsAllowed($moduleName)) {
             return false;
         }
 
@@ -126,11 +133,11 @@ class DataObjectAnnotator extends Object
      */
     public function annotateDataObject($className, $undo = false)
     {
-        if (!$this->annotatePermissionChecker->classNameIsAllowed($className)) {
+        if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
         }
 
-        $filePath = $this->annotatePermissionChecker->getClassFilePath($className);
+        $filePath = $this->permissionChecker->getClassFilePath($className);
 
         if (!$filePath) {
             return false;
@@ -160,11 +167,11 @@ class DataObjectAnnotator extends Object
      */
     public function undoDataObject($className)
     {
-        if (!$this->annotatePermissionChecker->classNameIsAllowed($className)) {
+        if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
         }
 
-        $filePath = $this->annotatePermissionChecker->getClassFilePath($className);
+        $filePath = $this->permissionChecker->getClassFilePath($className);
 
         if (!$filePath) {
             return false;
@@ -280,7 +287,7 @@ class DataObjectAnnotator extends Object
         $owners = array();
         foreach ($this->extensionClasses as $class) {
             $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
-            if ($config !== null && in_array($className, Config::inst()->get($class, 'extensions', Config::UNINHERITED), null)) {
+            if ($config !== null && in_array($className, $config, null)) {
                 $owners[] = $class;
             }
         }
@@ -292,7 +299,7 @@ class DataObjectAnnotator extends Object
                 }
                 $this->resultString .= $owner;
             }
-            $this->resultString .= "|$className owner\n";
+            $this->resultString .= "|$className \$owner\n";
         }
     }
 
@@ -322,7 +329,7 @@ class DataObjectAnnotator extends Object
                 ) {
                     $prop = 'float';
                 }
-                $this->resultString .= " * @property $prop $fieldName\n";
+                $this->resultString .= " * @property $prop \$$fieldName\n";
             }
         }
 
@@ -340,7 +347,7 @@ class DataObjectAnnotator extends Object
     {
         if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @property ' . $dataObjectName . " $fieldName\n";
+                $this->resultString .= ' * @property ' . $dataObjectName . " \$$fieldName\n";
             }
         }
 
@@ -358,11 +365,11 @@ class DataObjectAnnotator extends Object
     {
         if ($fields = Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= " * @property int {$fieldName}ID\n";
+                $this->resultString .= " * @property int \${$fieldName}ID\n";
             }
             $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= " * @method $dataObjectName $fieldName\n";
+                $this->resultString .= " * @method $dataObjectName $fieldName()\n";
             }
         }
 
@@ -381,7 +388,7 @@ class DataObjectAnnotator extends Object
         if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
             $this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method DataList|' . $dataObjectName . "[] $fieldName\n";
+                $this->resultString .= ' * @method DataList|' . $dataObjectName . "[] $fieldName()\n";
             }
         }
 
@@ -399,7 +406,7 @@ class DataObjectAnnotator extends Object
     {
         if ($fields = Config::inst()->get($className, 'many_many', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName\n";
+                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName()\n";
             }
         }
 
@@ -417,7 +424,7 @@ class DataObjectAnnotator extends Object
     {
         if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName\n";
+                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName()\n";
             }
         }
 
