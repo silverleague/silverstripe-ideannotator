@@ -3,7 +3,9 @@
 /**
  * Class DataObjectAnnotatorTask
  *
- * Task to add or remove annotations from a module or dataobject
+ * Task to add or remove annotations from a module or dataobject. 
+ *
+ * @package IDEAnnotator
  */
 class DataObjectAnnotatorTask extends BuildTask
 {
@@ -18,20 +20,23 @@ class DataObjectAnnotatorTask extends BuildTask
             return false;
         }
 
-        $permissionHelper = Injector::inst()->get('AnnotatePermissionChecker');
+        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
         $className = $request->getVar('dataobject');
         $moduleName = $request->getVar('module');
         $undo = $request->getVar('undo');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
-        if ($className && $permissionHelper->classNameIsAllowed($className)) {
+        if ($className && $permissionChecker->classNameIsAllowed($className)) {
             $annotator->annotateDataObject($className, $undo);
-        } elseif ($moduleName && $permissionHelper->moduleIsAllowed($moduleName)) {
+        } elseif ($moduleName && $permissionChecker->moduleIsAllowed($moduleName)) {
             $annotator->annotateModule($moduleName, $undo);
         }
 
-        return null;
+        $result = (null !== $undo) ? "\nUndid annotating " : "\nAnnotated ";
+        $result .= " module $moduleName/class $className\n";
+
+        echo $result;
     }
 
 }
