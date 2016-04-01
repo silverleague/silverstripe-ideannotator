@@ -82,6 +82,10 @@ Or add ```axyr/silverstripe-ideannotator: "dev-master"``` to `require-dev` in yo
 
 Or download and add it to your root directory.
 
+##APIDocs
+
+https://axyr.github.io/ideannotator/
+
 ##Caution
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...
 I tried to add complete UnitTests, but I can't garantuee every situation is covered.
