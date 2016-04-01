@@ -23,6 +23,10 @@ class Annotatable extends DataExtension
      */
     protected $permissionChecker;
 
+    /**
+     * Annotatable constructor.
+     * I'm unsure if setting these on construct is a good idea. It might cause higher memory usage.
+     */
     public function __construct() {
         parent::__construct();
         $this->annotator = Injector::inst()->get('DataObjectAnnotator');
