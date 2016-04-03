@@ -24,6 +24,14 @@ class Annotatable extends DataExtension
     protected $permissionChecker;
 
     /**
+     * Keep track ot the annotation actions for extensions
+     * An Extension can belong to many DataObjects.
+     * This prevents that an Extension is ran twice on dev/build
+     * @var array
+     */
+    public static $annotated_extensions = array();
+
+    /**
      * Annotatable constructor.
      * I'm unsure if setting these on construct is a good idea. It might cause higher memory usage.
      */
@@ -62,7 +70,7 @@ class Annotatable extends DataExtension
     private function generateClassAnnotations()
     {
         /* Annotate the current Class, if annotatable */
-        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName) === true) {
+        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
             $this->annotator->annotateDataObject($this->owner->ClassName);
         }
     }
@@ -78,7 +86,11 @@ class Annotatable extends DataExtension
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
-                    $this->annotator->annotateDataObject($extension);
+                    // no need to run many times
+                    if(!in_array($extension, Annotatable::$annotated_extensions)) {
+                        $this->annotator->annotateDataObject($extension);
+                        Annotatable::$annotated_extensions[$extension] = $extension;
+                    }
                 }
             }
         }
