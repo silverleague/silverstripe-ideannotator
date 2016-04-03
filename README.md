@@ -1,7 +1,7 @@
 # silverstripe-ideannotator
 
 [![Build Status](https://secure.travis-ci.org/axyr/silverstripe-ideannotator.png)](https://travis-ci.org/axyr/silverstripe-ideannotator)
-
+[![Packagist](https://img.shields.io/packagist/dt/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 This module generates @property, @method and @mixin tags for DataObjects and DataExtensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
 
 All DataExtensions will be added to the docblock with the @mixin tag.
