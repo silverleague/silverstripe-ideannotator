@@ -78,9 +78,7 @@ class Annotatable extends DataExtension
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
-                    if ($this->annotator->annotateDataObject($extension) === true) {
-                        DB::alteration_message($extension . ' Annotated', 'created');
-                    }
+                    $this->annotator->annotateDataObject($extension);
                 }
             }
         }
