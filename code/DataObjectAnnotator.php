@@ -137,7 +137,8 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
-        $filePath = $this->permissionChecker->getClassFilePath($className);
+        $classInfo = new AnnotateClassInfo($className);
+        $filePath  = $classInfo->getWritableClassFilePath();
 
         if (!$filePath) {
             return false;
@@ -171,7 +172,8 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
-        $filePath = $this->permissionChecker->getClassFilePath($className);
+        $classInfo = new AnnotateClassInfo($className);
+        $filePath  = $classInfo->getWritableClassFilePath();
 
         if (!$filePath) {
             return false;

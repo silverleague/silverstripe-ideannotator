@@ -3,13 +3,48 @@
 /**
  * Class AnnotatePermissionChecker
  *
- * Helperclass to check if the current class or module is allowed to be annotated.
+ * Helperclass to check if the current environment, class or module is allowed to be annotated.
  * This is abstracted from @see DataObjectAnnotator to separate and clean up.
  *
  * @package IDEAnnotator/Helpers
  */
 class AnnotatePermissionChecker
 {
+
+    /**
+     * Since we are changing php files, generation of docblocks should never be done on a live server.
+     * We can't prevent this, but we should make it as hard as possible.
+     *
+     * Generation is only allowed when :
+     * - The module is enabled
+     * - The site is in dev mode by configuration
+     *
+     * This means we will not change files if the ?isDev=1 $_GET variable is used to put a live site into dev mode.
+     * This also means we can't use Director::isDev();
+     */
+    public function environmentIsAllowed()
+    {
+        // Not enabled, so skip anyway
+        if(!Config::inst()->get('DataObjectAnnotator', 'enabled')) {
+            return false;
+        }
+
+        // If the module is enabled, check for dev by config only
+
+        // Copied from Director::isDev(), so we can bypass the session checking
+        // Check config
+        if(Config::inst()->get('Director', 'environment_type') === 'dev') return true;
+
+        // Check if we are running on one of the test servers
+        $devServers = (array)Config::inst()->get('Director', 'dev_servers');
+        if(isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers))  {
+            return true;
+        }
+
+        return false;
+    }
+
+
     /**
      * Check if a DataObject or DataExtension subclass is allowed by checking if the file
      * is in the $allowed_modules array
@@ -23,7 +58,9 @@ class AnnotatePermissionChecker
     {
         if (is_subclass_of($className, 'DataObject') || is_subclass_of($className, 'DataExtension')) {
 
-            $filePath = $this->getClassFilePath($className);
+            $classInfo = new AnnotateClassInfo($className);
+            $filePath  = $classInfo->getWritableClassFilePath();
+
             $allowedModules = Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
 
             foreach ($allowedModules as $moduleName) {
@@ -49,23 +86,4 @@ class AnnotatePermissionChecker
     {
         return in_array($moduleName, Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
     }
-
-    /**
-     * @todo this is not permission, this is general.
-     * @param $className
-     *
-     * @return string
-     */
-    public function getClassFilePath($className)
-    {
-        $reflector = new ReflectionClass($className);
-        $filePath = $reflector->getFileName();
-
-        if (is_writable($filePath)) {
-            return $filePath;
-        }
-
-        return false;
-    }
-
 }

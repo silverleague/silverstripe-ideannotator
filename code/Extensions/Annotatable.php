@@ -43,11 +43,10 @@ class Annotatable extends DataExtension
      */
     public function requireDefaultRecords()
     {
-
         /** @var SS_HTTPRequest|NullHTTPRequest $request */
         $request = Controller::curr()->getRequest();
         $skipAnnotation = $request->getVar('skipannotation');
-        if ($skipAnnotation !== null || !Config::inst()->get('DataObjectAnnotator', 'enabled')) {
+        if ($skipAnnotation !== null || !$this->permissionChecker->environmentIsAllowed()) {
             return false;
         }
 
