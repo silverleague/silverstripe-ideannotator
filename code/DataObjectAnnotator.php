@@ -1,4 +1,5 @@
 <?php
+use phpDocumentor\Reflection\DocBlock\Tag;
 
 /**
  * Class DataObjectAnnotator
@@ -75,18 +76,12 @@ class DataObjectAnnotator extends Object
 
     /**
      * List of all objects, so we can find the extensions.
-     *
      * @var array
      */
     protected $dataExtensions;
 
     /**
-     * @var string
-     * Overall string for dataset.
-     */
-    protected $resultString = '';
-
-    /**
+     * List all the generated tags form the various generateSomeORMProperies methods
      * @var array
      */
     protected $tags = array(
@@ -120,12 +115,10 @@ class DataObjectAnnotator extends Object
 
         foreach ($this->classes as $className) {
             $this->annotateDataObject($className);
-            $this->resultString = ''; // Reset the result after each class
         }
 
         foreach ($this->dataExtensions as $className) {
             $this->annotateDataObject($className);
-            $this->resultString = '';
         }
 
         return null;
@@ -175,21 +168,28 @@ class DataObjectAnnotator extends Object
     {
         $this->generateORMProperties($className);
 
-        if (!$this->resultString) {
+        if (!$this->tags) {
             return null;
+        }
+
+        $tagString = '';
+        foreach($this->tags as $tagType) {
+            foreach($tagType as $tag) {
+                $tagString .= ' * ' . $tag . "\n";
+            }
         }
 
         $startTag = static::STARTTAG;
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replacement = $startTag . "\n * \n" . $this->resultString . " * \n * " . $endTag;
+            $replacement = $startTag . "\n * \n" . $tagString . " * \n * " . $endTag;
 
             return preg_replace("/$startTag([\s\S]*?)$endTag/", $replacement, $fileContent);
         } else {
             $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
             $properties = "\n/**\n * " . $startTag . "\n * \n"
-                . $this->resultString
+                . $tagString
                 . " * \n * " . $endTag . "\n"
                 . " */\n$classDeclaration";
 
@@ -230,7 +230,7 @@ class DataObjectAnnotator extends Object
         /*
          * Start with an empty resultstring before generation
          */
-        $this->resultString = '';
+        $this->resetTags();
 
         /*
          * Loop the available types and generate the ORM property.
@@ -256,17 +256,11 @@ class DataObjectAnnotator extends Object
             }
         }
         if (count($owners)) {
-            $this->resultString .= ' * @property ';
-            foreach ($owners as $key => $owner) {
-                if ($key > 0) {
-                    $this->resultString .= '|';
-                }
-                $this->resultString .= $owner;
-            }
-            $this->resultString .= "|$className \$owner\n";
+            $owners[] = $className;
+            $tag = implode("|", $owners) . " \$owner";
+            $this->tags['properties'][$tag] = new Tag('property', $tag);
         }
     }
-
 
     /**
      * Generate the $db property values.
@@ -293,7 +287,8 @@ class DataObjectAnnotator extends Object
                 ) {
                     $prop = 'float';
                 }
-                $this->resultString .= " * @property $prop \$$fieldName\n";
+                $tag = "$prop \$$fieldName";
+                $this->tags['properties'][$tag] = new Tag('property', $tag);
             }
         }
 
@@ -310,9 +305,10 @@ class DataObjectAnnotator extends Object
     protected function generateORMBelongsToProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
-            $this->resultString .= " * \n";
+            //$this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ' . $dataObjectName . " \$$fieldName\n";
+                $tag = $dataObjectName . " \$$fieldName";
+                $this->tags['methods'][$tag] = new Tag('method', $tag);
             }
         }
 
@@ -330,10 +326,12 @@ class DataObjectAnnotator extends Object
     {
         if ($fields = Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= " * @property int \${$fieldName}ID\n";
+                $tag = "int \${$fieldName}ID";
+                $this->tags['properties'][$tag] = new Tag('property', $tag);
             }
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= " * @method $dataObjectName $fieldName()\n";
+                $tag = "{$dataObjectName} {$fieldName}()";
+                $this->tags['methods'][$tag] = new Tag('method', $tag);
             }
         }
 
@@ -350,9 +348,10 @@ class DataObjectAnnotator extends Object
     protected function generateORMHasManyProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
-            $this->resultString .= " * \n";
+            //$this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method DataList|' . $dataObjectName . "[] $fieldName()\n";
+                $tag = "DataList|{$dataObjectName}[] {$fieldName}()";
+                $this->tags['methods'][$tag] = new Tag('method', $tag);
             }
         }
 
@@ -370,7 +369,8 @@ class DataObjectAnnotator extends Object
     {
         if ($fields = Config::inst()->get($className, 'many_many', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName()\n";
+                $tag = "ManyManyList|{$dataObjectName}[] {$fieldName}()";
+                $this->tags['methods'][$tag] = new Tag('method', $tag);
             }
         }
 
@@ -388,7 +388,8 @@ class DataObjectAnnotator extends Object
     {
         if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName()\n";
+                $tag = "ManyManyList|{$dataObjectName}[] {$fieldName}()";
+                $this->tags['methods'][$tag] = new Tag('method', $tag);
             }
         }
 
@@ -405,12 +406,24 @@ class DataObjectAnnotator extends Object
     protected function generateORMExtensionsProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
-            $this->resultString .= " * \n";
+            //$this->resultString .= " * \n";
             foreach ($fields as $fieldName) {
-                $this->resultString .= " * @mixin $fieldName\n";
+                $this->tags['mixins'][$fieldName] = new Tag('mixin',$fieldName);
             }
         }
 
         return true;
+    }
+
+    /**
+     * Reset the tag list after each run
+     */
+    protected function resetTags()
+    {
+        $this->tags = array(
+            'properties'=> array(),
+            'methods'   => array(),
+            'mixins'    => array()
+        );
     }
 }

@@ -1,5 +1,10 @@
 <?php
 
+use phpDocumentor\Reflection\DocBlock;
+use phpDocumentor\Reflection\DocBlock\Context;
+use phpDocumentor\Reflection\DocBlock\Tag;
+use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
+
 /**
  * Class AnnotateClassInfo
  * We will need this for phpDocumentor as well.
@@ -18,6 +23,11 @@ class AnnotateClassInfo
      */
     protected $reflector;
 
+    /**
+     * AnnotateClassInfo constructor.
+     *
+     * @param $className
+     */
     public function __construct($className)
     {
         $this->className = $className;
@@ -40,5 +50,15 @@ class AnnotateClassInfo
         }
 
         return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDocComment()
+    {
+        $docblock = $this->reflector->getDocComment();
+
+        return $docblock;
     }
 }
