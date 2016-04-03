@@ -146,12 +146,14 @@ class DataObjectAnnotator extends Object
 
         if ($undo) {
             $this->removePHPDocBlock($filePath);
+            DB::alteration_message($className . ' annotation removed', 'created');
         } else {
             $original = file_get_contents($filePath);
             $annotated = $this->getFileContentWithAnnotations($original, $className);
             // nothing has changed, no need to write to the file
             if ($annotated && $annotated !== $original) {
                 file_put_contents($filePath, $annotated);
+                DB::alteration_message($className . ' Annotated', 'created');
             }
         }
 
