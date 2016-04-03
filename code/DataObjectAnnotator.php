@@ -163,29 +163,5 @@ class DataObjectAnnotator extends Object
 
         return str_replace($classDeclaration, $properties, $fileContent);
     }
-
-    /**
-     * removes the unnecessary STARTTAG and ENDTAG
-     *
-     * @param $fileContent
-     *
-     * @return mixed
-     */
-    protected function removeStartAndEndTag($fileContent)
-    {
-        $startTag = static::STARTTAG;
-        $endTag = static::ENDTAG;
-        $replacements = array(
-            "/ \* $startTag\n/",
-            "/ \* $endTag\n/"
-        );
-        if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $fileContent = preg_replace($replacements, '', $fileContent);
-        }
-
-        return $fileContent;
-    }
-
-
-
+    
 }

@@ -100,7 +100,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertTrue((bool)strpos($annotated, '@method DataObjectTest_Player ExtendedHasOneRelationship()'));
     }
 
-    public function testRemoveStartAndEndTag()
+    public function testRemoveOldStyleDocBlock()
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team_Extension');
         $filePath  = $classInfo->getWritableClassFilePath();
@@ -110,7 +110,10 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
         $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
 
-        $startAndEndTagsAreRemoved = $this->annotator->removeStartAndEndTag($annotated);
+
+        $generator = new MockDocBlockGenerator('DataObjectAnnotatorTest_Team_Extension');
+        $startAndEndTagsAreRemoved = $generator->removeOldStyleDocBlock($annotated);
+        
         $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::ENDTAG));
     }
@@ -134,9 +137,12 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
     {
         return parent::getFileContentWithAnnotations($fileContent, $className);
     }
+}
 
-    public function removeStartAndEndTag($fileContent)
+class MockDocBlockGenerator extends DocBlockGenerator implements TestOnly
+{
+    public function removeOldStyleDocBlock($docBlock)
     {
-        return parent::removeStartAndEndTag($fileContent);
+        return parent::removeOldStyleDocBlock($docBlock);
     }
 }

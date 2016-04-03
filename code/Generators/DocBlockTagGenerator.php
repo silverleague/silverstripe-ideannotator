@@ -5,7 +5,7 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 /**
  * Class DocBlockTagGenerator
  */
-class DocBlockTagGenerator extends Object
+class DocBlockTagGenerator
 {
     /**
      * @var array
@@ -36,36 +36,125 @@ class DocBlockTagGenerator extends Object
 
     /**
      * List all the generated tags form the various generateSomeORMProperies methods
+     * @see $this->getSupportedTagTypes();
      * @var array
      */
-    protected $tags = array(
-        'properties'=> array(),
-        'methods'   => array(),
-        'mixins'    => array()
-    );
+    protected $tags = [];
 
     public function __construct($className)
     {
-        parent::__construct();
-
         $this->className        = $className;
         $this->extensionClasses = ClassInfo::subclassesFor('Object');
+        $this->tags             = $this->getSupportedTagTypes();
 
         $this->generateORMProperties();
     }
 
     /**
-     * @param String $className
+     * todo this is a tad ugly...
+     * @param phpDocumentor\Reflection\DocBlock\Tag[] $existingTags
      *
+     * @return phpDocumentor\Reflection\DocBlock\Tag[]
+     */
+    public function getTagsMergedWithExisting($existingTags)
+    {
+        /**
+         * set array keys so we can match existing with generated tags
+         */
+        $existing = $this->getSupportedTagTypes();
+        foreach($existingTags as $tag) {
+            $content = $tag->getContent();
+            if($tag->getName() == 'property') {
+                $existing['properties'][$content] = new Tag($tag->getName(), $content);
+            }elseif($tag->getName() == 'method') {
+                $existing['methods'][$content] = new Tag($tag->getName(), $content);
+            }elseif($tag->getName() == 'mixin') {
+                $existing['mixins'][$content] = new Tag($tag->getName(), $content);
+            }else{
+                $existing['other'][$content] = new Tag($tag->getName(), $content);
+            }
+        }
+
+        /**
+         * Remove the generated tags that already exist
+         */
+        $tags = $this->tags;
+        foreach ($tags as $tagType => $tagList) {
+            foreach($tagList as $type => $tag) {
+                $content = $tag->getContent();
+                if(isset($existing[$tagType][$content])) {
+                    unset($tags[$tagType][$content]);
+                }
+            }
+        }
+
+        return $tags;
+    }
+
+    public function getPropertyTags()
+    {
+        return $this->tags['properties'];
+    }
+
+    public function getMethodTags()
+    {
+        return $this->tags['methods'];
+    }
+
+    public function getMixinTags()
+    {
+        return $this->tags['mixins'];
+    }
+
+    public function getOtherTags()
+    {
+        return $this->tags['other'];
+    }
+
+    /**
+     * @return phpDocumentor\Reflection\DocBlock\Tag[]
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Returns the generated Tag objects as a string
+     * with asterix and newline \n
      * @return string
+     */
+    public function getTagsAsString()
+    {
+        $tagString = '';
+
+        foreach($this->tags as $tagType) {
+            foreach($tagType as $tag) {
+                $tagString .= ' * ' . $tag . "\n";
+            }
+        }
+
+        return $tagString;
+    }
+
+    /**
+     * Reset the tag list after each run
+     */
+    protected function getSupportedTagTypes()
+    {
+        return array(
+            'properties'=> array(),
+            'methods'   => array(),
+            'mixins'    => array(),
+            'other'     => array()
+        );
+    }
+
+    /**
+     * Generates all ORM Properties
      */
     protected function generateORMProperties()
     {
-        /*
-         * Start with an empty resultstring before generation
-         */
-        $this->resetTags();
-
         /*
          * Loop the available types and generate the ORM property.
          */
@@ -244,41 +333,5 @@ class DocBlockTagGenerator extends Object
         }
 
         return true;
-    }
-
-    /**
-     * Reset the tag list after each run
-     */
-    protected function resetTags()
-    {
-        $this->tags = array(
-            'properties'=> array(),
-            'methods'   => array(),
-            'mixins'    => array()
-        );
-    }
-
-    /**
-     * @return phpDocumentor\Reflection\DocBlock\Tag[]
-     */
-    public function getTags()
-    {
-        return $this->tags;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTagsAsString()
-    {
-        $tagString = '';
-
-        foreach($this->tags as $tagType) {
-            foreach($tagType as $tag) {
-                $tagString .= ' * ' . $tag . "\n";
-            }
-        }
-
-        return $tagString;
     }
 }
