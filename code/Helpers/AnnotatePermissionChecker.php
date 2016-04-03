@@ -5,7 +5,7 @@
  *
  * Helperclass to check if the current class or module is allowed to be annotated.
  * This is abstracted from @see DataObjectAnnotator to separate and clean up.
- * 
+ *
  * @package IDEAnnotator/Helpers
  */
 class AnnotatePermissionChecker
@@ -51,6 +51,7 @@ class AnnotatePermissionChecker
     }
 
     /**
+     * @todo this is not permission, this is general.
      * @param $className
      *
      * @return string
