@@ -12,6 +12,16 @@ class AnnotatePermissionChecker
 {
 
     /**
+     * In the future we will support other Classes as well.
+     * We list the core classes, but in fact only it's subclasses are supported
+     * @see AnnotatePermissionChecker::classNameIsSupported();
+     */
+    protected $supportedParentClasses = array(
+        'DataObject',
+        'DataExtension'
+    );
+
+    /**
      * Since we are changing php files, generation of docblocks should never be done on a live server.
      * We can't prevent this, but we should make it as hard as possible.
      *
@@ -56,7 +66,7 @@ class AnnotatePermissionChecker
      */
     public function classNameIsAllowed($className)
     {
-        if (is_subclass_of($className, 'DataObject') || is_subclass_of($className, 'DataExtension')) {
+        if ($this->classNameIsSupported($className)) {
 
             $classInfo = new AnnotateClassInfo($className);
             $filePath  = $classInfo->getWritableClassFilePath();
@@ -68,6 +78,23 @@ class AnnotatePermissionChecker
                 if (0 === strpos($filePath, $modulePath)) {
                     return true;
                 }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a (subclass of ) class is a supported
+     *
+     * @param $className
+     * @return bool
+     */
+    public function classNameIsSupported($className)
+    {
+        foreach ($this->supportedParentClasses as $supportedParent) {
+            if(is_subclass_of($className, $supportedParent)) {
+                return true;
             }
         }
 

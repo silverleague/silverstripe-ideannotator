@@ -41,5 +41,4 @@ class AnnotateClassInfo
 
         return false;
     }
-
 }
