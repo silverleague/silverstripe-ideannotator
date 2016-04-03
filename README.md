@@ -1,6 +1,7 @@
 # silverstripe-ideannotator
 
 [![Travis](https://img.shields.io/travis/axyr/silverstripe-ideannotator.svg)](https://travis-ci.org/axyr/silverstripe-ideannotator)
+[![Code Climate](https://img.shields.io/codeclimate/github/axyr/silverstripe-ideannotator.svg)](https://codeclimate.com/github/axyr/silverstripe-ideannotator/)
 [![Packagist](https://img.shields.io/packagist/v/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/packagist/dt/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 
