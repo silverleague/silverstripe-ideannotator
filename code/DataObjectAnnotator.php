@@ -131,7 +131,7 @@ class DataObjectAnnotator extends Object
      *
      * @return bool
      */
-    public function annotateDataObject($className, $undo = false)
+    public function annotateDataObject($className)
     {
         if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
@@ -144,61 +144,16 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
-        if ($undo) {
-            $this->removePHPDocBlock($filePath);
-            DB::alteration_message($className . ' annotation removed', 'created');
-        } else {
-            $original = file_get_contents($filePath);
-            $annotated = $this->getFileContentWithAnnotations($original, $className);
-            // nothing has changed, no need to write to the file
-            if ($annotated && $annotated !== $original) {
-                file_put_contents($filePath, $annotated);
-                DB::alteration_message($className . ' Annotated', 'created');
-            }
+        $original = file_get_contents($filePath);
+        $annotated = $this->getFileContentWithAnnotations($original, $className);
+
+        // we have a change, so write the new file
+        if ($annotated && $annotated !== $original) {
+            file_put_contents($filePath, $annotated);
+            DB::alteration_message($className . ' Annotated', 'created');
         }
 
         return true;
-    }
-
-    /**
-     * Revert the file to its original state without the generated docblock from this module
-     *
-     * @param $className
-     *
-     * @see removePHPDocBlock
-     * @return bool
-     */
-    public function undoDataObject($className)
-    {
-        if (!$this->permissionChecker->classNameIsAllowed($className)) {
-            return false;
-        }
-
-        $classInfo = new AnnotateClassInfo($className);
-        $filePath  = $classInfo->getWritableClassFilePath();
-
-        if (!$filePath) {
-            return false;
-        }
-
-        $this->removePHPDocBlock($filePath);
-
-        return null;
-    }
-
-    /**
-     * Performs the actual file writing
-     *
-     * @param $filePath
-     */
-    private function removePHPDocBlock($filePath)
-    {
-        $original = file_get_contents($filePath);
-        $reverted = $this->getFileContentWithoutAnnotations($original);
-        // nothing has changed, no need to write to the file
-        if ($reverted && $reverted !== $original) {
-            file_put_contents($filePath, $reverted);
-        }
     }
 
     /**
@@ -236,24 +191,22 @@ class DataObjectAnnotator extends Object
     }
 
     /**
-     * Get the literal contents of the DataObject file.
+     * removes the unnecessary STARTTAG and ENDTAG
      *
      * @param $fileContent
      *
      * @return mixed
      */
-    protected function getFileContentWithoutAnnotations($fileContent)
+    protected function removeStartAndEndTag($fileContent)
     {
         $startTag = static::STARTTAG;
         $endTag = static::ENDTAG;
-
+        $replacements = array(
+            "/ \* $startTag\n/",
+            "/ \* $endTag\n/"
+        );
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replace = "/\n\/\*\*\n"
-                    . " \* $startTag\n"
-                    . "([\s\S]*?)"
-                    . " \* $endTag\n"
-                    . " \*\/\n/";
-            $fileContent = preg_replace($replace, '', $fileContent);
+            $fileContent = preg_replace($replacements, '', $fileContent);
         }
 
         return $fileContent;
