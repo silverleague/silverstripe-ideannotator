@@ -86,6 +86,15 @@ class DataObjectAnnotator extends Object
      */
     protected $resultString = '';
 
+    /**
+     * @var array
+     */
+    protected $tags = array(
+        'properties'=> array(),
+        'methods'   => array(),
+        'mixins'    => array()
+    );
+
     public function __construct()
     {
         parent::__construct();
@@ -97,26 +106,25 @@ class DataObjectAnnotator extends Object
 
     /**
      * @param string $moduleName
-     * @param bool|false $undo
      *
      * Generate docblock for all subclasses of DataObjects and DataExtenions
      * within a module.
      *
      * @return false || void
      */
-    public function annotateModule($moduleName, $undo = false)
+    public function annotateModule($moduleName)
     {
         if (!$this->permissionChecker->moduleIsAllowed($moduleName)) {
             return false;
         }
 
         foreach ($this->classes as $className) {
-            $this->annotateDataObject($className, $undo);
+            $this->annotateDataObject($className);
             $this->resultString = ''; // Reset the result after each class
         }
 
         foreach ($this->dataExtensions as $className) {
-            $this->annotateDataObject($className, $undo);
+            $this->annotateDataObject($className);
             $this->resultString = '';
         }
 
@@ -125,7 +133,6 @@ class DataObjectAnnotator extends Object
 
     /**
      * @param string     $className
-     * @param bool|false $undo
      *
      * Generate docblock for a single subclass of DataObject or DataExtenions
      *
