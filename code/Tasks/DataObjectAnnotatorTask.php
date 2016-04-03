@@ -3,9 +3,9 @@
 /**
  * Class DataObjectAnnotatorTask
  *
- * Task to add or remove annotations from a module or dataobject. 
+ * Task to add or remove annotations from a module or dataobject.
  *
- * @package IDEAnnotator
+ * @package IDEAnnotator/Tasks
  */
 class DataObjectAnnotatorTask extends BuildTask
 {

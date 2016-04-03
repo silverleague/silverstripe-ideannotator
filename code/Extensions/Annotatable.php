@@ -6,7 +6,7 @@
  * Annotate extension for the provided DataObjects for autocompletion purposes.
  * Start annotation, if skipannotation is not set and the annotator is enabled.
  *
- * @package IDEAnnotator
+ * @package IDEAnnotator/Extensions
  *
  * @property DataObject|Annotatable $owner
  */
@@ -78,7 +78,7 @@ class Annotatable extends DataExtension
         /** @var array $extensions */
         $extensions = Config::inst()->get($this->owner->ClassName, 'extensions', Config::UNINHERITED);
         /* Annotate the extensions for this Class, if annotatable */
-        if ($extensions) {
+        if (null !== $extensions) {
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
                     if ($this->annotator->annotateDataObject($extension) === true) {

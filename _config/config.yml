@@ -1,5 +1,7 @@
 ---
 Name: ideannotator
+Before:
+  - 'mysite/*'
 After:
   - 'framework/*'
   - 'cms/*'

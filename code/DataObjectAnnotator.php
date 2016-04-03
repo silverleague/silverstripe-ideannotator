@@ -12,7 +12,7 @@
  * It is advisable to only enable it in your local dev environment,
  * so the files won't change on a production server when you run dev/build
  *
- * @package IDEAnnotator
+ * @package IDEAnnotator/Core
  */
 class DataObjectAnnotator extends Object
 {
