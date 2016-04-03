@@ -6,10 +6,6 @@
  *
  * Several tests to make sure the Annotator does it's job correctly
  *
- * @method assertTrue() assertTrue(boolean)
- * @method assertFalse() assertFalse(boolean)
- * @method assertEquals() assertEquals($expected, $result)
- *
  * @mixin PHPUnit_Framework_TestCase
  */
 class DataObjectAnnotatorTest extends SapphireTest
