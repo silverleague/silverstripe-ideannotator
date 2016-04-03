@@ -154,7 +154,7 @@ class DataObjectAnnotator extends Object
             }
         }
 
-        return null;
+        return true;
     }
 
     /**
