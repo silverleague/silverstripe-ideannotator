@@ -6,7 +6,7 @@
  * Annotate extension for the provided DataObjects for autocompletion purposes.
  * Start annotation, if skipannotation is not set and the annotator is enabled.
  *
- * @package IDEAnnotator
+ * @package IDEAnnotator/Extensions
  *
  * @property DataObject|Annotatable $owner
  */
@@ -23,12 +23,18 @@ class Annotatable extends DataExtension
      */
     protected $permissionChecker;
 
-    public function __construct() {
+    /**
+     * Annotatable constructor.
+     * I'm unsure if setting these on construct is a good idea. It might cause higher memory usage.
+     */
+    public function __construct()
+    {
         parent::__construct();
         $this->annotator = Injector::inst()->get('DataObjectAnnotator');
         $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
 
     }
+
     /**
      * This is the base function on which annotations are started.
      *
@@ -57,9 +63,10 @@ class Annotatable extends DataExtension
     private function generateClassAnnotations()
     {
         /* Annotate the current Class, if annotatable */
-        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
-            $this->annotator->annotateDataObject($this->owner->ClassName);
-            DB::alteration_message($this->owner->ClassName . ' Annotated', 'created');
+        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName) === true) {
+            if ($this->annotator->annotateDataObject($this->owner->ClassName) === true) {
+                DB::alteration_message($this->owner->ClassName . ' Annotated', 'created');
+            }
         }
     }
 
@@ -71,11 +78,12 @@ class Annotatable extends DataExtension
         /** @var array $extensions */
         $extensions = Config::inst()->get($this->owner->ClassName, 'extensions', Config::UNINHERITED);
         /* Annotate the extensions for this Class, if annotatable */
-        if ($extensions) {
+        if (null !== $extensions) {
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
-                    $this->annotator->annotateDataObject($extension);
-                    DB::alteration_message($extension . ' Annotated', 'created');
+                    if ($this->annotator->annotateDataObject($extension) === true) {
+                        DB::alteration_message($extension . ' Annotated', 'created');
+                    }
                 }
             }
         }
