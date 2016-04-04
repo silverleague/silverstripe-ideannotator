@@ -1,5 +1,7 @@
-#[API Documentation](https://axyr.github.io/ideannotator)
+###[API Documentation](https://axyr.github.io/ideannotator)
 
-#[Code of Conduct](CodeOfConduct.md)
+###[Installation](Installation.md)
 
-#[Contributing](Contributing.md)
+###[Code of Conduct](CodeOfConduct.md)
+
+###[Contributing](../../CONTRIBUTING.md)
