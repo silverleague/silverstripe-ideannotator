@@ -5,6 +5,8 @@ use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
 
 /**
  * Class DocBlockGenerator
+ * 
+ * @package IDEAnnotator/Generators
  */
 class DocBlockGenerator
 {

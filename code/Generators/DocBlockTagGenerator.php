@@ -4,6 +4,8 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 
 /**
  * Class DocBlockTagGenerator
+ * 
+ * @package IDEAnnotator/Generators
  */
 class DocBlockTagGenerator
 {

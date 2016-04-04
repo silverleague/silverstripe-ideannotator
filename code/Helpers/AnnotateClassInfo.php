@@ -10,6 +10,8 @@ use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
  * We will need this for phpDocumentor as well.
  *
  * @todo namespace this...
+ *
+ * @package IDEAnnotator/Helpers
  */
 class AnnotateClassInfo
 {
