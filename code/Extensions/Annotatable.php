@@ -32,15 +32,13 @@ class Annotatable extends DataExtension
     public static $annotated_extensions = array();
 
     /**
-     * Annotatable constructor.
-     * I'm unsure if setting these on construct is a good idea. It might cause higher memory usage.
+     * Annotatable setup.
+     * This is theoratically a constructor, but to save memory we're using setup called from {@see requireDefaultRecords}
      */
-    public function __construct()
+    public function setUp()
     {
-        parent::__construct();
         $this->annotator = Injector::inst()->get('DataObjectAnnotator');
         $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
-
     }
 
     /**
@@ -51,6 +49,9 @@ class Annotatable extends DataExtension
      */
     public function requireDefaultRecords()
     {
+        // Setup the protected values.
+        $this->setUp();
+
         /** @var SS_HTTPRequest|NullHTTPRequest $request */
         $request = Controller::curr()->getRequest();
         $skipAnnotation = $request->getVar('skipannotation');
@@ -61,7 +62,7 @@ class Annotatable extends DataExtension
         $this->generateClassAnnotations();
         $this->generateExtensionAnnotations();
 
-        return null;
+        return true;
     }
 
     /**
