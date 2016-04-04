@@ -49,7 +49,13 @@ class NewsItem extends DataObject
 ```
 
 ## Further information
-For further information like installation etc., see the [docs](docs/en/index.md)
+For installation, see [installation](docs/en/Installation.md)
+
+For the Code of Conduct, see [CodeOfConduct](docs/en/CodeOfConduct.md)
+
+For contributing, see [Contributing](CONTRIBUTING.md)
+
+For further documentation information, see the [docs](docs/en/Index.md)
 
 ##Caution
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...
