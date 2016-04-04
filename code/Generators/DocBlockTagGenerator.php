@@ -244,7 +244,6 @@ class DocBlockTagGenerator
     protected function generateORMBelongsToProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
-            //$this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = $dataObjectName . " \$$fieldName";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
