@@ -4,7 +4,7 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 
 /**
  * Class DocBlockTagGenerator
- * 
+ *
  * @package IDEAnnotator/Generators
  */
 class DocBlockTagGenerator
@@ -43,6 +43,11 @@ class DocBlockTagGenerator
      */
     protected $tags = array();
 
+    /**
+     * DocBlockTagGenerator constructor.
+     *
+     * @param string $className
+     */
     public function __construct($className)
     {
         $this->className        = $className;
@@ -66,11 +71,11 @@ class DocBlockTagGenerator
         $existing = $this->getSupportedTagTypes();
         foreach($existingTags as $tag) {
             $content = $tag->getContent();
-            if($tag->getName() == 'property') {
+            if($tag->getName() === 'property') {
                 $existing['properties'][$content] = new Tag($tag->getName(), $content);
-            }elseif($tag->getName() == 'method') {
+            }elseif($tag->getName() === 'method') {
                 $existing['methods'][$content] = new Tag($tag->getName(), $content);
-            }elseif($tag->getName() == 'mixin') {
+            }elseif($tag->getName() === 'mixin') {
                 $existing['mixins'][$content] = new Tag($tag->getName(), $content);
             }else{
                 $existing['other'][$content] = new Tag($tag->getName(), $content);
@@ -93,21 +98,33 @@ class DocBlockTagGenerator
         return $tags;
     }
 
+    /**
+     * @return mixed
+     */
     public function getPropertyTags()
     {
         return $this->tags['properties'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getMethodTags()
     {
         return $this->tags['methods'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getMixinTags()
     {
         return $this->tags['mixins'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getOtherTags()
     {
         return $this->tags['other'];
