@@ -9,6 +9,21 @@
  */
 class DataObjectAnnotatorTask extends BuildTask
 {
+
+    /**
+     * DataObjectAnnotatorTask constructor.
+     * Setup default values. In this case title and description.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->title = 'DataObject annotations for specific DataObjects';
+        $this->description = "DataObject Annotator annotates your DO's if possible, helping you write better code.<br />"
+            . 'Usage: add the module or DataObject as parameter to the URL, e.g. ?module=ideannotator<br />'
+            . 'To undo annotations, add undo=true to the URL.';
+
+    }
+
     /**
      * @param $request SS_HTTPRequest
      *
