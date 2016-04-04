@@ -209,7 +209,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMDBProperties($className)
     {
@@ -239,7 +239,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMBelongsToProperties($className)
     {
@@ -259,7 +259,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMHasOneProperties($className)
     {
@@ -282,7 +282,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMHasManyProperties($className)
     {
@@ -302,7 +302,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMManyManyProperties($className)
     {
@@ -321,7 +321,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMBelongsManyManyProperties($className)
     {
@@ -340,7 +340,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMExtensionsProperties($className)
     {
