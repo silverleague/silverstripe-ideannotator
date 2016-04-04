@@ -6,10 +6,6 @@
  *
  * Several tests to make sure the Annotator does it's job correctly
  *
- * @method assertTrue() assertTrue(boolean)
- * @method assertFalse() assertFalse(boolean)
- * @method assertEquals() assertEquals($expected, $result)
- *
  * @mixin PHPUnit_Framework_TestCase
  */
 class DataObjectAnnotatorTest extends SapphireTest
@@ -18,12 +14,12 @@ class DataObjectAnnotatorTest extends SapphireTest
     /**
      * @var MockDataObjectAnnotator
      */
-    private $annotator = null;
+    private $annotator;
 
     /**
-     * @var AnnotatePermissionChecker $annotatorHelper
+     * @var AnnotatePermissionChecker $permissionChecker
      */
-    private $annotatorHelper = null;
+    private $permissionChecker;
 
     /**
      * Setup Defaults
@@ -38,37 +34,8 @@ class DataObjectAnnotatorTest extends SapphireTest
             array('DataObjectAnnotatorTest_Team_Extension')
         );
 
-        $this->annotator = MockDataObjectAnnotator::create();
-        $this->annotatorHelper = new AnnotatePermissionChecker();
-    }
-
-    /**
-     * Test is a module name is in the @Config enabled_modules
-     * and will be seen as allowed or disallowed correctly
-     */
-    public function testModuleIsAllowed()
-    {
-        $this->assertFalse($this->annotatorHelper->moduleIsAllowed('framework'));
-        $this->assertTrue($this->annotatorHelper->moduleIsAllowed('mysite'));
-        $this->assertTrue($this->annotatorHelper->moduleIsAllowed('ideannotator'));
-    }
-
-    /**
-     * Test if a DataObject is in an allowed module name
-     * and will be seen as allowed or disallowed correctly
-     */
-    public function testDataObjectIsAllowed()
-    {
-        $this->assertTrue($this->annotatorHelper->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
-        $this->assertTrue($this->annotatorHelper->classNameIsAllowed('DataObjectAnnotatorTest_Team_Extension'));
-
-        $this->assertFalse($this->annotatorHelper->classNameIsAllowed('DataObject'));
-        $this->assertFalse($this->annotatorHelper->classNameIsAllowed('File'));
-
-        Config::inst()->remove('DataObjectAnnotator', 'enabled_modules');
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite'));
-
-        $this->assertFalse($this->annotatorHelper->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
+        $this->annotator = Injector::inst()->get('MockDataObjectAnnotator');
+        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
     }
 
     /**
@@ -78,7 +45,9 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testFileContentWithAnnotations()
     {
-        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
+        $filePath  = $classInfo->getWritableClassFilePath();
+
         $content = $this->annotator->getFileContentWithAnnotations(file_get_contents($filePath),
             'DataObjectAnnotatorTest_Team');
 
@@ -100,58 +69,15 @@ class DataObjectAnnotatorTest extends SapphireTest
     }
 
     /**
-     * Test if there are no generated annotations present
-     */
-    public function testFileContentWithoutAnnotations()
-    {
-        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
-        $content = $this->annotator->getFileContentWithoutAnnotations(file_get_contents($filePath));
-
-        $this->assertFalse(strpos($content, DataObjectAnnotator::STARTTAG));
-        $this->assertFalse(strpos($content, DataObjectAnnotator::ENDTAG));
-        $this->assertFalse(strpos($content, '@property string $Title'));
-        $this->assertFalse(strpos($content, '@property int $VisitCount'));
-        $this->assertFalse(strpos($content, '@property int $CaptainID'));
-        $this->assertFalse(strpos($content, '@method DataObjectAnnotatorTest_Player Captain()'));
-        $this->assertFalse(strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()'));
-        $this->assertFalse(strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players()'));
-        $this->assertFalse(strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension()'));
-    }
-
-    /**
-     * Test if an undo action will lead to the same file as the original file
-     */
-    public function testFileIsTheSameAfterUndoAnnotate()
-    {
-        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
-        $original = file_get_contents($filePath);
-        $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
-        $undone = $this->annotator->getFileContentWithoutAnnotations($annotated);
-
-        $this->assertEquals($original, $undone);
-    }
-
-    /**
      * Test that multiple annotation runs won't generate ducplicate docblocks
      */
     public function testNothingHasChangedAfterSecondAnnotation()
     {
-        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
+        $filePath  = $classInfo->getWritableClassFilePath();
         $original = file_get_contents($filePath);
         $firstRun = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
         $secondRun = $this->annotator->getFileContentWithAnnotations($firstRun, 'DataObjectAnnotatorTest_Team');
-        $this->assertEquals($firstRun, $secondRun);
-    }
-
-    /**
-     * Test that nothing has changed after running the getWithoutAnnotations
-     */
-    public function testNothingHasChangedAfterSecondWithoutAnnotation()
-    {
-        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team');
-        $original = file_get_contents($filePath);
-        $firstRun = $this->annotator->getFileContentWithoutAnnotations($original);
-        $secondRun = $this->annotator->getFileContentWithoutAnnotations($firstRun);
         $this->assertEquals($firstRun, $secondRun);
     }
 
@@ -160,7 +86,8 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testAnnotateDataExtension()
     {
-        $filePath = $this->annotatorHelper->getClassFilePath('DataObjectAnnotatorTest_Team_Extension');
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team_Extension');
+        $filePath  = $classInfo->getWritableClassFilePath();
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team_Extension');
 
@@ -171,6 +98,24 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertTrue((bool)strpos($annotated, '@property int $ExtendedIntField'));
         $this->assertTrue((bool)strpos($annotated, '@property int $ExtendedHasOneRelationshipID'));
         $this->assertTrue((bool)strpos($annotated, '@method DataObjectTest_Player ExtendedHasOneRelationship()'));
+    }
+
+    public function testRemoveOldStyleDocBlock()
+    {
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team_Extension');
+        $filePath  = $classInfo->getWritableClassFilePath();
+
+        $original  = file_get_contents($filePath);
+        $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team_Extension');
+        $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
+        $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
+
+
+        $generator = new MockDocBlockGenerator('DataObjectAnnotatorTest_Team_Extension');
+        $startAndEndTagsAreRemoved = $generator->removeOldStyleDocBlock($annotated);
+
+        $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::STARTTAG));
+        $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::ENDTAG));
     }
 }
 
@@ -192,15 +137,12 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
     {
         return parent::getFileContentWithAnnotations($fileContent, $className);
     }
+}
 
-    /**
-     * @param $fileContent
-     *
-     * @return mixed
-     */
-    public function getFileContentWithoutAnnotations($fileContent)
+class MockDocBlockGenerator extends DocBlockGenerator implements TestOnly
+{
+    public function removeOldStyleDocBlock($docBlock)
     {
-        return parent::getFileContentWithoutAnnotations($fileContent);
+        return parent::removeOldStyleDocBlock($docBlock);
     }
-
 }

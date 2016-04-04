@@ -24,15 +24,21 @@ class Annotatable extends DataExtension
     protected $permissionChecker;
 
     /**
-     * Annotatable constructor.
-     * I'm unsure if setting these on construct is a good idea. It might cause higher memory usage.
+     * Keep track ot the annotation actions for extensions
+     * An Extension can belong to many DataObjects.
+     * This prevents that an Extension is ran twice on dev/build
+     * @var array
      */
-    public function __construct()
+    public static $annotated_extensions = array();
+
+    /**
+     * Annotatable setup.
+     * This is theoratically a constructor, but to save memory we're using setup called from {@see requireDefaultRecords}
+     */
+    public function setUp()
     {
-        parent::__construct();
         $this->annotator = Injector::inst()->get('DataObjectAnnotator');
         $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
-
     }
 
     /**
@@ -43,18 +49,20 @@ class Annotatable extends DataExtension
      */
     public function requireDefaultRecords()
     {
+        // Setup the protected values.
+        $this->setUp();
 
         /** @var SS_HTTPRequest|NullHTTPRequest $request */
         $request = Controller::curr()->getRequest();
         $skipAnnotation = $request->getVar('skipannotation');
-        if ($skipAnnotation !== null || !Config::inst()->get('DataObjectAnnotator', 'enabled')) {
+        if ($skipAnnotation !== null || !$this->permissionChecker->environmentIsAllowed()) {
             return false;
         }
 
         $this->generateClassAnnotations();
         $this->generateExtensionAnnotations();
 
-        return null;
+        return true;
     }
 
     /**
@@ -63,10 +71,8 @@ class Annotatable extends DataExtension
     private function generateClassAnnotations()
     {
         /* Annotate the current Class, if annotatable */
-        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName) === true) {
-            if ($this->annotator->annotateDataObject($this->owner->ClassName) === true) {
-                DB::alteration_message($this->owner->ClassName . ' Annotated', 'created');
-            }
+        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
+            $this->annotator->annotateDataObject($this->owner->ClassName);
         }
     }
 
@@ -81,8 +87,10 @@ class Annotatable extends DataExtension
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
-                    if ($this->annotator->annotateDataObject($extension) === true) {
-                        DB::alteration_message($extension . ' Annotated', 'created');
+                    // no need to run many times
+                    if(!in_array($extension, Annotatable::$annotated_extensions)) {
+                        $this->annotator->annotateDataObject($extension);
+                        Annotatable::$annotated_extensions[$extension] = $extension;
                     }
                 }
             }

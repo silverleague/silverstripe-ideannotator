@@ -1,6 +1,9 @@
 # silverstripe-ideannotator
 
-[![Build Status](https://secure.travis-ci.org/axyr/silverstripe-ideannotator.png)](https://travis-ci.org/axyr/silverstripe-ideannotator)
+[![Travis](https://img.shields.io/travis/axyr/silverstripe-ideannotator.svg)](https://travis-ci.org/axyr/silverstripe-ideannotator)
+[![Code Climate](https://img.shields.io/codeclimate/github/axyr/silverstripe-ideannotator.svg)](https://codeclimate.com/github/axyr/silverstripe-ideannotator/)
+[![Packagist](https://img.shields.io/packagist/v/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
+[![Packagist](https://img.shields.io/packagist/dt/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 
 This module generates @property, @method and @mixin tags for DataObjects and DataExtensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
 
@@ -45,42 +48,14 @@ class NewsItem extends DataObject
 }
 ```
 
-##Config
-This module is disabled by default and I recommend to only enable this module in your local development environment, since this module changes the file content of the Dataobject and DataExtension classes.
+## Further information
+For installation, see [installation](docs/en/Installation.md)
 
-You can do this, by using something like this in your mysite/_config.php :
+For the Code of Conduct, see [CodeOfConduct](docs/en/CodeOfConduct.md)
 
-```php
-if($_SERVER['HTTP_HOST'] == 'mysite.local.dev') {
-    Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-}
-```
-When enabled IdeAnnotator generates the docblocks on dev/build for mysite only.
+For contributing, see [Contributing](CONTRIBUTING.md)
 
-You can add extra module folders with the following config setting :
-
-```php
-Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite', 'otherfolderinsiteroot'));
-```
-or
-```
-yml
----
-Only:
-    environment: 'dev'
----
-DataObjectAnnotator:
-    enabled_modules:
-      - mysite
-      - otherfolderinsiteroot
-````
-
-##Installation
-Either run ```composer require axyr/silverstripe-ideannotator --dev```
-
-Or add ```axyr/silverstripe-ideannotator: "dev-master"``` to `require-dev` in your composer.json file
-
-Or download and add it to your root directory.
+For further documentation information, see the [docs](docs/en/Index.md)
 
 ##Caution
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...

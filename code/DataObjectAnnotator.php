@@ -16,7 +16,6 @@
  */
 class DataObjectAnnotator extends Object
 {
-
     /**
      * This string marks the beginning of a generated annotations block
      */
@@ -42,21 +41,6 @@ class DataObjectAnnotator extends Object
     private static $enabled_modules = array('mysite');
 
     /**
-     * @var array
-     * Available properties to generate docblocks for.
-     */
-    protected static $propertyTypes = array(
-        'Owner',
-        'DB',
-        'HasOne',
-        'BelongsTo',
-        'HasMany',
-        'ManyMany',
-        'BelongsManyMany',
-        'Extensions',
-    );
-
-    /**
      * @var AnnotatePermissionChecker
      */
     private $permissionChecker;
@@ -68,133 +52,87 @@ class DataObjectAnnotator extends Object
     protected $classes;
 
     /**
-     * All classes that subclass Object
-     * @var array
-     */
-    protected $extensionClasses;
-
-    /**
      * List of all objects, so we can find the extensions.
-     *
      * @var array
      */
     protected $dataExtensions;
 
     /**
-     * @var string
-     * Overall string for dataset.
+     * Temporary flag so we can switch implementations.
+     * Keep it public for easy checking outside this class.
+     * @var bool
      */
-    protected $resultString = '';
+    public static $phpDocumentorEnabled = false;
 
+    /**
+     * DataObjectAnnotator constructor.
+     */
     public function __construct()
     {
         parent::__construct();
-        $this->classes = ClassInfo::subclassesFor('DataObject');
-        $this->extensionClasses = ClassInfo::subclassesFor('Object');
-        $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        // Don't instantiate anything if annotations are not enabled.
+        if(static::config()->get('enabled') === true) {
+            $this->classes = ClassInfo::subclassesFor('DataObject');
+            $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
+            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        }
     }
 
     /**
      * @param string $moduleName
-     * @param bool|false $undo
      *
      * Generate docblock for all subclasses of DataObjects and DataExtenions
      * within a module.
      *
-     * @return false || void
+     * @return bool
      */
-    public function annotateModule($moduleName, $undo = false)
+    public function annotateModule($moduleName)
     {
         if (!$this->permissionChecker->moduleIsAllowed($moduleName)) {
             return false;
         }
 
         foreach ($this->classes as $className) {
-            $this->annotateDataObject($className, $undo);
-            $this->resultString = ''; // Reset the result after each class
+            $this->annotateDataObject($className);
         }
 
         foreach ($this->dataExtensions as $className) {
-            $this->annotateDataObject($className, $undo);
-            $this->resultString = '';
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string     $className
-     * @param bool|false $undo
-     *
-     * Generate docblock for a single subclass of DataObject or DataExtenions
-     *
-     * @return bool
-     */
-    public function annotateDataObject($className, $undo = false)
-    {
-        if (!$this->permissionChecker->classNameIsAllowed($className)) {
-            return false;
-        }
-
-        $filePath = $this->permissionChecker->getClassFilePath($className);
-
-        if (!$filePath) {
-            return false;
-        }
-
-        if ($undo) {
-            $this->removePHPDocBlock($filePath);
-        } else {
-            $original = file_get_contents($filePath);
-            $annotated = $this->getFileContentWithAnnotations($original, $className);
-            // nothing has changed, no need to write to the file
-            if ($annotated && $annotated !== $original) {
-                file_put_contents($filePath, $annotated);
-            }
+            $this->annotateDataObject($className);
         }
 
         return true;
     }
 
     /**
-     * Revert the file to its original state without the generated docblock from this module
+     * @param string     $className
      *
-     * @param $className
+     * Generate docblock for a single subclass of DataObject or DataExtenions
      *
-     * @see removePHPDocBlock
      * @return bool
      */
-    public function undoDataObject($className)
+    public function annotateDataObject($className)
     {
         if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
         }
 
-        $filePath = $this->permissionChecker->getClassFilePath($className);
+        $classInfo = new AnnotateClassInfo($className);
+        $filePath  = $classInfo->getWritableClassFilePath();
 
         if (!$filePath) {
             return false;
         }
 
-        $this->removePHPDocBlock($filePath);
-
-        return null;
-    }
-
-    /**
-     * Performs the actual file writing
-     *
-     * @param $filePath
-     */
-    private function removePHPDocBlock($filePath)
-    {
         $original = file_get_contents($filePath);
-        $reverted = $this->getFileContentWithoutAnnotations($original);
-        // nothing has changed, no need to write to the file
-        if ($reverted && $reverted !== $original) {
-            file_put_contents($filePath, $reverted);
+        $annotated = $this->getFileContentWithAnnotations($original, $className);
+
+        // we have a change, so write the new file
+        if ($annotated && $annotated !== $original) {
+            file_put_contents($filePath, $annotated);
+            DB::alteration_message($className . ' Annotated', 'created');
         }
+
+        return true;
     }
 
     /**
@@ -203,250 +141,67 @@ class DataObjectAnnotator extends Object
      * @param String $fileContent
      * @param String $className
      *
-     * @return mixed|void
+     * @return string|bool
      */
     protected function getFileContentWithAnnotations($fileContent, $className)
     {
-        $this->generateORMProperties($className);
+        $generator = new DocBlockTagGenerator($className);
 
-        if (!$this->resultString) {
-            return null;
+        $tagString = $generator->getTagsAsString();
+
+        if (!$tagString) {
+            return false;
         }
 
         $startTag = static::STARTTAG;
         $endTag = static::ENDTAG;
 
         if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replacement = $startTag . "\n * \n" . $this->resultString . " * \n * " . $endTag;
-
+            $replacement = $startTag . "\n * \n" . $tagString . " * \n * " . $endTag;
             return preg_replace("/$startTag([\s\S]*?)$endTag/", $replacement, $fileContent);
-        } else {
-            $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
-            $properties = "\n/**\n * " . $startTag . "\n * \n"
-                . $this->resultString
-                . " * \n * " . $endTag . "\n"
-                . " */\n$classDeclaration";
-
-            return str_replace($classDeclaration, $properties, $fileContent);
         }
+
+        $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
+        $properties = "\n/**\n * " . $startTag . "\n * \n"
+            . $tagString
+            . " * \n * " . $endTag . "\n"
+            . " */\n$classDeclaration";
+
+        return str_replace($classDeclaration, $properties, $fileContent);
     }
 
     /**
-     * Get the literal contents of the DataObject file.
-     *
-     * @param $fileContent
-     *
-     * @return mixed
+     * @return boolean
      */
-    protected function getFileContentWithoutAnnotations($fileContent)
+    public static function isEnabled()
     {
-        $startTag = static::STARTTAG;
-        $endTag = static::ENDTAG;
-
-        if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replace = "/\n\/\*\*\n"
-                    . " \* $startTag\n"
-                    . "([\s\S]*?)"
-                    . " \* $endTag\n"
-                    . " \*\/\n/";
-            $fileContent = preg_replace($replace, '', $fileContent);
-        }
-
-        return $fileContent;
-    }
-
-
-    /**
-     * @param String $className
-     *
-     * @return string
-     */
-    protected function generateORMProperties($className)
-    {
-        /*
-         * Start with an empty resultstring before generation
-         */
-        $this->resultString = '';
-
-        /*
-         * Loop the available types and generate the ORM property.
-         */
-        foreach (self::$propertyTypes as $type) {
-            $function = 'generateORM' . $type . 'Properties';
-            $this->{$function}($className);
-        }
+        return static::config()->get('enabled');
     }
 
     /**
-     * Generate the Owner-properties for extensions.
-     *
-     * @param string $className
+     * @param boolean $enabled
      */
-    protected function generateORMOwnerProperties($className)
+    public static function setEnabled($enabled)
     {
-        $owners = array();
-        foreach ($this->extensionClasses as $class) {
-            $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
-            if ($config !== null && in_array($className, $config, null)) {
-                $owners[] = $class;
-            }
-        }
-        if (count($owners)) {
-            $this->resultString .= ' * @property ';
-            foreach ($owners as $key => $owner) {
-                if ($key > 0) {
-                    $this->resultString .= '|';
-                }
-                $this->resultString .= $owner;
-            }
-            $this->resultString .= "|$className \$owner\n";
-        }
-    }
-
-
-    /**
-     * Generate the $db property values.
-     *
-     * @param DataObject|DataExtension $className
-     *
-     * @return string
-     */
-    protected function generateORMDBProperties($className)
-    {
-        if ($fields = Config::inst()->get($className, 'db', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $prop = 'string';
-
-                $fieldObj = Object::create_from_string($dataObjectName, $fieldName);
-
-                if ($fieldObj instanceof Int || $fieldObj instanceof DBInt) {
-                    $prop = 'int';
-                } elseif ($fieldObj instanceof Boolean) {
-                    $prop = 'boolean';
-                } elseif ($fieldObj instanceof Float ||
-                    $fieldObj instanceof DBFloat ||
-                    $fieldObj instanceof Decimal
-                ) {
-                    $prop = 'float';
-                }
-                $this->resultString .= " * @property $prop \$$fieldName\n";
-            }
-        }
-
-        return true;
+        static::config()->enabled = $enabled;
     }
 
     /**
-     * Generate the $belongs_to property values.
-     *
-     * @param DataObject|DataExtension $className
-     *
-     * @return string
+     * @return array
      */
-    protected function generateORMBelongsToProperties($className)
+    public static function getEnabledModules()
     {
-        if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
-            $this->resultString .= " * \n";
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ' . $dataObjectName . " \$$fieldName\n";
-            }
-        }
-
-        return true;
+        return static::config()->get('enabled_modules');
     }
 
     /**
-     * Generate the $has_one property and method values.
-     *
-     * @param DataObject|DataExtension $className
-     *
-     * @return string
+     * @param array $enabled_modules
      */
-    protected function generateORMHasOneProperties($className)
+    public static function setEnabledModules($enabled_modules)
     {
-        if ($fields = Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= " * @property int \${$fieldName}ID\n";
-            }
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= " * @method $dataObjectName $fieldName()\n";
-            }
-        }
-
-        return true;
+        static::config()->enabled_modules = $enabled_modules;
     }
 
-    /**
-     * Generate the $has_many method values.
-     *
-     * @param DataObject|DataExtension $className
-     *
-     * @return string
-     */
-    protected function generateORMHasManyProperties($className)
-    {
-        if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
-            $this->resultString .= " * \n";
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method DataList|' . $dataObjectName . "[] $fieldName()\n";
-            }
-        }
 
-        return true;
-    }
 
-    /**
-     * Generate the $many_many method values.
-     *
-     * @param DataObject|DataExtension $className
-     *
-     * @return string
-     */
-    protected function generateORMManyManyProperties($className)
-    {
-        if ($fields = Config::inst()->get($className, 'many_many', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName()\n";
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Generate the $belongs_many_many method values.
-     *
-     * @param DataObject|DataExtension $className
-     *
-     * @return string
-     */
-    protected function generateORMBelongsManyManyProperties($className)
-    {
-        if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $this->resultString .= ' * @method ManyManyList|' . $dataObjectName . "[] $fieldName()\n";
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Generate the mixins for DataExtensions
-     *
-     * @param DataObject|DataExtension $className
-     *
-     * @return string
-     */
-    protected function generateORMExtensionsProperties($className)
-    {
-        if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
-            $this->resultString .= " * \n";
-            foreach ($fields as $fieldName) {
-                $this->resultString .= " * @mixin $fieldName\n";
-            }
-        }
-
-        return true;
-    }
 }

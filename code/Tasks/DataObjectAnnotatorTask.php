@@ -9,6 +9,21 @@
  */
 class DataObjectAnnotatorTask extends BuildTask
 {
+
+    /**
+     * DataObjectAnnotatorTask constructor.
+     * Setup default values. In this case title and description.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->title = 'DataObject annotations for specific DataObjects';
+        $this->description = "DataObject Annotator annotates your DO's if possible, helping you write better code.<br />"
+            . 'Usage: add the module or DataObject as parameter to the URL, e.g. ?module=ideannotator<br />'
+            . 'To undo annotations, add undo=true to the URL.';
+
+    }
+
     /**
      * @param $request SS_HTTPRequest
      *
@@ -23,18 +38,16 @@ class DataObjectAnnotatorTask extends BuildTask
         $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
         $className = $request->getVar('dataobject');
         $moduleName = $request->getVar('module');
-        $undo = $request->getVar('undo');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
         if ($className && $permissionChecker->classNameIsAllowed($className)) {
-            $annotator->annotateDataObject($className, $undo);
+            $annotator->annotateDataObject($className);
         } elseif ($moduleName && $permissionChecker->moduleIsAllowed($moduleName)) {
-            $annotator->annotateModule($moduleName, $undo);
+            $annotator->annotateModule($moduleName);
         }
 
-        $result = (null !== $undo) ? "\nUndid annotating " : "\nAnnotated ";
-        $result .= " module $moduleName/class $className\n";
+        $result = "Annotated module $moduleName/class $className\n";
 
         echo $result;
     }
