@@ -39,7 +39,7 @@ class DocBlockTagGenerator
      * @see $this->getSupportedTagTypes();
      * @var array
      */
-    protected $tags = [];
+    protected $tags = array();
 
     public function __construct($className)
     {
