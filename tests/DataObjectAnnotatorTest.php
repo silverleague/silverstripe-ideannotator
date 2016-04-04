@@ -45,7 +45,7 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testFileContentWithAnnotations()
     {
-        $classInfo = Injector::inst()->get('AnnotateClassInfo', true, 'DataObjectAnnotatorTest_Team');
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
         $filePath  = $classInfo->getWritableClassFilePath();
 
         $content = $this->annotator->getFileContentWithAnnotations(file_get_contents($filePath),
