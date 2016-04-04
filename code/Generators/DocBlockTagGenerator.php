@@ -286,7 +286,6 @@ class DocBlockTagGenerator
     protected function generateORMHasManyProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
-            //$this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "DataList|{$dataObjectName}[] {$fieldName}()";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
@@ -344,7 +343,6 @@ class DocBlockTagGenerator
     protected function generateORMExtensionsProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
-            //$this->resultString .= " * \n";
             foreach ($fields as $fieldName) {
                 $this->tags['mixins'][$fieldName] = new Tag('mixin',$fieldName);
             }
