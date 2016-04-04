@@ -14,12 +14,12 @@ class DataObjectAnnotatorTest extends SapphireTest
     /**
      * @var MockDataObjectAnnotator
      */
-    private $annotator = null;
+    private $annotator;
 
     /**
      * @var AnnotatePermissionChecker $permissionChecker
      */
-    private $permissionChecker = null;
+    private $permissionChecker;
 
     /**
      * Setup Defaults
@@ -34,8 +34,8 @@ class DataObjectAnnotatorTest extends SapphireTest
             array('DataObjectAnnotatorTest_Team_Extension')
         );
 
-        $this->annotator = MockDataObjectAnnotator::create();
-        $this->permissionChecker = new AnnotatePermissionChecker();
+        $this->annotator = Injector::inst()->get('MockDataObjectAnnotator');
+        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
     }
 
     /**
@@ -113,7 +113,7 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $generator = new MockDocBlockGenerator('DataObjectAnnotatorTest_Team_Extension');
         $startAndEndTagsAreRemoved = $generator->removeOldStyleDocBlock($annotated);
-        
+
         $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::ENDTAG));
     }

@@ -64,12 +64,18 @@ class DataObjectAnnotator extends Object
      */
     public static $phpDocumentorEnabled = false;
 
+    /**
+     * DataObjectAnnotator constructor.
+     */
     public function __construct()
     {
         parent::__construct();
-        $this->classes = ClassInfo::subclassesFor('DataObject');
-        $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        // Don't instantiate anything if annotations are not enabled.
+        if(static::config()->get('enabled') === true) {
+            $this->classes = ClassInfo::subclassesFor('DataObject');
+            $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
+            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        }
     }
 
     /**
@@ -78,7 +84,7 @@ class DataObjectAnnotator extends Object
      * Generate docblock for all subclasses of DataObjects and DataExtenions
      * within a module.
      *
-     * @return false || void
+     * @return bool
      */
     public function annotateModule($moduleName)
     {
@@ -94,7 +100,7 @@ class DataObjectAnnotator extends Object
             $this->annotateDataObject($className);
         }
 
-        return null;
+        return true;
     }
 
     /**
@@ -135,7 +141,7 @@ class DataObjectAnnotator extends Object
      * @param String $fileContent
      * @param String $className
      *
-     * @return mixed|void
+     * @return string|bool
      */
     protected function getFileContentWithAnnotations($fileContent, $className)
     {
@@ -144,7 +150,7 @@ class DataObjectAnnotator extends Object
         $tagString = $generator->getTagsAsString();
 
         if (!$tagString) {
-            return null;
+            return false;
         }
 
         $startTag = static::STARTTAG;
@@ -163,5 +169,39 @@ class DataObjectAnnotator extends Object
 
         return str_replace($classDeclaration, $properties, $fileContent);
     }
-    
+
+    /**
+     * @return boolean
+     */
+    public static function isEnabled()
+    {
+        return static::config()->get('enabled');
+    }
+
+    /**
+     * @param boolean $enabled
+     */
+    public static function setEnabled($enabled)
+    {
+        static::config()->enabled = $enabled;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getEnabledModules()
+    {
+        return static::config()->get('enabled_modules');
+    }
+
+    /**
+     * @param array $enabled_modules
+     */
+    public static function setEnabledModules($enabled_modules)
+    {
+        static::config()->enabled_modules = $enabled_modules;
+    }
+
+
+
 }

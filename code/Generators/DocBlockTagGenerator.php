@@ -4,6 +4,8 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 
 /**
  * Class DocBlockTagGenerator
+ *
+ * @package IDEAnnotator/Generators
  */
 class DocBlockTagGenerator
 {
@@ -41,6 +43,11 @@ class DocBlockTagGenerator
      */
     protected $tags = array();
 
+    /**
+     * DocBlockTagGenerator constructor.
+     *
+     * @param string $className
+     */
     public function __construct($className)
     {
         $this->className        = $className;
@@ -64,11 +71,11 @@ class DocBlockTagGenerator
         $existing = $this->getSupportedTagTypes();
         foreach($existingTags as $tag) {
             $content = $tag->getContent();
-            if($tag->getName() == 'property') {
+            if($tag->getName() === 'property') {
                 $existing['properties'][$content] = new Tag($tag->getName(), $content);
-            }elseif($tag->getName() == 'method') {
+            }elseif($tag->getName() === 'method') {
                 $existing['methods'][$content] = new Tag($tag->getName(), $content);
-            }elseif($tag->getName() == 'mixin') {
+            }elseif($tag->getName() === 'mixin') {
                 $existing['mixins'][$content] = new Tag($tag->getName(), $content);
             }else{
                 $existing['other'][$content] = new Tag($tag->getName(), $content);
@@ -91,21 +98,33 @@ class DocBlockTagGenerator
         return $tags;
     }
 
+    /**
+     * @return mixed
+     */
     public function getPropertyTags()
     {
         return $this->tags['properties'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getMethodTags()
     {
         return $this->tags['methods'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getMixinTags()
     {
         return $this->tags['mixins'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getOtherTags()
     {
         return $this->tags['other'];
@@ -190,7 +209,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMDBProperties($className)
     {
@@ -220,12 +239,11 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMBelongsToProperties($className)
     {
         if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
-            //$this->resultString .= " * \n";
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = $dataObjectName . " \$$fieldName";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
@@ -240,7 +258,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMHasOneProperties($className)
     {
@@ -263,7 +281,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMHasManyProperties($className)
     {
@@ -283,7 +301,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMManyManyProperties($className)
     {
@@ -302,7 +320,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMBelongsManyManyProperties($className)
     {
@@ -321,7 +339,7 @@ class DocBlockTagGenerator
      *
      * @param DataObject|DataExtension $className
      *
-     * @return string
+     * @return bool
      */
     protected function generateORMExtensionsProperties($className)
     {

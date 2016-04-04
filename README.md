@@ -48,46 +48,14 @@ class NewsItem extends DataObject
 }
 ```
 
-##Config
-This module is disabled by default and I recommend to only enable this module in your local development environment, since this module changes the file content of the Dataobject and DataExtension classes.
+## Further information
+For installation, see [installation](docs/en/Installation.md)
 
-You can do this, by using something like this in your mysite/_config.php :
+For the Code of Conduct, see [CodeOfConduct](docs/en/CodeOfConduct.md)
 
-```php
-if($_SERVER['HTTP_HOST'] == 'mysite.local.dev') {
-    Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-}
-```
-When enabled IdeAnnotator generates the docblocks on dev/build for mysite only.
+For contributing, see [Contributing](CONTRIBUTING.md)
 
-You can add extra module folders with the following config setting :
-
-```php
-Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite', 'otherfolderinsiteroot'));
-```
-or
-```
-yml
----
-Only:
-    environment: 'dev'
----
-DataObjectAnnotator:
-    enabled_modules:
-      - mysite
-      - otherfolderinsiteroot
-````
-
-##Installation
-Either run ```composer require axyr/silverstripe-ideannotator --dev```
-
-Or add ```axyr/silverstripe-ideannotator: "dev-master"``` to `require-dev` in your composer.json file
-
-Or download and add it to your root directory.
-
-##APIDocs
-
-https://axyr.github.io/ideannotator/
+For further documentation information, see the [docs](docs/en/Index.md)
 
 ##Caution
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...

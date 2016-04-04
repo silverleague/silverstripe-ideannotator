@@ -14,6 +14,11 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     private $permissionChecker = null;
 
     /**
+     * @var MockDataObjectAnnotator
+     */
+    private $annotator;
+
+    /**
      * Setup Defaults
      */
     public function setUp()
@@ -27,8 +32,8 @@ class AnnotatePermissionCheckerTest extends SapphireTest
             array('DataObjectAnnotatorTest_Team_Extension')
         );
 
-        $this->annotator = MockDataObjectAnnotator::create();
-        $this->permissionChecker = new AnnotatePermissionChecker();
+        $this->annotator = Injector::inst()->get('MockDataObjectAnnotator');
+        $this->permissionChecker =  Injector::inst()->get('AnnotatePermissionChecker');
     }
 
     public function testEnvironmentIsAllowed()
