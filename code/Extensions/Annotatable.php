@@ -12,7 +12,7 @@
  */
 class Annotatable extends DataExtension
 {
-    
+
     /**
      * @var DataObjectAnnotator
      */
@@ -89,12 +89,9 @@ class Annotatable extends DataExtension
         /* Annotate the extensions for this Class, if annotatable */
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
-                if ($this->permissionChecker->classNameIsAllowed($extension)) {
-                    // no need to run many times
-                    if (!in_array($extension, Annotatable::$annotated_extensions)) {
-                        $this->annotator->annotateDataObject($extension);
-                        Annotatable::$annotated_extensions[$extension] = $extension;
-                    }
+                if ($this->permissionChecker->classNameIsAllowed($extension) && !in_array($extension, Annotatable::$annotated_extensions, null)) {
+                    $this->annotator->annotateDataObject($extension);
+                    Annotatable::$annotated_extensions[$extension] = $extension;
                 }
             }
         }

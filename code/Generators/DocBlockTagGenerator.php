@@ -364,7 +364,7 @@ class DocBlockTagGenerator
      * @param DataObject|DataExtension $className
      * @param string $type
      *
-     * @return array|bool
+     * @return array|boolean
      */
     private function getConfig($className, $type) {
         $fields = Config::inst()->get($className, $type, Config::UNINHERITED);

@@ -76,7 +76,7 @@ class AnnotatePermissionChecker extends Object
      * is in the $allowed_modules array
      * The permission is checked by matching the filePath and modulePath
      *
-     * @param $className
+     * @param string $className
      *
      * @return bool
      */
@@ -103,7 +103,7 @@ class AnnotatePermissionChecker extends Object
     /**
      * Check if a (subclass of ) class is a supported
      *
-     * @param $className
+     * @param DataObject $className
      *
      * @return bool
      */

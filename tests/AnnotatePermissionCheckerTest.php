@@ -36,6 +36,11 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->permissionChecker =  Injector::inst()->get('AnnotatePermissionChecker');
     }
 
+    /**
+     * Test if the selected environment is allowed.
+     * Only _local_ dev should be allowed.
+     * Although the local check is slightly iffy.
+     */
     public function testEnvironmentIsAllowed()
     {
         $this->assertTrue($this->permissionChecker->environmentIsAllowed());

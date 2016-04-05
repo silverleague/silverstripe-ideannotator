@@ -112,7 +112,7 @@ class DataObjectAnnotator extends Object
      * @param String $fileContent
      * @param String $className
      *
-     * @return string|bool
+     * @return string|boolean
      */
     protected function getFileContentWithAnnotations($fileContent, $className)
     {

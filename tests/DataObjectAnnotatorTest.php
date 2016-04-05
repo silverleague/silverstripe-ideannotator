@@ -128,8 +128,8 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
 {
 
     /**
-     * @param $fileContent
-     * @param $className
+     * @param string|boolean $fileContent
+     * @param string $className
      *
      * @return mixed|void
      */
@@ -141,6 +141,12 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
 
 class MockDocBlockGenerator extends DocBlockGenerator implements TestOnly
 {
+
+    /**
+     * @param string|boolean $docBlock
+     *
+     * @return mixed
+     */
     public function removeOldStyleDocBlock($docBlock)
     {
         return parent::removeOldStyleDocBlock($docBlock);
