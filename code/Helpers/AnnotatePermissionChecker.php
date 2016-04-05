@@ -52,7 +52,7 @@ class AnnotatePermissionChecker extends Object
     {
         // Not enabled, so skip anyway
         // @todo this check is implemented all over the place. Shouldn't one place be enough?
-        if (!static::inst()->get('enabled')) {
+        if (!static::config()->get('enabled')) {
             return false;
         }
 
@@ -88,7 +88,7 @@ class AnnotatePermissionChecker extends Object
             $classInfo = new AnnotateClassInfo($className);
             $filePath = $classInfo->getWritableClassFilePath();
 
-            $allowedModules = Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
+            $allowedModules = static::config()->get('enabled_modules');
 
             foreach ($allowedModules as $moduleName) {
                 $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
@@ -129,7 +129,7 @@ class AnnotatePermissionChecker extends Object
      */
     public function moduleIsAllowed($moduleName)
     {
-        return in_array($moduleName, Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
+        return in_array($moduleName, static::config()->get('enabled_modules'), null);
     }
 
 

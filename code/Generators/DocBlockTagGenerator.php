@@ -193,7 +193,7 @@ class DocBlockTagGenerator
         $owners = array();
         foreach ($this->extensionClasses as $class) {
             $config = $this->getConfig($class, 'extensions');
-            if ($config !== null && in_array($className, $config, null)) {
+            if ($config !== false && in_array($className, $config, null)) {
                 $owners[] = $class;
             }
         }
@@ -328,7 +328,8 @@ class DocBlockTagGenerator
      */
     protected function generateORMBelongsManyManyProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
+        $fields = $this->getConfig($className, 'belongs_many_many');
+        if ($fields !== false) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "ManyManyList|{$dataObjectName}[] {$fieldName}()";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
