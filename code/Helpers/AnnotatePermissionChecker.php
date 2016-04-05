@@ -103,7 +103,7 @@ class AnnotatePermissionChecker extends Object
     /**
      * Check if a (subclass of ) class is a supported
      *
-     * @param DataObject $className
+     * @param DataObject|string $className
      *
      * @return bool
      */

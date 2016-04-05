@@ -66,4 +66,6 @@ checks:
     argument_type_checks: true
 
 filter:
-  paths: [code/*, tests/*]
+  paths: [code/*]
+  exclude_paths:
+    - tests/*
