@@ -9,6 +9,7 @@ After:
 DataObject:
   extensions:
     - Annotatable
-DataObjectAnnotator:
-    enabled_modules:
-      - mysite
+AnnotatePermissionChecker:
+  enabled: false
+  enabled_modules:
+    - mysite

@@ -5,7 +5,7 @@ use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
 
 /**
  * Class DocBlockGenerator
- * 
+ *
  * @package IDEAnnotator/Generators
  */
 class DocBlockGenerator
@@ -29,7 +29,7 @@ class DocBlockGenerator
     /**
      * DocBlockGenerator constructor.
      *
-     * @param $className
+     * @param string $className
      */
     public function __construct($className)
     {
@@ -87,7 +87,7 @@ class DocBlockGenerator
     }
 
     /**
-     * @param $existingDocBlock string
+     * @param string $existingDocBlock
      * @return string
      */
     protected function mergeGeneratedTagsIntoDocBlock($existingDocBlock)

@@ -25,8 +25,8 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     {
         parent::setUp();
         Config::inst()->update('Director', 'environment_type', 'dev');
-        Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::inst()->update('AnnotatePermissionChecker', 'enabled', true);
+        Config::inst()->update('AnnotatePermissionChecker', 'enabled_modules', array('ideannotator'));
 
         Config::inst()->update('DataObjectAnnotatorTest_Team', 'extensions',
             array('DataObjectAnnotatorTest_Team_Extension')
@@ -36,6 +36,11 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->permissionChecker =  Injector::inst()->get('AnnotatePermissionChecker');
     }
 
+    /**
+     * Test if the selected environment is allowed.
+     * Only _local_ dev should be allowed.
+     * Although the local check is slightly iffy.
+     */
     public function testEnvironmentIsAllowed()
     {
         $this->assertTrue($this->permissionChecker->environmentIsAllowed());
@@ -69,8 +74,8 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->assertFalse($this->permissionChecker->classNameIsAllowed('DataObject'));
         $this->assertFalse($this->permissionChecker->classNameIsAllowed('File'));
 
-        Config::inst()->remove('DataObjectAnnotator', 'enabled_modules');
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite'));
+        Config::inst()->remove('AnnotatePermissionChecker', 'enabled_modules');
+        Config::inst()->update('AnnotatePermissionChecker', 'enabled_modules', array('mysite'));
 
         $this->assertFalse($this->permissionChecker->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
     }

@@ -192,8 +192,8 @@ class DocBlockTagGenerator
     {
         $owners = array();
         foreach ($this->extensionClasses as $class) {
-            $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
-            if ($config !== null && in_array($className, $config, null)) {
+            $config = $this->getConfig($class, 'extensions');
+            if ($config !== false && in_array($className, $config, null)) {
                 $owners[] = $class;
             }
         }
@@ -213,7 +213,8 @@ class DocBlockTagGenerator
      */
     protected function generateORMDBProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'db', Config::UNINHERITED)) {
+        $fields = $this->getConfig($className, 'db');
+        if ($fields !== false) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $prop = 'string';
 
@@ -243,7 +244,8 @@ class DocBlockTagGenerator
      */
     protected function generateORMBelongsToProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
+        $fields = $this->getConfig($className, 'belongs_to');
+        if ($fields !== false) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = $dataObjectName . " \$$fieldName";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
@@ -262,7 +264,8 @@ class DocBlockTagGenerator
      */
     protected function generateORMHasOneProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
+        $fields = $this->getConfig($className, 'has_one');
+        if ($fields !== false) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "int \${$fieldName}ID";
                 $this->tags['properties'][$tag] = new Tag('property', $tag);
@@ -285,8 +288,8 @@ class DocBlockTagGenerator
      */
     protected function generateORMHasManyProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
-            //$this->resultString .= " * \n";
+        $fields = $this->getConfig($className, 'has_many');
+        if ($fields !== false) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "DataList|{$dataObjectName}[] {$fieldName}()";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
@@ -305,7 +308,8 @@ class DocBlockTagGenerator
      */
     protected function generateORMManyManyProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'many_many', Config::UNINHERITED)) {
+        $fields = $this->getConfig($className, 'many_many');
+        if ($fields !== false) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "ManyManyList|{$dataObjectName}[] {$fieldName}()";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
@@ -324,7 +328,8 @@ class DocBlockTagGenerator
      */
     protected function generateORMBelongsManyManyProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
+        $fields = $this->getConfig($className, 'belongs_many_many');
+        if ($fields !== false) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "ManyManyList|{$dataObjectName}[] {$fieldName}()";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
@@ -343,13 +348,29 @@ class DocBlockTagGenerator
      */
     protected function generateORMExtensionsProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
-            //$this->resultString .= " * \n";
+        $fields = $this->getConfig($className, 'extensions');
+        if ($fields !== false) {
             foreach ($fields as $fieldName) {
                 $this->tags['mixins'][$fieldName] = new Tag('mixin',$fieldName);
             }
         }
 
         return true;
+    }
+
+    /**
+     * Get the configuration for the given classname and type
+     *
+     * @param DataObject|DataExtension $className
+     * @param string $type
+     *
+     * @return array|boolean
+     */
+    private function getConfig($className, $type) {
+        $fields = Config::inst()->get($className, $type, Config::UNINHERITED);
+        if(is_array($fields)) {
+            return $fields;
+        }
+        return false;
     }
 }

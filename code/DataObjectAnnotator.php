@@ -27,25 +27,6 @@ class DataObjectAnnotator extends Object
     const ENDTAG = 'EndGeneratedWithDataObjectAnnotator';
 
     /**
-     * @config
-     * Enable generation from @see Annotatable and @see DataObjectAnnotatorTask
-     * @var bool
-     */
-    private static $enabled = false;
-
-    /**
-     * @config
-     * Enable modules that are allowed to have generated docblocks for DataObjects and DataExtensions
-     * @var array
-     */
-    private static $enabled_modules = array('mysite');
-
-    /**
-     * @var AnnotatePermissionChecker
-     */
-    private $permissionChecker;
-
-    /**
      * All classes that subclass DataObject
      * @var array
      */
@@ -74,24 +55,18 @@ class DataObjectAnnotator extends Object
         if(static::config()->get('enabled') === true) {
             $this->classes = ClassInfo::subclassesFor('DataObject');
             $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
         }
     }
 
     /**
-     * @param string $moduleName
+     * @return bool
      *
      * Generate docblock for all subclasses of DataObjects and DataExtenions
      * within a module.
      *
-     * @return bool
      */
-    public function annotateModule($moduleName)
+    public function annotateModule()
     {
-        if (!$this->permissionChecker->moduleIsAllowed($moduleName)) {
-            return false;
-        }
-
         foreach ($this->classes as $className) {
             $this->annotateDataObject($className);
         }
@@ -112,10 +87,6 @@ class DataObjectAnnotator extends Object
      */
     public function annotateDataObject($className)
     {
-        if (!$this->permissionChecker->classNameIsAllowed($className)) {
-            return false;
-        }
-
         $classInfo = new AnnotateClassInfo($className);
         $filePath  = $classInfo->getWritableClassFilePath();
 
@@ -141,7 +112,7 @@ class DataObjectAnnotator extends Object
      * @param String $fileContent
      * @param String $className
      *
-     * @return string|bool
+     * @return string|boolean
      */
     protected function getFileContentWithAnnotations($fileContent, $className)
     {
@@ -169,39 +140,5 @@ class DataObjectAnnotator extends Object
 
         return str_replace($classDeclaration, $properties, $fileContent);
     }
-
-    /**
-     * @return boolean
-     */
-    public static function isEnabled()
-    {
-        return static::config()->get('enabled');
-    }
-
-    /**
-     * @param boolean $enabled
-     */
-    public static function setEnabled($enabled)
-    {
-        static::config()->enabled = $enabled;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getEnabledModules()
-    {
-        return static::config()->get('enabled_modules');
-    }
-
-    /**
-     * @param array $enabled_modules
-     */
-    public static function setEnabledModules($enabled_modules)
-    {
-        static::config()->enabled_modules = $enabled_modules;
-    }
-
-
 
 }

@@ -8,12 +8,28 @@
  *
  * @package IDEAnnotator/Helpers
  */
-class AnnotatePermissionChecker
+class AnnotatePermissionChecker extends Object
 {
+
+
+    /**
+     * @config
+     * Enable generation from @see Annotatable and @see DataObjectAnnotatorTask
+     * @var bool
+     */
+    private static $enabled = false;
+
+    /**
+     * @config
+     * Enable modules that are allowed to have generated docblocks for DataObjects and DataExtensions
+     * @var array
+     */
+    private static $enabled_modules = array('mysite');
 
     /**
      * In the future we will support other Classes as well.
      * We list the core classes, but in fact only it's subclasses are supported
+     *
      * @see AnnotatePermissionChecker::classNameIsSupported();
      */
     protected $supportedParentClasses = array(
@@ -35,7 +51,7 @@ class AnnotatePermissionChecker
     public function environmentIsAllowed()
     {
         // Not enabled, so skip anyway
-        if(!Config::inst()->get('DataObjectAnnotator', 'enabled')) {
+        if (!static::isEnabled()) {
             return false;
         }
 
@@ -43,15 +59,15 @@ class AnnotatePermissionChecker
 
         // Copied from Director::isDev(), so we can bypass the session checking
         // Check config
-        if(Config::inst()->get('Director', 'environment_type') === 'dev') return true;
-
-        // Check if we are running on one of the test servers
-        $devServers = (array)Config::inst()->get('Director', 'dev_servers');
-        if(isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers))  {
+        if (Config::inst()->get('Director', 'environment_type') === 'dev') {
             return true;
         }
 
-        return false;
+        // Check if we are running on one of the test servers
+        $devServers = (array)Config::inst()->get('Director', 'dev_servers');
+        $httpHost = Controller::curr()->getRequest()->getHeader('Host');
+
+        return (null !== $httpHost && in_array($httpHost, $devServers, null));
     }
 
 
@@ -60,7 +76,7 @@ class AnnotatePermissionChecker
      * is in the $allowed_modules array
      * The permission is checked by matching the filePath and modulePath
      *
-     * @param $className
+     * @param string $className
      *
      * @return bool
      */
@@ -69,9 +85,9 @@ class AnnotatePermissionChecker
         if ($this->classNameIsSupported($className)) {
 
             $classInfo = new AnnotateClassInfo($className);
-            $filePath  = $classInfo->getWritableClassFilePath();
+            $filePath = $classInfo->getWritableClassFilePath();
 
-            $allowedModules = Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
+            $allowedModules = static::config()->get('enabled_modules');
 
             foreach ($allowedModules as $moduleName) {
                 $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
@@ -87,13 +103,14 @@ class AnnotatePermissionChecker
     /**
      * Check if a (subclass of ) class is a supported
      *
-     * @param $className
+     * @param DataObject|string $className
+     *
      * @return bool
      */
     public function classNameIsSupported($className)
     {
         foreach ($this->supportedParentClasses as $supportedParent) {
-            if(is_subclass_of($className, $supportedParent)) {
+            if (is_subclass_of($className, $supportedParent)) {
                 return true;
             }
         }
@@ -111,6 +128,40 @@ class AnnotatePermissionChecker
      */
     public function moduleIsAllowed($moduleName)
     {
-        return in_array($moduleName, Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
+        return in_array($moduleName, static::config()->get('enabled_modules'), null);
     }
+
+
+    /**
+     * @return boolean
+     */
+    public static function isEnabled()
+    {
+        return static::config()->get('enabled');
+    }
+
+    /**
+     * @param boolean $enabled
+     */
+    public static function setEnabled($enabled)
+    {
+        static::config()->enabled = $enabled;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getEnabledModules()
+    {
+        return static::config()->get('enabled_modules');
+    }
+
+    /**
+     * @param array $enabled_modules
+     */
+    public static function setEnabledModules($enabled_modules)
+    {
+        static::config()->enabled_modules = $enabled_modules;
+    }
+
 }
