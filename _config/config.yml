@@ -10,5 +10,6 @@ DataObject:
   extensions:
     - Annotatable
 AnnotatePermissionChecker:
-    enabled_modules:
-      - mysite
+  enabled: false
+  enabled_modules:
+    - mysite
