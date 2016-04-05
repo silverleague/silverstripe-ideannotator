@@ -25,25 +25,22 @@ class DataObjectAnnotatorTask extends BuildTask
     }
 
     /**
+     * The annotations here are explicitly called by an admin.
+     * Thus, we allow annotations and don't check for permissions?
      * @param $request SS_HTTPRequest
      *
      * @return null
      */
     public function run($request)
     {
-        if (!Config::inst()->get('DataObjectAnnotator', 'enabled')) {
-            return false;
-        }
-
-        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
         $className = $request->getVar('dataobject');
         $moduleName = $request->getVar('module');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
-        if ($className && $permissionChecker->classNameIsAllowed($className)) {
+        if ($className) {
             $annotator->annotateDataObject($className);
-        } elseif ($moduleName && $permissionChecker->moduleIsAllowed($moduleName)) {
+        } elseif ($moduleName) {
             $annotator->annotateModule($moduleName);
         }
 

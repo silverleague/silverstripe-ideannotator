@@ -59,8 +59,6 @@ class AnnotateClassInfo
      */
     public function getDocComment()
     {
-        $docblock = $this->reflector->getDocComment();
-
-        return $docblock;
+        return $this->reflector->getDocComment();
     }
 }

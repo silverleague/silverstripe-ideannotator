@@ -12,7 +12,7 @@
  */
 class Annotatable extends DataExtension
 {
-
+    
     /**
      * @var DataObjectAnnotator
      */
@@ -27,6 +27,7 @@ class Annotatable extends DataExtension
      * Keep track ot the annotation actions for extensions
      * An Extension can belong to many DataObjects.
      * This prevents that an Extension is ran twice on dev/build
+     *
      * @var array
      */
     public static $annotated_extensions = array();
@@ -44,7 +45,9 @@ class Annotatable extends DataExtension
     /**
      * This is the base function on which annotations are started.
      *
-     * @todo rewrite this. It's not actually a requireDefaultRecords. But it's the only place to hook into the build-process to start the annotation process.
+     * @todo rewrite this. It's not actually a requireDefaultRecords.
+     * But it's the only place to hook into the build-process to start the annotation process.
+     *
      * @return bool
      */
     public function requireDefaultRecords()
@@ -88,7 +91,7 @@ class Annotatable extends DataExtension
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
                     // no need to run many times
-                    if(!in_array($extension, Annotatable::$annotated_extensions)) {
+                    if (!in_array($extension, Annotatable::$annotated_extensions)) {
                         $this->annotator->annotateDataObject($extension);
                         Annotatable::$annotated_extensions[$extension] = $extension;
                     }
