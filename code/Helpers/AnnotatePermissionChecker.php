@@ -51,8 +51,7 @@ class AnnotatePermissionChecker extends Object
     public function environmentIsAllowed()
     {
         // Not enabled, so skip anyway
-        // @todo this check is implemented all over the place. Shouldn't one place be enough?
-        if (!static::config()->get('enabled')) {
+        if (!static::isEnabled()) {
             return false;
         }
 
