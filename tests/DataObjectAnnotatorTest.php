@@ -27,8 +27,8 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::inst()->update('AnnotatePermissionChecker', 'enabled', true);
+        Config::inst()->update('AnnotatePermissionChecker', 'enabled_modules', array('ideannotator'));
 
         Config::inst()->update('DataObjectAnnotatorTest_Team', 'extensions',
             array('DataObjectAnnotatorTest_Team_Extension')
