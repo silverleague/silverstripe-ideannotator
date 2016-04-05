@@ -361,7 +361,7 @@ class DocBlockTagGenerator
     /**
      * Get the configuration for the given classname and type
      *
-     * @param DataObject $className
+     * @param DataObject|DataExtension $className
      * @param string $type
      *
      * @return array|bool
