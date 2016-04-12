@@ -7,11 +7,9 @@ before_script:
 language: php
 php:
   [5.3,5.4,5.5,5.6,7.0]
-
 matrix:
   allow_failures:
     - php: 7.0
-
 script:
 - vendor/bin/phpunit ideannotator/tests/
 env:
@@ -19,3 +17,6 @@ env:
   - DB=MYSQL CORE_RELEASE=3.1
   global:
     secure: HJ7sHJww/NX3PPVGjy0ggZyZSLoAdGB4BZJ0UEnIDNhR1fZ1aF4pAEA1K5cvksV9FGCbQ9Z/2JfRk8csDgWIybkBuckZsj+7yjd8u6AEPLKve+GA/Z3iN21jrDZiCC/gugAWJl7OdmR+64bFBjHbvZzYUusjSjpSRO5EqqWPgWA=
+addons:
+  code_climate:
+    repo_token: edaded3f06ffcb76affdc4e747ad6a8d29093594ad2df74405d000da9c9e6899
