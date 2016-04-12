@@ -117,7 +117,7 @@ class DocBlockGenerator
     }
 
     /**
-     * @param $existingDocBlock string
+     * @param string $existingDocBlock
      * @return string
      */
     protected function mergeGeneratedTagsIntoDocBlock($existingDocBlock)
