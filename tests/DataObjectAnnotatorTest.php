@@ -48,8 +48,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
         $filePath  = $classInfo->getWritableClassFilePath();
 
-        $content = $this->annotator->writeDocBlock(file_get_contents($filePath),
-            'DataObjectAnnotatorTest_Team');
+        $content = $this->annotator->writeDocBlock(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
 
         $this->assertFalse((bool)strpos($content, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($content, DataObjectAnnotator::ENDTAG));
@@ -70,6 +69,15 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertTrue((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_Player[] Players()'));
         // DataExtension
         $this->assertTrue((bool)strpos($content, '@mixin DataObjectAnnotatorTest_Team_Extension'));
+    }
+
+    public function testExistingMethodsWillNotBeTagged()
+    {
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
+        $filePath  = $classInfo->getWritableClassFilePath();
+
+        $content = $this->annotator->writeDocBlock(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
+        $this->assertFalse((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_SubTeam[] SecondarySubTeams()'));
     }
 
     /**
