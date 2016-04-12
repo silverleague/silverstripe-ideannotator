@@ -127,8 +127,7 @@ class DocBlockTagGenerator
         }
         if (count($owners)) {
             $owners[] = $this->className;
-            $tag = implode("|", $owners) . " \$owner";
-            $this->tags['properties'][$tag] = new Tag('property', $tag);
+            $this->pushPropertyTag(implode("|", $owners) . " \$owner");
         }
     }
 
@@ -150,8 +149,8 @@ class DocBlockTagGenerator
                 } elseif ($fieldObj instanceof Float || $fieldObj instanceof DBFloat || $fieldObj instanceof Decimal) {
                     $prop = 'float';
                 }
-                $tag = "$prop \$$fieldName";
-                $this->tags['properties'][$tag] = new Tag('property', $tag);
+
+                $this->pushPropertyTag("$prop \$$fieldName");
             }
         }
     }
@@ -163,10 +162,7 @@ class DocBlockTagGenerator
     {
         if ($fields = (array)Config::inst()->get($this->className, 'belongs_to', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                if (!$this->reflector->hasMethod($fieldName)) {
-                    $tag = $dataObjectName . " \$$fieldName";
-                    $this->tags['methods'][$tag] = new Tag('method', $tag);
-                }
+                $this->pushMethodTag($fieldName, $dataObjectName . " \$$fieldName");
             }
         }
     }
@@ -178,13 +174,8 @@ class DocBlockTagGenerator
     {
         if ($fields = (array)Config::inst()->get($this->className, 'has_one', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $tag = "int \${$fieldName}ID";
-                $this->tags['properties'][$tag] = new Tag('property', $tag);
-
-                if (!$this->reflector->hasMethod($fieldName)) {
-                    $tag = "{$dataObjectName} {$fieldName}()";
-                    $this->tags['methods'][$tag] = new Tag('method', $tag);
-                }
+                $this->pushPropertyTag("int \${$fieldName}ID");
+                $this->pushMethodTag($fieldName, "{$dataObjectName} {$fieldName}()");
             }
         }
     }
@@ -242,11 +233,27 @@ class DocBlockTagGenerator
     {
         if(!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
-                if (!$this->reflector->hasMethod($fieldName)) {
-                    $tag = "{$listType}|{$dataObjectName}[] {$fieldName}()";
-                    $this->tags['methods'][$tag] = new Tag('method', $tag);
-                }
+                $this->pushMethodTag($fieldName, "{$listType}|{$dataObjectName}[] {$fieldName}()");
             }
+        }
+    }
+
+    /**
+     * @param $tagString
+     */
+    protected function pushPropertyTag($tagString)
+    {
+        $this->tags['properties'][$tagString] = new Tag('property', $tagString);
+    }
+
+    /**
+     * @param string $fieldName
+     * @param string $tagString
+     */
+    protected function pushMethodTag($fieldName, $tagString)
+    {
+        if (!$this->reflector->hasMethod($fieldName)) {
+            $this->tags['methods'][$tagString] = new Tag('method', $tagString);
         }
     }
 }

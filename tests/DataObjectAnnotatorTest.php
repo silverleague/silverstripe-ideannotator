@@ -61,7 +61,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertTrue((bool)strpos($content, '@property int $VisitCount'));
         // has_one ID
         $this->assertTrue((bool)strpos($content, '@property int $CaptainID'));
-        // had_one relation
+        // has_one relation
         $this->assertTrue((bool)strpos($content, '@method DataObjectAnnotatorTest_Player Captain()'));
         // has_many relation
         $this->assertTrue((bool)strpos($content, '@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()'));
