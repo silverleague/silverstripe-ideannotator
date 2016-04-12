@@ -2,6 +2,7 @@
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
+use phpDocumentor\Reflection\DocBlock\Tag;
 
 /**
  * Class DocBlockGenerator
@@ -161,7 +162,7 @@ class DocBlockGenerator
             . "([\s\S]*?)"
             . " \* $endTag\n"
             . " \*\/\n/";
-        $docBlock = preg_replace($replace, '', $docBlock);
+        $docBlock = preg_replace($replace, "\n", $docBlock);
 
         /**
          * Then remove the start and end tag seperate, if it still exists in case a developer has merged
