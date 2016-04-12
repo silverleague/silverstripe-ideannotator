@@ -79,11 +79,41 @@ class DocBlockGenerator
     }
 
     /**
-     * @return DocBlock\Tag[]
+     * @return array
      */
     public function getTagsMergedWithExisting()
     {
-        return (array)$this->tagGenerator->getTagsMergedWithExisting($this->getExistingTags());
+        /**
+         * set array keys so we can match existing with generated tags
+         */
+        $existing = $this->tagGenerator->getSupportedTagTypes();
+        foreach($this->getExistingTags() as $tag) {
+            $content = $tag->getContent();
+            if($tag->getName() === 'property') {
+                $existing['properties'][$content] = new Tag($tag->getName(), $content);
+            }elseif($tag->getName() === 'method') {
+                $existing['methods'][$content] = new Tag($tag->getName(), $content);
+            }elseif($tag->getName() === 'mixin') {
+                $existing['mixins'][$content] = new Tag($tag->getName(), $content);
+            }else{
+                $existing['other'][$content] = new Tag($tag->getName(), $content);
+            }
+        }
+
+        /**
+         * Remove the generated tags that already exist
+         */
+        $tags = $this->tagGenerator->getTags();
+        foreach ($tags as $tagType => $tagList) {
+            foreach($tagList as $type => $tag) {
+                $content = $tag->getContent();
+                if(isset($existing[$tagType][$content])) {
+                    unset($tags[$tagType][$content]);
+                }
+            }
+        }
+
+        return $tags;
     }
 
     /**
