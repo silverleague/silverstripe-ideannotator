@@ -72,9 +72,9 @@ class DataObjectAnnotator extends Object
         parent::__construct();
         // Don't instantiate anything if annotations are not enabled.
         if(static::config()->get('enabled') === true) {
-            $this->classes = ClassInfo::subclassesFor('DataObject');
-            $this->dataExtensions = ClassInfo::subclassesFor('DataExtension');
-            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+            $this->classes = (array)ClassInfo::subclassesFor('DataObject');
+            $this->dataExtensions = (array)ClassInfo::subclassesFor('DataExtension');
+            $this->permissionChecker = (array)Injector::inst()->get('AnnotatePermissionChecker');
         }
     }
 
@@ -119,7 +119,7 @@ class DataObjectAnnotator extends Object
         $classInfo = new AnnotateClassInfo($className);
         $filePath  = $classInfo->getWritableClassFilePath();
 
-        if (!$filePath) {
+        if ($filePath === false) {
             return false;
         }
 
@@ -150,7 +150,7 @@ class DataObjectAnnotator extends Object
         $tagString = $generator->getTagsAsString();
 
         if (!$tagString) {
-            return false;
+            return '';
         }
 
         $startTag = static::STARTTAG;
@@ -175,7 +175,7 @@ class DataObjectAnnotator extends Object
      */
     public static function isEnabled()
     {
-        return static::config()->get('enabled');
+        return (bool)static::config()->get('enabled');
     }
 
     /**
@@ -191,7 +191,7 @@ class DataObjectAnnotator extends Object
      */
     public static function getEnabledModules()
     {
-        return static::config()->get('enabled_modules');
+        return (array)static::config()->get('enabled_modules');
     }
 
     /**
@@ -201,7 +201,5 @@ class DataObjectAnnotator extends Object
     {
         static::config()->enabled_modules = $enabled_modules;
     }
-
-
 
 }

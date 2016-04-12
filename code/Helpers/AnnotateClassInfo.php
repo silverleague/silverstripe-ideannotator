@@ -41,7 +41,7 @@ class AnnotateClassInfo
      * If the file writable, return the absolute path of the file that holds the ClassName
      * @todo should we check here for writable?
      *
-     * @return string
+     * @return string|false
      */
     public function getWritableClassFilePath()
     {

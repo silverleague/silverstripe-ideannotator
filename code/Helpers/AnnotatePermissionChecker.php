@@ -35,9 +35,7 @@ class AnnotatePermissionChecker
     public function environmentIsAllowed()
     {
         // Not enabled, so skip anyway
-        if(!Config::inst()->get('DataObjectAnnotator', 'enabled')) {
-            return false;
-        }
+        if(!Config::inst()->get('DataObjectAnnotator', 'enabled')) return false;
 
         // If the module is enabled, check for dev by config only
 
@@ -47,13 +45,10 @@ class AnnotatePermissionChecker
 
         // Check if we are running on one of the test servers
         $devServers = (array)Config::inst()->get('Director', 'dev_servers');
-        if(isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers))  {
-            return true;
-        }
+        if(isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers)) return true;
 
         return false;
     }
-
 
     /**
      * Check if a DataObject or DataExtension subclass is allowed by checking if the file
@@ -71,7 +66,7 @@ class AnnotatePermissionChecker
             $classInfo = new AnnotateClassInfo($className);
             $filePath  = $classInfo->getWritableClassFilePath();
 
-            $allowedModules = Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
+            $allowedModules = (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
 
             foreach ($allowedModules as $moduleName) {
                 $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
@@ -111,6 +106,6 @@ class AnnotatePermissionChecker
      */
     public function moduleIsAllowed($moduleName)
     {
-        return in_array($moduleName, Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
+        return in_array($moduleName, (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
     }
 }

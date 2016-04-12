@@ -25,9 +25,8 @@ class DataObjectAnnotatorTask extends BuildTask
     }
 
     /**
-     * @param $request SS_HTTPRequest
-     *
-     * @return null
+     * @param SS_HTTPRequest $request
+     * @return false|null
      */
     public function run($request)
     {

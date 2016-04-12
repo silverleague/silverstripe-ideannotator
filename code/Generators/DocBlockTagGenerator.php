@@ -51,7 +51,7 @@ class DocBlockTagGenerator
     public function __construct($className)
     {
         $this->className        = $className;
-        $this->extensionClasses = ClassInfo::subclassesFor('Object');
+        $this->extensionClasses = (array)ClassInfo::subclassesFor('Object');
         $this->tags             = $this->getSupportedTagTypes();
 
         $this->generateORMProperties();
@@ -208,12 +208,10 @@ class DocBlockTagGenerator
      * Generate the $db property values.
      *
      * @param DataObject|DataExtension $className
-     *
-     * @return bool
      */
     protected function generateORMDBProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'db', Config::UNINHERITED)) {
+        if ($fields = (array)Config::inst()->get($className, 'db', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $prop = 'string';
 
@@ -230,35 +228,27 @@ class DocBlockTagGenerator
                 $this->tags['properties'][$tag] = new Tag('property', $tag);
             }
         }
-
-        return true;
     }
 
     /**
      * Generate the $belongs_to property values.
      *
      * @param DataObject|DataExtension $className
-     *
-     * @return bool
      */
     protected function generateORMBelongsToProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
+        if ($fields = (array)Config::inst()->get($className, 'belongs_to', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = $dataObjectName . " \$$fieldName";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
             }
         }
-
-        return true;
     }
 
     /**
      * Generate the $has_one property and method values.
      *
      * @param DataObject|DataExtension $className
-     *
-     * @return bool
      */
     protected function generateORMHasOneProperties($className)
     {
@@ -266,79 +256,56 @@ class DocBlockTagGenerator
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "int \${$fieldName}ID";
                 $this->tags['properties'][$tag] = new Tag('property', $tag);
-            }
-            foreach ($fields as $fieldName => $dataObjectName) {
+
                 $tag = "{$dataObjectName} {$fieldName}()";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
             }
         }
-
-        return true;
     }
 
     /**
      * Generate the $has_many method values.
      *
      * @param DataObject|DataExtension $className
-     *
-     * @return bool
      */
     protected function generateORMHasManyProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'has_many', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $tag = "DataList|{$dataObjectName}[] {$fieldName}()";
-                $this->tags['methods'][$tag] = new Tag('method', $tag);
-            }
-        }
-
-        return true;
+        $this->generateTagsForDataLists(
+            Config::inst()->get($className, 'has_many', Config::UNINHERITED),
+            'DataList'
+        );
     }
 
     /**
      * Generate the $many_many method values.
      *
      * @param DataObject|DataExtension $className
-     *
-     * @return bool
      */
     protected function generateORMManyManyProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'many_many', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $tag = "ManyManyList|{$dataObjectName}[] {$fieldName}()";
-                $this->tags['methods'][$tag] = new Tag('method', $tag);
-            }
-        }
-
-        return true;
+        $this->generateTagsForDataLists(
+            Config::inst()->get($className, 'many_many', Config::UNINHERITED),
+            'ManyManyList'
+        );
     }
 
     /**
      * Generate the $belongs_many_many method values.
      *
      * @param DataObject|DataExtension $className
-     *
-     * @return bool
      */
     protected function generateORMBelongsManyManyProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED)) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $tag = "ManyManyList|{$dataObjectName}[] {$fieldName}()";
-                $this->tags['methods'][$tag] = new Tag('method', $tag);
-            }
-        }
-
-        return true;
+        $this->generateTagsForDataLists(
+            Config::inst()->get($className, 'belongs_many_many', Config::UNINHERITED),
+            'ManyManyList'
+        );
     }
 
     /**
      * Generate the mixins for DataExtensions
      *
      * @param DataObject|DataExtension $className
-     *
-     * @return bool
      */
     protected function generateORMExtensionsProperties($className)
     {
@@ -347,7 +314,19 @@ class DocBlockTagGenerator
                 $this->tags['mixins'][$fieldName] = new Tag('mixin',$fieldName);
             }
         }
+    }
 
-        return true;
+    /**
+     * @param array $fields
+     * @param string $listType
+     */
+    protected function generateTagsForDataLists($fields, $listType = 'DataList')
+    {
+        if($fields) {
+            foreach ((array)$fields as $fieldName => $dataObjectName) {
+                $tag = "{$listType}|{$dataObjectName}[] {$fieldName}()";
+                $this->tags['methods'][$tag] = new Tag('method', $tag);
+            }
+        }
     }
 }

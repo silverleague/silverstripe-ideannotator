@@ -5,7 +5,7 @@ use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
 
 /**
  * Class DocBlockGenerator
- * 
+ *
  * @package IDEAnnotator/Generators
  */
 class DocBlockGenerator
@@ -83,7 +83,7 @@ class DocBlockGenerator
      */
     public function getTagsMergedWithExisting()
     {
-        return $this->tagGenerator->getTagsMergedWithExisting($this->getExistingTags());
+        return (array)$this->tagGenerator->getTagsMergedWithExisting($this->getExistingTags());
     }
 
     /**
