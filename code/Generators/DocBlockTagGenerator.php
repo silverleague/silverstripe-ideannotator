@@ -99,38 +99,6 @@ class DocBlockTagGenerator
     }
 
     /**
-     * @return mixed
-     */
-    public function getPropertyTags()
-    {
-        return $this->tags['properties'];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMethodTags()
-    {
-        return $this->tags['methods'];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMixinTags()
-    {
-        return $this->tags['mixins'];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getOtherTags()
-    {
-        return $this->tags['other'];
-    }
-
-    /**
      * @return phpDocumentor\Reflection\DocBlock\Tag[]
      */
     public function getTags()
@@ -174,9 +142,6 @@ class DocBlockTagGenerator
      */
     protected function generateORMProperties()
     {
-        /*
-         * Loop the available types and generate the ORM property.
-         */
         foreach (self::$propertyTypes as $type) {
             $function = 'generateORM' . $type . 'Properties';
             $this->{$function}($this->className);
@@ -252,7 +217,7 @@ class DocBlockTagGenerator
      */
     protected function generateORMHasOneProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
+        if ($fields = (array)Config::inst()->get($className, 'has_one', Config::UNINHERITED)) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $tag = "int \${$fieldName}ID";
                 $this->tags['properties'][$tag] = new Tag('property', $tag);
@@ -309,7 +274,7 @@ class DocBlockTagGenerator
      */
     protected function generateORMExtensionsProperties($className)
     {
-        if ($fields = Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
+        if ($fields = (array)Config::inst()->get($className, 'extensions', Config::UNINHERITED)) {
             foreach ($fields as $fieldName) {
                 $this->tags['mixins'][$fieldName] = new Tag('mixin',$fieldName);
             }
