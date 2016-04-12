@@ -62,7 +62,7 @@ class DocBlockTagGenerator
      */
     public function getTags()
     {
-        return $this->tags;
+        return (array)$this->tags;
     }
 
     /**

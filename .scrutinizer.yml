@@ -56,7 +56,7 @@ checks:
     deadlock_detection_in_loops: true
     code_rating: true
     closure_use_not_conflicting: true
-    catch_class_exists: true
+    catch_class_exists: false
     blank_line_after_namespace_declaration: false
     avoid_multiple_statements_on_same_line: true
     avoid_duplicate_types: true
