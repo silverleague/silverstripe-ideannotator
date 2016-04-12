@@ -1,8 +1,8 @@
 <?php
 
 use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
 use phpDocumentor\Reflection\DocBlock\Tag;
+use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
 
 /**
  * Class DocBlockGenerator
@@ -49,9 +49,7 @@ class DocBlockGenerator
      */
     public function getExistingDocBlock()
     {
-        $docBlock = $this->reflector->getDocComment();
-
-        return $this->removeOldStyleDocBlock($docBlock);
+        return $this->reflector->getDocComment();
     }
 
     /**
@@ -59,7 +57,9 @@ class DocBlockGenerator
      */
     public function getGeneratedDocBlock()
     {
-        return $this->mergeGeneratedTagsIntoDocBlock($this->getExistingDocBlock());
+        $existing = $this->getExistingDocBlock();
+        $docBlock = $this->removeOldStyleDocBlock($existing);
+        return $this->mergeGeneratedTagsIntoDocBlock($docBlock);
     }
 
     /**
@@ -67,7 +67,9 @@ class DocBlockGenerator
      */
     public function getExistingTags()
     {
-        $docBlock = new DocBlock($this->getExistingDocBlock());
+        $existing = $this->getExistingDocBlock();
+        $docBlock = $this->removeOldStyleDocBlock($existing);
+        $docBlock = new DocBlock($docBlock);
         return $docBlock->getTags();
     }
 
@@ -157,11 +159,13 @@ class DocBlockGenerator
         /**
          * First remove the complete generated docblock
          */
-        $replace = "/\n\/\*\*\n"
-            . " \* $startTag\n"
+        $replace = "/"
+            . "\/\*\*\n"
+            . " \* $startTag"
             . "([\s\S]*?)"
-            . " \* $endTag\n"
-            . " \*\/\n/";
+            . " \* $endTag"
+            . "\n \*\/"
+            ."/";
         $docBlock = preg_replace($replace, "\n", $docBlock);
 
         /**

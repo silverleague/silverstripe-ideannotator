@@ -124,7 +124,7 @@ class DataObjectAnnotator extends Object
         }
 
         $original = file_get_contents($filePath);
-        $annotated = $this->getFileContentWithAnnotations($original, $className);
+        $annotated = $this->writeDocBlock($original, $className);
 
         // we have a change, so write the new file
         if ($annotated && $annotated !== $original) {
@@ -168,6 +168,27 @@ class DataObjectAnnotator extends Object
             . " */\n$classDeclaration";
 
         return str_replace($classDeclaration, $properties, $fileContent);
+    }
+
+    protected function writeDocBlock($fileContent, $className)
+    {
+        $generator = new DocBlockGenerator($className);
+
+        $existing  = $generator->getExistingDocBlock();
+        $generated = $generator->getGeneratedDocBlock();
+
+        if($existing) {
+            $fileContent = str_replace($existing, $generated, $fileContent);
+        }else{
+            $needle = "class {$className}";
+            $replace = "{$generated}\nclass {$className}";
+            $pos = strpos($fileContent, $needle);
+            if ($pos !== false) {
+                $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
+            }
+        }
+
+        return $fileContent;
     }
 
     /**

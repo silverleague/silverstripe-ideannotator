@@ -48,11 +48,15 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
         $filePath  = $classInfo->getWritableClassFilePath();
 
-        $content = $this->annotator->getFileContentWithAnnotations(file_get_contents($filePath),
+        $content = $this->annotator->writeDocBlock(file_get_contents($filePath),
             'DataObjectAnnotatorTest_Team');
 
-        $this->assertTrue((bool)strpos($content, DataObjectAnnotator::STARTTAG));
-        $this->assertTrue((bool)strpos($content, DataObjectAnnotator::ENDTAG));
+        $this->assertFalse((bool)strpos($content, DataObjectAnnotator::STARTTAG));
+        $this->assertFalse((bool)strpos($content, DataObjectAnnotator::ENDTAG));
+
+        // ClassName title
+        $this->assertTrue((bool)strpos($content, ' * DataObjectAnnotatorTest_Team'));
+
         // database fields
         $this->assertTrue((bool)strpos($content, '@property string $Title'));
         $this->assertTrue((bool)strpos($content, '@property int $VisitCount'));
@@ -76,8 +80,8 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
         $filePath  = $classInfo->getWritableClassFilePath();
         $original = file_get_contents($filePath);
-        $firstRun = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team');
-        $secondRun = $this->annotator->getFileContentWithAnnotations($firstRun, 'DataObjectAnnotatorTest_Team');
+        $firstRun = $this->annotator->writeDocBlock($original, 'DataObjectAnnotatorTest_Team');
+        $secondRun = $this->annotator->writeDocBlock($firstRun, 'DataObjectAnnotatorTest_Team');
         $this->assertEquals($firstRun, $secondRun);
     }
 
@@ -89,10 +93,10 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team_Extension');
         $filePath  = $classInfo->getWritableClassFilePath();
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team_Extension');
+        $annotated = $this->annotator->writeDocBlock($original, 'DataObjectAnnotatorTest_Team_Extension');
 
-        $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
-        $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
+        $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
+        $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
         $this->assertTrue((bool)strpos($annotated, '@property DataObjectAnnotatorTest_Team|DataObjectAnnotatorTest_Team_Extension $owner'));
         $this->assertTrue((bool)strpos($annotated, '@property string $ExtendedVarcharField'));
         $this->assertTrue((bool)strpos($annotated, '@property int $ExtendedIntField'));
@@ -102,20 +106,32 @@ class DataObjectAnnotatorTest extends SapphireTest
 
     public function testRemoveOldStyleDocBlock()
     {
-        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team_Extension');
+        $classInfo = new AnnotateClassInfo('DataObjectWithOldStyleTagMarkers');
         $filePath  = $classInfo->getWritableClassFilePath();
-
         $original  = file_get_contents($filePath);
-        $annotated = $this->annotator->getFileContentWithAnnotations($original, 'DataObjectAnnotatorTest_Team_Extension');
-        $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
-        $this->assertTrue((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
+        $annotated = $this->annotator->writeDocBlock($original, 'DataObjectWithOldStyleTagMarkers');
+        $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
+        $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
 
-
-        $generator = new MockDocBlockGenerator('DataObjectAnnotatorTest_Team_Extension');
+        $generator = new MockDocBlockGenerator('DataObjectWithOldStyleTagMarkers');
         $startAndEndTagsAreRemoved = $generator->removeOldStyleDocBlock($annotated);
 
         $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($startAndEndTagsAreRemoved, DataObjectAnnotator::ENDTAG));
+    }
+
+    public function testTwoClassesInOneFile()
+    {
+        $classInfo = new AnnotateClassInfo('DoubleDataObjectInOneFile1');
+        $filePath  = $classInfo->getWritableClassFilePath();
+        $original  = file_get_contents($filePath);
+        $annotated = $this->annotator->writeDocBlock($original, 'DoubleDataObjectInOneFile1');
+
+        $this->assertTrue((bool)strpos($annotated, '@property string $Title'));
+
+        $annotated = $this->annotator->writeDocBlock($annotated, 'DoubleDataObjectInOneFile2');
+
+        $this->assertTrue((bool)strpos($annotated, '@property string $Name'));
     }
 }
 
@@ -133,9 +149,9 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
      *
      * @return mixed|void
      */
-    public function getFileContentWithAnnotations($fileContent, $className)
+    public function writeDocBlock($fileContent, $className)
     {
-        return parent::getFileContentWithAnnotations($fileContent, $className);
+        return parent::writeDocBlock($fileContent, $className);
     }
 }
 
