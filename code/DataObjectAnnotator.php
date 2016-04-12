@@ -74,7 +74,7 @@ class DataObjectAnnotator extends Object
         if(static::config()->get('enabled') === true) {
             $this->classes = (array)ClassInfo::subclassesFor('DataObject');
             $this->dataExtensions = (array)ClassInfo::subclassesFor('DataExtension');
-            $this->permissionChecker = (array)Injector::inst()->get('AnnotatePermissionChecker');
+            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
         }
     }
 

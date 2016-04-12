@@ -322,7 +322,7 @@ class DocBlockTagGenerator
      */
     protected function generateTagsForDataLists($fields, $listType = 'DataList')
     {
-        if($fields) {
+        if(!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
                 $tag = "{$listType}|{$dataObjectName}[] {$fieldName}()";
                 $this->tags['methods'][$tag] = new Tag('method', $tag);
