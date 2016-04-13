@@ -15,6 +15,7 @@
     "phpdocumentor/reflection-docblock": "^2.0.4"
   },
   "require-dev": {
+    "silverstripe/cms": ">=3.1.0",
     "phpunit/PHPUnit": "~3.7@stable"
   },
   "extra": {
