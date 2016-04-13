@@ -54,7 +54,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertFalse((bool)strpos($content, DataObjectAnnotator::ENDTAG));
 
         // ClassName title
-        $this->assertTrue((bool)strpos($content, ' * DataObjectAnnotatorTest_Team'));
+        $this->assertTrue((bool)strpos($content, ' * Class DataObjectAnnotatorTest_Team'));
 
         // database fields
         $this->assertTrue((bool)strpos($content, '@property string $Title'));

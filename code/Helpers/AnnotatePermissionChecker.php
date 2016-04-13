@@ -18,7 +18,9 @@ class AnnotatePermissionChecker
      */
     protected $supportedParentClasses = array(
         'DataObject',
-        'DataExtension'
+        'DataExtension',
+        'ContentController',
+        'Extension'
     );
 
     /**

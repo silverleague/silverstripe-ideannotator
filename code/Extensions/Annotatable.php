@@ -60,7 +60,7 @@ class Annotatable extends DataExtension
         }
 
         $this->generateClassAnnotations();
-        $this->generateExtensionAnnotations();
+        $this->generateControllerAnnotations();
 
         return true;
     }
@@ -72,26 +72,53 @@ class Annotatable extends DataExtension
     {
         /* Annotate the current Class, if annotatable */
         if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
-            $this->annotator->annotateDataObject($this->owner->ClassName);
+            $this->annotator->annotateObject($this->owner->ClassName);
         }
+
+        $this->generateExtensionAnnotations($this->owner->ClassName);
     }
 
     /**
      * Generate class Extension annotations
      */
-    private function generateExtensionAnnotations()
+    private function generateExtensionAnnotations($className)
     {
         /** @var array $extensions */
-        $extensions = Config::inst()->get($this->owner->ClassName, 'extensions', Config::UNINHERITED);
+        $extensions = Config::inst()->get($className, 'extensions', Config::UNINHERITED);
         /* Annotate the extensions for this Class, if annotatable */
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
                 if ($this->permissionChecker->classNameIsAllowed($extension)) {
                     // no need to run many times
                     if(!in_array($extension, Annotatable::$annotated_extensions)) {
-                        $this->annotator->annotateDataObject($extension);
+                        $this->annotator->annotateObject($extension);
                         Annotatable::$annotated_extensions[$extension] = $extension;
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Generate Page_Controller Annotations
+     */
+    private function generateControllerAnnotations()
+    {
+        $candidates = array();
+
+        $reflector    = new ReflectionClass($this->owner->ClassName);
+        if($reflector->isSubclassOf('SiteTree')) {
+            $candidates[] = $this->owner->ClassName . '_Controller';
+            $candidates[] = $this->owner->ClassName . 'Controller';
+        }
+
+        if(!empty($candidates)) {
+            foreach($candidates as $candidate) {
+                if (class_exists($candidate)) {
+                    if ($this->permissionChecker->classNameIsAllowed($candidate)) {
+                        $this->annotator->annotateObject($candidate);
+                    }
+                    $this->generateExtensionAnnotations($candidate);
                 }
             }
         }

@@ -101,12 +101,12 @@ abstract class AbstractTagGenerator
     }
 
     /**
-     * @param string $fieldName
+     * @param string $methodName
      * @param string $tagString
      */
-    protected function pushMethodTag($fieldName, $tagString)
+    protected function pushMethodTag($methodName, $tagString)
     {
-        if (!$this->reflector->hasMethod($fieldName)) {
+        if (!$this->reflector->hasMethod($methodName)) {
             $this->tags['methods'][$tagString] = new Tag('method', $tagString);
         }
     }

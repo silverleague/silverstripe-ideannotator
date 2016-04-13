@@ -107,15 +107,15 @@ class DataObjectAnnotator extends Object
         }
 
         foreach ($this->classes as $className) {
-            $this->annotateDataObject($className);
+            $this->annotateObject($className);
         }
 
         foreach ($this->dataExtensions as $className) {
-            $this->annotateDataObject($className);
+            $this->annotateObject($className);
         }
 
         foreach ($this->controllers as $className) {
-            $this->annotateController($className);
+            $this->annotateObject($className);
         }
 
         return true;
@@ -128,7 +128,7 @@ class DataObjectAnnotator extends Object
      *
      * @return bool
      */
-    public function annotateDataObject($className)
+    public function annotateObject($className)
     {
         if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
@@ -151,41 +151,6 @@ class DataObjectAnnotator extends Object
         }
 
         return true;
-    }
-
-    /**
-     * Get the file and have the ORM Properties generated.
-     *
-     * @param String $fileContent
-     * @param String $className
-     *
-     * @return string
-     */
-    protected function getFileContentWithAnnotations($fileContent, $className)
-    {
-        $generator = new DocBlockTagGenerator($className);
-
-        $tagString = $generator->getTagsAsString();
-
-        if (!$tagString) {
-            return '';
-        }
-
-        $startTag = static::STARTTAG;
-        $endTag = static::ENDTAG;
-
-        if (strpos($fileContent, $startTag) && strpos($fileContent, $endTag)) {
-            $replacement = $startTag . "\n * \n" . $tagString . " * \n * " . $endTag;
-            return preg_replace("/$startTag([\s\S]*?)$endTag/", $replacement, $fileContent);
-        }
-
-        $classDeclaration = 'class ' . $className . ' extends'; // add extends to exclude Controller writes
-        $properties = "\n/**\n * " . $startTag . "\n * \n"
-            . $tagString
-            . " * \n * " . $endTag . "\n"
-            . " */\n$classDeclaration";
-
-        return str_replace($classDeclaration, $properties, $fileContent);
     }
 
     protected function writeDocBlock($fileContent, $className)

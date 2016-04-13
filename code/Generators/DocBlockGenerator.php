@@ -36,7 +36,11 @@ class DocBlockGenerator
     {
         $this->className    = $className;
         $this->reflector    = new ReflectionClass($className);
-        $this->tagGenerator = new OrmTagGenerator($className);
+
+        $generatorClass = $this->reflector->isSubclassOf('ContentController')
+                        ? 'ControllerTagGenerator' : 'OrmTagGenerator';
+
+        $this->tagGenerator = new $generatorClass($className);
     }
 
     /**
@@ -128,7 +132,7 @@ class DocBlockGenerator
         $docBlock = new DocBlock($existingDocBlock);
 
         if (!$docBlock->getText()) {
-            $docBlock->setText($this->className);
+            $docBlock->setText('Class ' . $this->className);
         }
 
         foreach($this->getTagsMergedWithExisting() as $tags) {

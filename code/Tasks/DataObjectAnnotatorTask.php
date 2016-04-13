@@ -35,13 +35,13 @@ class DataObjectAnnotatorTask extends BuildTask
         }
 
         $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
-        $className = $request->getVar('dataobject');
+        $className = $request->getVar('object');
         $moduleName = $request->getVar('module');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
         if ($className && $permissionChecker->classNameIsAllowed($className)) {
-            $annotator->annotateDataObject($className);
+            $annotator->annotateObject($className);
         } elseif ($moduleName && $permissionChecker->moduleIsAllowed($moduleName)) {
             $annotator->annotateModule($moduleName);
         }
