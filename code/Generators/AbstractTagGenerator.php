@@ -93,6 +93,36 @@ abstract class AbstractTagGenerator
     abstract protected function generateTags();
 
     /**
+     * Generate the mixins for DataExtensions.
+     */
+    protected function generateExtensionsTags()
+    {
+        if ($fields = (array)$this->getClassConfig('extensions')) {
+            foreach ($fields as $fieldName) {
+                $this->pushMixinTag($fieldName);
+            }
+        }
+    }
+    
+    /**
+     * Generate the Owner-properties for extensions.
+     */
+    protected function generateOwnerTags()
+    {
+        $owners = array();
+        foreach ($this->extensionClasses as $class) {
+            $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
+            if ($config !== null && in_array($this->className, $config, null)) {
+                $owners[] = $class;
+            }
+        }
+        if (count($owners)) {
+            $owners[] = $this->className;
+            $this->pushPropertyTag(implode("|", $owners) . " \$owner");
+        }
+    }
+
+    /**
      * @param $tagString
      */
     protected function pushPropertyTag($tagString)
