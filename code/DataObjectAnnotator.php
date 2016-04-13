@@ -58,6 +58,18 @@ class DataObjectAnnotator extends Object
     protected $dataExtensions;
 
     /**
+     * All classes that subclass ContentController
+     * @var array
+     */
+    protected $controllers;
+
+    /**
+     * List of all objects, so we can find the extensions.
+     * @var array
+     */
+    protected $controllerExtensions;
+
+    /**
      * Temporary flag so we can switch implementations.
      * Keep it public for easy checking outside this class.
      * @var bool
@@ -74,6 +86,8 @@ class DataObjectAnnotator extends Object
         if(static::config()->get('enabled') === true) {
             $this->classes = (array)ClassInfo::subclassesFor('DataObject');
             $this->dataExtensions = (array)ClassInfo::subclassesFor('DataExtension');
+            $this->controller = (array)ClassInfo::subclassesFor('ContentController');
+            $this->controllerExtensions = (array)ClassInfo::subclassesFor('Extension');
             $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
         }
     }
@@ -98,6 +112,10 @@ class DataObjectAnnotator extends Object
 
         foreach ($this->dataExtensions as $className) {
             $this->annotateDataObject($className);
+        }
+
+        foreach ($this->controllers as $className) {
+            $this->annotateController($className);
         }
 
         return true;

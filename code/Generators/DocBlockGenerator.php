@@ -36,7 +36,7 @@ class DocBlockGenerator
     {
         $this->className    = $className;
         $this->reflector    = new ReflectionClass($className);
-        $this->tagGenerator = new DocBlockTagGenerator($className);
+        $this->tagGenerator = new OrmTagGenerator($className);
     }
 
     /**
