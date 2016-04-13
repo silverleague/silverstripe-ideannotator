@@ -46,37 +46,6 @@ class DataObjectAnnotator extends Object
     private $permissionChecker;
 
     /**
-     * All classes that subclass DataObject
-     * @var array
-     */
-    protected $classes;
-
-    /**
-     * List of all objects, so we can find the extensions.
-     * @var array
-     */
-    protected $dataExtensions;
-
-    /**
-     * All classes that subclass ContentController
-     * @var array
-     */
-    protected $controllers;
-
-    /**
-     * List of all objects, so we can find the extensions.
-     * @var array
-     */
-    protected $controllerExtensions;
-
-    /**
-     * Temporary flag so we can switch implementations.
-     * Keep it public for easy checking outside this class.
-     * @var bool
-     */
-    public static $phpDocumentorEnabled = false;
-
-    /**
      * DataObjectAnnotator constructor.
      */
     public function __construct()
@@ -84,10 +53,6 @@ class DataObjectAnnotator extends Object
         parent::__construct();
         // Don't instantiate anything if annotations are not enabled.
         if(static::config()->get('enabled') === true) {
-            $this->classes = (array)ClassInfo::subclassesFor('DataObject');
-            $this->dataExtensions = (array)ClassInfo::subclassesFor('DataExtension');
-            $this->controllers = (array)ClassInfo::subclassesFor('ContentController');
-            $this->controllerExtensions = (array)ClassInfo::subclassesFor('Extension');
             $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
         }
     }
@@ -106,15 +71,11 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
-        foreach ($this->classes as $className) {
-            $this->annotateObject($className);
-        }
+        $classes = (array)ClassInfo::subclassesFor('DataObject');
+        $classes = array_merge($classes, (array)ClassInfo::subclassesFor('ContentController'));
+        $classes = array_merge($classes, (array)ClassInfo::subclassesFor('Extension'));
 
-        foreach ($this->dataExtensions as $className) {
-            $this->annotateObject($className);
-        }
-
-        foreach ($this->controllers as $className) {
+        foreach ($classes as $className) {
             $this->annotateObject($className);
         }
 
@@ -141,19 +102,27 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
-        $original = file_get_contents($filePath);
-        $annotated = $this->writeDocBlock($original, $className);
+        $original  = file_get_contents($filePath);
+        $generated = $this->getGeneratedFileContent($original, $className);
 
         // we have a change, so write the new file
-        if ($annotated && $annotated !== $original) {
-            file_put_contents($filePath, $annotated);
+        if ($generated && $generated !== $original) {
+            file_put_contents($filePath, $generated);
             DB::alteration_message($className . ' Annotated', 'created');
         }
 
         return true;
     }
 
-    protected function writeDocBlock($fileContent, $className)
+    /**
+     * @param $fileContent
+     * @param $className
+     *
+     * Return the complete File content with the newly generated DocBlocks
+     *
+     * @return mixed
+     */
+    protected function getGeneratedFileContent($fileContent, $className)
     {
         $generator = new DocBlockGenerator($className);
 

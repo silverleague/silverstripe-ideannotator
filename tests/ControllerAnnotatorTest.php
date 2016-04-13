@@ -42,7 +42,7 @@ class ControllerAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('AnnotatorPageTest');
         $filePath  = $classInfo->getWritableClassFilePath();
 
-        $content = $this->annotator->writeDocBlock(file_get_contents($filePath), 'AnnotatorPageTest');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest');
 
         $this->assertTrue((bool)strpos($content, ' * Class AnnotatorPageTest'));
         $this->assertTrue((bool)strpos($content, '@property string $SubTitle'));
@@ -53,7 +53,9 @@ class ControllerAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('AnnotatorPageTest_Controller');
         $filePath  = $classInfo->getWritableClassFilePath();
 
-        $content = $this->annotator->writeDocBlock(file_get_contents($filePath), 'AnnotatorPageTest_Controller');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest_Controller');
+
+        $this->assertTrue((bool)strpos($content, ' * Class AnnotatorPageTest_Controller'));
         $this->assertTrue((bool)strpos($content, '@property AnnotatorPageTest dataRecord'));
         $this->assertTrue((bool)strpos($content, '@method AnnotatorPageTest data()'));
         $this->assertTrue((bool)strpos($content, '@mixin AnnotatorPageTest'));
@@ -68,8 +70,9 @@ class ControllerAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('AnnotatorPageTest_Extension');
         $filePath  = $classInfo->getWritableClassFilePath();
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->writeDocBlock($original, 'AnnotatorPageTest_Extension');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'AnnotatorPageTest_Extension');
 
+        $this->assertTrue((bool)strpos($annotated, ' * Class AnnotatorPageTest_Extension'));
         $this->assertTrue((bool)strpos($annotated, '@property AnnotatorPageTest_Controller|AnnotatorPageTest_Extension $owner'));
     }
 }

@@ -103,7 +103,7 @@ abstract class AbstractTagGenerator
             }
         }
     }
-    
+
     /**
      * Generate the Owner-properties for extensions.
      */

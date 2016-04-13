@@ -48,7 +48,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
         $filePath  = $classInfo->getWritableClassFilePath();
 
-        $content = $this->annotator->writeDocBlock(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
 
         $this->assertFalse((bool)strpos($content, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($content, DataObjectAnnotator::ENDTAG));
@@ -76,7 +76,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
         $filePath  = $classInfo->getWritableClassFilePath();
 
-        $content = $this->annotator->writeDocBlock(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
         $this->assertFalse((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_SubTeam[] SecondarySubTeams()'));
     }
 
@@ -88,8 +88,8 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
         $filePath  = $classInfo->getWritableClassFilePath();
         $original = file_get_contents($filePath);
-        $firstRun = $this->annotator->writeDocBlock($original, 'DataObjectAnnotatorTest_Team');
-        $secondRun = $this->annotator->writeDocBlock($firstRun, 'DataObjectAnnotatorTest_Team');
+        $firstRun = $this->annotator->getGeneratedFileContent($original, 'DataObjectAnnotatorTest_Team');
+        $secondRun = $this->annotator->getGeneratedFileContent($firstRun, 'DataObjectAnnotatorTest_Team');
         $this->assertEquals($firstRun, $secondRun);
     }
 
@@ -101,7 +101,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team_Extension');
         $filePath  = $classInfo->getWritableClassFilePath();
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->writeDocBlock($original, 'DataObjectAnnotatorTest_Team_Extension');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'DataObjectAnnotatorTest_Team_Extension');
 
         $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
@@ -117,7 +117,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectWithOldStyleTagMarkers');
         $filePath  = $classInfo->getWritableClassFilePath();
         $original  = file_get_contents($filePath);
-        $annotated = $this->annotator->writeDocBlock($original, 'DataObjectWithOldStyleTagMarkers');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'DataObjectWithOldStyleTagMarkers');
         $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
 
@@ -133,11 +133,11 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DoubleDataObjectInOneFile1');
         $filePath  = $classInfo->getWritableClassFilePath();
         $original  = file_get_contents($filePath);
-        $annotated = $this->annotator->writeDocBlock($original, 'DoubleDataObjectInOneFile1');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'DoubleDataObjectInOneFile1');
 
         $this->assertTrue((bool)strpos($annotated, '@property string $Title'));
 
-        $annotated = $this->annotator->writeDocBlock($annotated, 'DoubleDataObjectInOneFile2');
+        $annotated = $this->annotator->getGeneratedFileContent($annotated, 'DoubleDataObjectInOneFile2');
 
         $this->assertTrue((bool)strpos($annotated, '@property string $Name'));
     }
@@ -157,9 +157,9 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
      *
      * @return mixed|void
      */
-    public function writeDocBlock($fileContent, $className)
+    public function getGeneratedFileContent($fileContent, $className)
     {
-        return parent::writeDocBlock($fileContent, $className);
+        return parent::getGeneratedFileContent($fileContent, $className);
     }
 }
 
