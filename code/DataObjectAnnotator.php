@@ -67,7 +67,7 @@ class DataObjectAnnotator extends Object
      */
     public function annotateModule($moduleName)
     {
-        if (!$this->permissionChecker->moduleIsAllowed($moduleName)) {
+        if (!(bool)$moduleName || !$this->permissionChecker->moduleIsAllowed($moduleName)) {
             return false;
         }
 
@@ -91,7 +91,7 @@ class DataObjectAnnotator extends Object
      */
     public function annotateObject($className)
     {
-        if (!$this->permissionChecker->classNameIsAllowed($className)) {
+        if (!(bool)$className || !$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
         }
 

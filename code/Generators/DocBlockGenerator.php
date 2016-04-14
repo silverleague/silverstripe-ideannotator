@@ -110,9 +110,9 @@ class DocBlockGenerator
         /**
          * Remove the generated tags that already exist
          */
-        $tags = $this->tagGenerator->getTags();
+        $tags = (array)$this->tagGenerator->getTags();
         foreach ($tags as $tagType => $tagList) {
-            foreach($tagList as $type => $tag) {
+            foreach((array)$tagList as $type => $tag) {
                 $content = $tag->getContent();
                 if(isset($existing[$tagType][$content])) {
                     unset($tags[$tagType][$content]);

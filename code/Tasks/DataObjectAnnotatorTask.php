@@ -23,7 +23,7 @@ class DataObjectAnnotatorTask extends BuildTask
     }
 
     /**
-     * @param $request
+     * @param SS_HTTPRequest $request
      * @return bool
      */
     public function run($request)
@@ -35,19 +35,12 @@ class DataObjectAnnotatorTask extends BuildTask
             return false;
         }
 
-        $className  = $request->getVar('object');
-        $moduleName = $request->getVar('module');
-
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
 
-        if ($className && $permissionChecker->classNameIsAllowed($className)) {
-            $annotator->annotateObject($className);
-        }
+        $annotator->annotateObject($request->getVar('object'));
 
-        if ($moduleName && $permissionChecker->moduleIsAllowed($moduleName)) {
-            $annotator->annotateModule($moduleName);
-        }
+        $annotator->annotateModule($request->getVar('module'));
 
         return true;
     }
