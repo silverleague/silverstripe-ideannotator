@@ -71,10 +71,7 @@ class Annotatable extends DataExtension
     private function generateClassAnnotations()
     {
         /* Annotate the current Class, if annotatable */
-        if ($this->permissionChecker->classNameIsAllowed($this->owner->ClassName)) {
-            $this->annotator->annotateObject($this->owner->ClassName);
-        }
-
+        $this->annotator->annotateObject($this->owner->ClassName);
         $this->generateExtensionAnnotations($this->owner->ClassName);
     }
 
@@ -88,12 +85,10 @@ class Annotatable extends DataExtension
         /* Annotate the extensions for this Class, if annotatable */
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
-                if ($this->permissionChecker->classNameIsAllowed($extension)) {
-                    // no need to run many times
-                    if(!in_array($extension, Annotatable::$annotated_extensions)) {
-                        $this->annotator->annotateObject($extension);
-                        Annotatable::$annotated_extensions[$extension] = $extension;
-                    }
+                // no need to run many times
+                if(!in_array($extension, Annotatable::$annotated_extensions)) {
+                    $this->annotator->annotateObject($extension);
+                    Annotatable::$annotated_extensions[$extension] = $extension;
                 }
             }
         }
@@ -104,22 +99,13 @@ class Annotatable extends DataExtension
      */
     private function generateControllerAnnotations()
     {
-        $candidates = array();
+        $reflector = new ReflectionClass($this->owner->ClassName);
 
-        $reflector    = new ReflectionClass($this->owner->ClassName);
         if($reflector->isSubclassOf('SiteTree')) {
-            $candidates[] = $this->owner->ClassName . '_Controller';
-            $candidates[] = $this->owner->ClassName . 'Controller';
-        }
-
-        if(!empty($candidates)) {
-            foreach($candidates as $candidate) {
-                if (class_exists($candidate)) {
-                    if ($this->permissionChecker->classNameIsAllowed($candidate)) {
-                        $this->annotator->annotateObject($candidate);
-                    }
-                    $this->generateExtensionAnnotations($candidate);
-                }
+            $controller = $this->owner->ClassName . '_Controller';
+            if (class_exists($controller)) {
+                $this->annotator->annotateObject($controller);
+                $this->generateExtensionAnnotations($controller);
             }
         }
     }
