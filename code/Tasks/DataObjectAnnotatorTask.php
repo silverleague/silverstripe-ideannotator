@@ -17,11 +17,9 @@ class DataObjectAnnotatorTask extends BuildTask
     public function __construct()
     {
         parent::__construct();
-        $this->title = 'DataObject annotations for specific DataObjects';
+        $this->title = 'DataObject annotations for specific DataObjects, Extensions or Controllers';
         $this->description = "DataObject Annotator annotates your DO's if possible, helping you write better code.<br />"
-            . 'Usage: add the module or DataObject as parameter to the URL, e.g. ?module=ideannotator<br />'
-            . 'To undo annotations, add undo=true to the URL.';
-
+            . 'Usage: add the module or DataObject as parameter to the URL, e.g. ?module=mysite .';
     }
 
     /**
@@ -30,25 +28,28 @@ class DataObjectAnnotatorTask extends BuildTask
      */
     public function run($request)
     {
-        if (!Config::inst()->get('DataObjectAnnotator', 'enabled')) {
+        /* @var $permissionChecker AnnotatePermissionChecker */
+        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+
+        if (!$permissionChecker->environmentIsAllowed()) {
             return false;
         }
 
-        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
-        $className = $request->getVar('object');
+        $className  = $request->getVar('object');
         $moduleName = $request->getVar('module');
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
+
         if ($className && $permissionChecker->classNameIsAllowed($className)) {
             $annotator->annotateObject($className);
-        } elseif ($moduleName && $permissionChecker->moduleIsAllowed($moduleName)) {
+        }
+
+        if ($moduleName && $permissionChecker->moduleIsAllowed($moduleName)) {
             $annotator->annotateModule($moduleName);
         }
 
-        $result = "Annotated module $moduleName/class $className\n";
-
-        echo $result;
+        return true;
     }
 
 }

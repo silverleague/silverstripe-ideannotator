@@ -102,6 +102,17 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
+        $this->writeFileContent($filePath, $className);
+
+        return true;
+    }
+
+    /**
+     * @param $filePath
+     * @param $className
+     */
+    protected function writeFileContent($filePath, $className)
+    {
         $original  = file_get_contents($filePath);
         $generated = $this->getGeneratedFileContent($original, $className);
 
@@ -110,8 +121,6 @@ class DataObjectAnnotator extends Object
             file_put_contents($filePath, $generated);
             DB::alteration_message($className . ' Annotated', 'created');
         }
-
-        return true;
     }
 
     /**

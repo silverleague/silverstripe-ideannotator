@@ -30,9 +30,7 @@ class AnnotatePermissionChecker
     {
         if(!$this->isEnabled()) return false;
 
-        if($this->environmentIsDev()) return true;
-
-        return false;
+        return $this->environmentIsDev();
     }
 
     /**
@@ -85,7 +83,7 @@ class AnnotatePermissionChecker
      * Check if a module is in the $allowed_modules array
      * Required for the buildTask.
      *
-     * @param $moduleName
+     * @param string $moduleName
      *
      * @return bool
      */
