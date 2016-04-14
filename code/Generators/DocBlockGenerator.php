@@ -23,7 +23,7 @@ class DocBlockGenerator
     protected $reflector;
 
     /**
-     * @var
+     * @var AbstractTagGenerator
      */
     protected $tagGenerator;
 
@@ -163,30 +163,13 @@ class DocBlockGenerator
         /**
          * First remove the complete generated docblock
          */
-        $replace = "/"
-            . "\/\*\*\n"
-            . " \* $startTag"
-            . "([\s\S]*?)"
-            . " \* $endTag"
-            . "\n \*\/"
-            ."/";
-        $docBlock = preg_replace($replace, "\n", $docBlock);
+        $docBlock = preg_replace("/\/\*\*\n \* $startTag([\s\S]*?) \* $endTag\n \*\//", "\n", $docBlock);
 
         /**
          * Then remove the start and end tag seperate, if it still exists in case a developer has merged
          * the generated docblocks with existing ones.
          */
-        $replacements = array(
-            "/ \* $startTag\n/",
-            "/ \* $endTag\n/"
-        );
-
-        $docBlock = preg_replace($replacements, '', $docBlock);
-
-        /**
-         * Then the we have a docblock with or without annotations
-         * Those will be handled by phpDocumentor
-         */
+        $docBlock = preg_replace(array("/ \* $startTag\n/", "/ \* $endTag\n/"), '', $docBlock);
 
         return $docBlock;
     }

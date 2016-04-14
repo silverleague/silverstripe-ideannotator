@@ -109,13 +109,11 @@ abstract class AbstractTagGenerator
      */
     protected function generateOwnerTags()
     {
-        $owners = array();
-        foreach ($this->extensionClasses as $class) {
+        $owners = array_filter($this->extensionClasses, function($class) {
             $config = Config::inst()->get($class, 'extensions', Config::UNINHERITED);
-            if ($config !== null && in_array($this->className, $config, null)) {
-                $owners[] = $class;
-            }
-        }
+            return ($config !== null && in_array($this->className, $config, null));
+        });
+        
         if (count($owners)) {
             $owners[] = $this->className;
             $this->pushPropertyTag(implode("|", $owners) . " \$owner");
