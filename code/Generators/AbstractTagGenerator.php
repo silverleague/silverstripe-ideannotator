@@ -119,7 +119,6 @@ abstract class AbstractTagGenerator
         });
 
         if (!empty($owners)) {
-            $owners[] = $this->className;
             $this->pushPropertyTag(implode("|", $owners) . " \$owner");
         }
     }

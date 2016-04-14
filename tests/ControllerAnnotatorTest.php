@@ -73,6 +73,6 @@ class ControllerAnnotatorTest extends SapphireTest
         $annotated = $this->annotator->getGeneratedFileContent($original, 'AnnotatorPageTest_Extension');
 
         $this->assertTrue((bool)strpos($annotated, ' * Class AnnotatorPageTest_Extension'));
-        $this->assertTrue((bool)strpos($annotated, '@property AnnotatorPageTest_Controller|AnnotatorPageTest_Extension $owner'));
+        $this->assertTrue((bool)strpos($annotated, '@property AnnotatorPageTest_Controller $owner'));
     }
 }

@@ -107,7 +107,7 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
         $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::ENDTAG));
-        $this->assertTrue((bool)strpos($annotated, '@property DataObjectAnnotatorTest_Team|DataObjectAnnotatorTest_Team_Extension $owner'));
+        $this->assertTrue((bool)strpos($annotated, '@property DataObjectAnnotatorTest_Team $owner'));
         $this->assertTrue((bool)strpos($annotated, '@property string $ExtendedVarcharField'));
         $this->assertTrue((bool)strpos($annotated, '@property int $ExtendedIntField'));
         $this->assertTrue((bool)strpos($annotated, '@property int $ExtendedHasOneRelationshipID'));
