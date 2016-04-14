@@ -16,6 +16,9 @@ if($_SERVER['HTTP_HOST'] == 'mysite.local.dev') {
     Config::inst()->update('DataObjectAnnotator', 'enabled', true);
 }
 ```
+
+Even when the module is enabled, the generation will only work in a dev environment. Putting a live site into dev with ?isDev will not alter your files.
+
 When enabled IdeAnnotator generates the docblocks on dev/build for mysite only.
 
 You can add extra module folders with the following config setting :

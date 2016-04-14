@@ -2,15 +2,12 @@
 
 [![Travis](https://img.shields.io/travis/axyr/silverstripe-ideannotator.svg)](https://travis-ci.org/axyr/silverstripe-ideannotator)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/axyr/silverstripe-ideannotator.svg)](https://scrutinizer-ci.com/g/axyr/silverstripe-ideannotator/)
-[![Code Climate](https://img.shields.io/codeclimate/github/axyr/silverstripe-ideannotator.svg)](https://codeclimate.com/github/axyr/silverstripe-ideannotator/)
 [![Packagist](https://img.shields.io/packagist/dt/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/packagist/v/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/badge/unstable-dev--master-orange.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 
 
-This module generates @property, @method and @mixin tags for DataObjects and DataExtensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
-
-All DataExtensions will be added to the docblock with the @mixin tag.
+This module generates @property, @method and @mixin tags for DataObjects, Page_Controllers and (Data)Extensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
 
 The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
 
@@ -20,15 +17,16 @@ The docblocks can be generated/updated with each dev/build and with a DataObject
 <?php
 
 /**
- * StartGeneratedWithDataObjectAnnotator
- * @property string Title
- * @property int Sort
- * @property int AuthorID
- * @method Member Author
- * @method DataList Categories
- * @method ManyManyList Tags
- * @mixin MyDataExtension
- * EndGeneratedWithDataObjectAnnotator
+ * Class NewsItem
+ *
+ * @property string $Title
+ * @property int $Sort
+ * @property int $Version
+ * @property int $AuthorID
+ * @method Member Author()
+ * @method DataList|Category[] Categories()
+ * @method ManyManyList|Tag[] Tags()
+ * @mixin Versioned
  */
 class NewsItem extends DataObject
 {
