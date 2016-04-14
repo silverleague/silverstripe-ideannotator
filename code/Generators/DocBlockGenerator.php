@@ -97,10 +97,8 @@ class DocBlockGenerator
             $docBlock->setText('Class ' . $this->className);
         }
 
-        foreach($this->getGeneratedTags() as $tags) {
-            foreach($tags as $tag) {
-                $docBlock->appendTag($tag);
-            }
+        foreach($this->getGeneratedTags() as $tag) {
+            $docBlock->appendTag($tag);
         }
 
         $serializer = new DocBlockSerializer();

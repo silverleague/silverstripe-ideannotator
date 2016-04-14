@@ -53,7 +53,7 @@ abstract class AbstractTagGenerator
      */
     public function getTags()
     {
-        return (array)$this->tags;
+        return (array)call_user_func_array('array_merge', $this->tags);
     }
 
     /**
@@ -65,17 +65,20 @@ abstract class AbstractTagGenerator
     {
         $tagString = '';
 
-        foreach($this->tags as $tagType) {
-            foreach($tagType as $tag) {
-                $tagString .= ' * ' . $tag . "\n";
-            }
+        foreach($this->tags as $tag) {
+            $tagString .= ' * ' . $tag . "\n";
         }
 
         return $tagString;
     }
 
     /**
-     * Reset the tag list after each run
+     * List of supported tags.
+     *
+     * Each tag type can hold many tags, so we keep them grouped.
+     * Also used to reset the tag list after each run
+     *
+     * @return array
      */
     public function getSupportedTagTypes()
     {
