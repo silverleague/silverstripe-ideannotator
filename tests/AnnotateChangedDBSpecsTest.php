@@ -32,7 +32,6 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
         $filePath  = $classInfo->getWritableClassFilePath();
-        Debug::dump(file_get_contents($filePath));
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
         $this->assertFalse(strpos($content, 'VisitCount') > 0);
     }
