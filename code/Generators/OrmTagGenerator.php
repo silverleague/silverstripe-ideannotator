@@ -26,6 +26,23 @@ class OrmTagGenerator extends AbstractTagGenerator
     );
 
     /**
+     * Default tagname is will be @string .
+     *
+     * All exceptions for @see DBField types are listed here
+     *
+     * @see generateDBTags();
+     * @var array
+     */
+    protected static $dbfield_tagnames = array(
+        'Int'     => 'int',
+        'DBInt'   => 'int',
+        'Boolean' => 'boolean',
+        'Float'   => 'float',
+        'DBFloat' => 'float',
+        'Decimal' => 'float'
+    );
+
+    /**
      * Generates all ORM Tags
      */
     protected function generateTags()
@@ -45,14 +62,15 @@ class OrmTagGenerator extends AbstractTagGenerator
             foreach ($fields as $fieldName => $dataObjectName) {
                 $prop = 'string';
 
-                $fieldObj = Object::create_from_string($dataObjectName, $fieldName);
+                $fieldObj = Object::create_from_string($dataObjectName);
 
-                if ($fieldObj instanceof Int || $fieldObj instanceof DBInt) {
-                    $prop = 'int';
-                } elseif ($fieldObj instanceof Boolean) {
-                    $prop = 'boolean';
-                } elseif ($fieldObj instanceof Float || $fieldObj instanceof DBFloat || $fieldObj instanceof Decimal) {
-                    $prop = 'float';
+                foreach(self::$dbfield_tagnames as $dbClass => $tagName) {
+                    if(class_exists($dbClass)) {
+                        $obj = Object::create_from_string($dbClass);
+                        if($fieldObj instanceof $obj) {
+                            $prop = $tagName;
+                        }
+                    }
                 }
 
                 $this->pushPropertyTag("$prop \$$fieldName");
