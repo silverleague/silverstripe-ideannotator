@@ -12,7 +12,8 @@ class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
 
     private static $db = array(
         'Title'      => 'Varchar',
-        'VisitCount' => 'Int'
+        'VisitCount' => 'Int',
+        'Price'      => 'Currency'
     );
 
     private static $has_one = array(

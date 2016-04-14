@@ -59,6 +59,8 @@ class DataObjectAnnotatorTest extends SapphireTest
         // database fields
         $this->assertTrue((bool)strpos($content, '@property string $Title'));
         $this->assertTrue((bool)strpos($content, '@property int $VisitCount'));
+        $this->assertTrue((bool)strpos($content, '@property float $Price'));
+
         // has_one ID
         $this->assertTrue((bool)strpos($content, '@property int $CaptainID'));
         // has_one relation

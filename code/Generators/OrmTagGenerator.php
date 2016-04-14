@@ -59,23 +59,29 @@ class OrmTagGenerator extends AbstractTagGenerator
     protected function generateDBTags()
     {
         if ($fields = (array)$this->getClassConfig('db')) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $prop = 'string';
-
-                $fieldObj = Object::create_from_string($dataObjectName);
-
-                foreach(self::$dbfield_tagnames as $dbClass => $tagName) {
-                    if(class_exists($dbClass)) {
-                        $obj = Object::create_from_string($dbClass);
-                        if($fieldObj instanceof $obj) {
-                            $prop = $tagName;
-                        }
-                    }
-                }
-
-                $this->pushPropertyTag("$prop \$$fieldName");
+            foreach ($fields as $fieldName => $dbFieldType) {
+                $this->pushPropertyTag($this->getTagNameForDBField($dbFieldType) . " \$$fieldName");
             }
         }
+    }
+
+    /**
+     * @param string $dbFieldType
+     * @return string
+     */
+    public function getTagNameForDBField($dbFieldType)
+    {
+        $fieldObj = Object::create_from_string($dbFieldType);
+
+        foreach(self::$dbfield_tagnames as $dbClass => $tagName) {
+            if(class_exists($dbClass)) {
+                $obj = Object::create_from_string($dbClass);
+                if($fieldObj instanceof $obj) {
+                    return $tagName;
+                }
+            }
+        }
+        return 'string';
     }
 
     /**
