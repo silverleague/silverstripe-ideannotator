@@ -68,7 +68,7 @@ class Annotatable extends DataExtension
     /**
      * Generate class own annotations
      */
-    private function generateClassAnnotations()
+    protected function generateClassAnnotations()
     {
         /* Annotate the current Class, if annotatable */
         $this->annotator->annotateObject($this->owner->ClassName);
@@ -76,28 +76,9 @@ class Annotatable extends DataExtension
     }
 
     /**
-     * Generate class Extension annotations
-     */
-    private function generateExtensionAnnotations($className)
-    {
-        /** @var array $extensions */
-        $extensions = Config::inst()->get($className, 'extensions', Config::UNINHERITED);
-        /* Annotate the extensions for this Class, if annotatable */
-        if (null !== $extensions) {
-            foreach ($extensions as $extension) {
-                // no need to run many times
-                if(!in_array($extension, Annotatable::$annotated_extensions)) {
-                    $this->annotator->annotateObject($extension);
-                    Annotatable::$annotated_extensions[$extension] = $extension;
-                }
-            }
-        }
-    }
-
-    /**
      * Generate Page_Controller Annotations
      */
-    private function generateControllerAnnotations()
+    protected function generateControllerAnnotations()
     {
         $reflector = new ReflectionClass($this->owner->ClassName);
 
@@ -106,6 +87,22 @@ class Annotatable extends DataExtension
             if (class_exists($controller)) {
                 $this->annotator->annotateObject($controller);
                 $this->generateExtensionAnnotations($controller);
+            }
+        }
+    }
+
+    /**
+     * Generate class Extension annotations
+     */
+    protected function generateExtensionAnnotations($className)
+    {
+        $extensions = (array)Config::inst()->get($className, 'extensions', Config::UNINHERITED);
+
+        $extensions = array_diff($extensions, Annotatable::$annotated_extensions);
+
+        if (!empty($extensions)) {
+            foreach ($extensions as $extension) {
+                $this->annotator->annotateObject(Annotatable::$annotated_extensions[$extension] = $extension);
             }
         }
     }
