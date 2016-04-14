@@ -86,56 +86,18 @@ class DocBlockGenerator
     }
 
     /**
-     * @return array
-     */
-    public function getTagsMergedWithExisting()
-    {
-        /**
-         * set array keys so we can match existing with generated tags
-         */
-        $existing = $this->tagGenerator->getSupportedTagTypes();
-        foreach($this->getExistingTags() as $tag) {
-            $content = $tag->getContent();
-            if($tag->getName() === 'property') {
-                $existing['properties'][$content] = new Tag($tag->getName(), $content);
-            }elseif($tag->getName() === 'method') {
-                $existing['methods'][$content] = new Tag($tag->getName(), $content);
-            }elseif($tag->getName() === 'mixin') {
-                $existing['mixins'][$content] = new Tag($tag->getName(), $content);
-            }else{
-                $existing['other'][$content] = new Tag($tag->getName(), $content);
-            }
-        }
-
-        /**
-         * Remove the generated tags that already exist
-         */
-        $tags = (array)$this->tagGenerator->getTags();
-        foreach ($tags as $tagType => $tagList) {
-            foreach((array)$tagList as $type => $tag) {
-                $content = $tag->getContent();
-                if(isset($existing[$tagType][$content])) {
-                    unset($tags[$tagType][$content]);
-                }
-            }
-        }
-
-        return $tags;
-    }
-
-    /**
      * @param string $existingDocBlock
      * @return string
      */
     protected function mergeGeneratedTagsIntoDocBlock($existingDocBlock)
     {
-        $docBlock = new DocBlock($existingDocBlock);
+        $docBlock = new DocBlock($this->removeExistingSupportedTags($existingDocBlock));
 
         if (!$docBlock->getText()) {
             $docBlock->setText('Class ' . $this->className);
         }
 
-        foreach($this->getTagsMergedWithExisting() as $tags) {
+        foreach($this->getGeneratedTags() as $tags) {
             foreach($tags as $tag) {
                 $docBlock->appendTag($tag);
             }
@@ -145,6 +107,26 @@ class DocBlockGenerator
         $docBlock = $serializer->getDocComment($docBlock);
 
         return $docBlock;
+    }
+
+    /**
+     * Remove all existing tags that are supported by this module.
+     *
+     * This will make sure that removed ORM properties and Extenions will not remain in the docblock,
+     * while providing the option to manually add docblocks like @author etc.
+     *
+     * @param $docBlock
+     * @return string
+     */
+    public function removeExistingSupportedTags($docBlock)
+    {
+        $replacements = array(
+            "/ \* @property ([\s\S]*?)\n/",
+            "/ \* @method ([\s\S]*?)\n/",
+            "/ \* @mixin ([\s\S]*?)\n/"
+        );
+
+        return (string)preg_replace($replacements, '', $docBlock);
     }
 
     /**

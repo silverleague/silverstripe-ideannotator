@@ -3,6 +3,7 @@
 /**
  * Class DataObjectAnnotatorTest_Team
  *
+ * @author Simon
  * @property string $Title
  * @property int $VisitCount
  * @property string $ExtendedVarcharField

@@ -3,6 +3,8 @@
 /**
  * This test should fail, if a DB property is removed from
  * a class, but the property itself still exists after generation
+ *
+ * @mixin PHPUnit_Framework_TestCase
  */
 class AnnotateChangedDBSpecsTest extends SapphireTest
 {
@@ -34,6 +36,14 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $filePath  = $classInfo->getWritableClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
         $this->assertFalse(strpos($content, 'VisitCount') > 0);
+    }
+
+    public function testNonSupportedTagsWillNotBeTouched()
+    {
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
+        $filePath  = $classInfo->getWritableClassFilePath();
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
+        $this->assertTrue(strpos($content, 'Simon') > 0);
     }
 
 }
