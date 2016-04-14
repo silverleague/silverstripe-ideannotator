@@ -24,30 +24,13 @@ class AnnotatePermissionChecker
     );
 
     /**
-     * Since we are changing php files, generation of docblocks should never be done on a live server.
-     * We can't prevent this, but we should make it as hard as possible.
-     *
-     * Generation is only allowed when :
-     * - The module is enabled
-     * - The site is in dev mode by configuration
-     *
-     * This means we will not change files if the ?isDev=1 $_GET variable is used to put a live site into dev mode.
-     * This also means we can't use Director::isDev();
+     * @return bool
      */
     public function environmentIsAllowed()
     {
-        // Not enabled, so skip anyway
-        if(!Config::inst()->get('DataObjectAnnotator', 'enabled')) return false;
+        if(!$this->isEnabled()) return false;
 
-        // If the module is enabled, check for dev by config only
-
-        // Copied from Director::isDev(), so we can bypass the session checking
-        // Check config
-        if(Config::inst()->get('Director', 'environment_type') === 'dev') return true;
-
-        // Check if we are running on one of the test servers
-        $devServers = (array)Config::inst()->get('Director', 'dev_servers');
-        if(isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers)) return true;
+        if($this->environmentIsDev()) return true;
 
         return false;
     }
@@ -109,5 +92,34 @@ class AnnotatePermissionChecker
     public function moduleIsAllowed($moduleName)
     {
         return in_array($moduleName, (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return (bool)Config::inst()->get('DataObjectAnnotator', 'enabled');
+    }
+
+    /**
+     * Since we are changing php files, generation of docblocks should never be done on a live server.
+     * We can't prevent this, but we should make it as hard as possible.
+     *
+     * Generation is only allowed when :
+     * - The module is enabled
+     * - The site is in dev mode by configuration
+     *
+     * This means we will not change files if the ?isDev=1 $_GET variable is used to put a live site into dev mode.
+     * This also means we can't use Director::isDev();
+     *
+     * @return bool
+     */
+    public function environmentIsDev()
+    {
+        $devServers = (array)Config::inst()->get('Director', 'dev_servers');
+
+        return Config::inst()->get('Director', 'environment_type') === 'dev'
+            || (isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers));
     }
 }

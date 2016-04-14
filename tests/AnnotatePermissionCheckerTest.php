@@ -36,12 +36,38 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->permissionChecker =  Injector::inst()->get('AnnotatePermissionChecker');
     }
 
+    public function testIsEnabled()
+    {
+        $this->assertTrue($this->permissionChecker->isEnabled());
+
+        Config::inst()->remove('DataObjectAnnotator', 'enabled');
+        Config::inst()->update('DataObjectAnnotator', 'enabled', false);
+        $this->assertFalse($this->permissionChecker->isEnabled());
+    }
+
+    public function testEnvironmentIsDev()
+    {
+        $this->assertTrue($this->permissionChecker->environmentIsDev());
+
+        Config::inst()->remove('Director', 'environment_type');
+        Config::inst()->update('Director', 'environment_type', 'live');
+        $this->assertFalse($this->permissionChecker->environmentIsDev());
+
+
+        Config::inst()->remove('Director', 'environment_type');
+        Config::inst()->update('Director', 'environment_type', 'test');
+        $this->assertFalse($this->permissionChecker->environmentIsDev());
+    }
+
     public function testEnvironmentIsAllowed()
     {
         $this->assertTrue($this->permissionChecker->environmentIsAllowed());
 
+        Config::inst()->remove('Director', 'environment_type');
         Config::inst()->update('Director', 'environment_type', 'test');
+        $this->assertFalse($this->permissionChecker->environmentIsAllowed());
 
+        Config::inst()->remove('Director', 'environment_type');
         Config::inst()->update('Director', 'environment_type', 'live');
         $this->assertFalse($this->permissionChecker->environmentIsAllowed());
     }
