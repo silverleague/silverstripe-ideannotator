@@ -52,9 +52,13 @@ class Annotatable extends DataExtension
         // Setup the protected values.
         $this->setUp();
 
-        /** @var SS_HTTPRequest|NullHTTPRequest $request */
-        $request = Controller::curr()->getRequest();
-        $skipAnnotation = $request->getVar('skipannotation');
+        $skipAnnotation = null;
+
+        // This is not the case on the command line
+        if(Controller::has_curr()) {
+            $skipAnnotation = Controller::curr()->getRequest()->getVar('skipannotation');
+        }
+        
         if ($skipAnnotation !== null || !$this->permissionChecker->environmentIsAllowed()) {
             return false;
         }
