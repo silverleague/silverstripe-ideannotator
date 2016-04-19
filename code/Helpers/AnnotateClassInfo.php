@@ -1,10 +1,5 @@
 <?php
 
-use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Context;
-use phpDocumentor\Reflection\DocBlock\Tag;
-use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
-
 /**
  * Class AnnotateClassInfo
  * We will need this for phpDocumentor as well.
