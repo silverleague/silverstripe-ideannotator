@@ -6,7 +6,7 @@ After:
   - 'framework/*'
   - 'cms/*'
 ---
-DataObject:
+DevBuildController:
   extensions:
     - Annotatable
 DataObjectAnnotator:

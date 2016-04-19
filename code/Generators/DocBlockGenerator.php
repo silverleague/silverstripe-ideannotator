@@ -37,7 +37,7 @@ class DocBlockGenerator
         $this->className    = $className;
         $this->reflector    = new ReflectionClass($className);
 
-        $generatorClass = $this->reflector->isSubclassOf('ContentController')
+        $generatorClass = $this->reflector->isSubclassOf('Controller')
                         ? 'ControllerTagGenerator' : 'OrmTagGenerator';
 
         $this->tagGenerator = new $generatorClass($className);

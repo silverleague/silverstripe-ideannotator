@@ -19,7 +19,7 @@ class AnnotatePermissionChecker
     protected $supportedParentClasses = array(
         'DataObject',
         'DataExtension',
-        'ContentController',
+        'Controller',
         'Extension'
     );
 
@@ -31,6 +31,14 @@ class AnnotatePermissionChecker
         if(!$this->isEnabled()) return false;
 
         return $this->environmentIsDev();
+    }
+
+    /**
+     * @return array
+     */
+    public function getSupportedParentClasses()
+    {
+        return $this->supportedParentClasses;
     }
 
     /**
@@ -89,7 +97,18 @@ class AnnotatePermissionChecker
      */
     public function moduleIsAllowed($moduleName)
     {
-        return in_array($moduleName, (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules'), null);
+        return in_array($moduleName, $this->enabledModules(), null);
+    }
+
+    /**
+     * @return array
+     */
+    public function enabledModules()
+    {
+        $enabled = (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
+
+        // modules might be enabled more then once.
+        return array_combine($enabled, $enabled);
     }
 
     /**

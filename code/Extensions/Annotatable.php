@@ -8,9 +8,9 @@
  *
  * @package IDEAnnotator/Extensions
  *
- * @property DataObject|Annotatable $owner
+ * @property DevBuildController $owner
  */
-class Annotatable extends DataExtension
+class Annotatable extends Extension
 {
 
     /**
@@ -42,72 +42,22 @@ class Annotatable extends DataExtension
     }
 
     /**
-     * This is the base function on which annotations are started.
-     *
-     * @todo rewrite this. It's not actually a requireDefaultRecords. But it's the only place to hook into the build-process to start the annotation process.
-     * @return bool
+     * Annotated Controllers and Extensions
      */
-    public function requireDefaultRecords()
+    public function afterCallActionHandler()
     {
-        // Setup the protected values.
         $this->setUp();
 
-        $skipAnnotation = null;
+        $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
 
-        // This is not the case on the command line
-        if(Controller::has_curr()) {
-            $skipAnnotation = Controller::curr()->getRequest()->getVar('skipannotation');
-        }
-        
-        if ($skipAnnotation !== null || !$this->permissionChecker->environmentIsAllowed()) {
-            return false;
-        }
+        if ($skipAnnotation === null || $this->permissionChecker->environmentIsAllowed()) {
 
-        $this->generateClassAnnotations();
-        $this->generateControllerAnnotations();
-
-        return true;
-    }
-
-    /**
-     * Generate class own annotations
-     */
-    protected function generateClassAnnotations()
-    {
-        /* Annotate the current Class, if annotatable */
-        $this->annotator->annotateObject($this->owner->ClassName);
-        $this->generateExtensionAnnotations($this->owner->ClassName);
-    }
-
-    /**
-     * Generate Page_Controller Annotations
-     */
-    protected function generateControllerAnnotations()
-    {
-        $reflector = new ReflectionClass($this->owner->ClassName);
-
-        if($reflector->isSubclassOf('SiteTree')) {
-            $controller = $this->owner->ClassName . '_Controller';
-            if (class_exists($controller)) {
-                $this->annotator->annotateObject($controller);
-                $this->generateExtensionAnnotations($controller);
+            echo '<p><b>Generating class docblocks</b></p>';
+            $modules = $this->permissionChecker->enabledModules();
+            foreach ($modules as $module) {
+                $this->annotator->annotateModule($module);
             }
-        }
-    }
-
-    /**
-     * Generate class Extension annotations
-     */
-    protected function generateExtensionAnnotations($className)
-    {
-        $extensions = (array)Config::inst()->get($className, 'extensions', Config::UNINHERITED);
-
-        $extensions = array_diff($extensions, Annotatable::$annotated_extensions);
-
-        if (!empty($extensions)) {
-            foreach ($extensions as $extension) {
-                $this->annotator->annotateObject(Annotatable::$annotated_extensions[$extension] = $extension);
-            }
+            echo '<p>Docblock generation finished!</p>';
         }
     }
 }

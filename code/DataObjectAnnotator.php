@@ -46,6 +46,11 @@ class DataObjectAnnotator extends Object
     private $permissionChecker;
 
     /**
+     * @var array
+     */
+    private $annotatableClasses = array();
+
+    /**
      * DataObjectAnnotator constructor.
      */
     public function __construct()
@@ -54,7 +59,42 @@ class DataObjectAnnotator extends Object
         // Don't instantiate anything if annotations are not enabled.
         if(static::config()->get('enabled') === true) {
             $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+            foreach ($this->permissionChecker->getSupportedParentClasses() as $supportedParentClass) {
+                $this->setEnabledClasses($supportedParentClass);
+            }
         }
+    }
+
+    /**
+     * Get all annotatable classes from enabled modules
+     */
+    protected function setEnabledClasses($supportedParentClass)
+    {
+        foreach((array)ClassInfo::subclassesFor($supportedParentClass) as $class)
+        {
+            $classInfo = new AnnotateClassInfo($class);
+            if($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
+                $this->annotatableClasses[$class] = $classInfo->getWritableClassFilePath();
+            }
+        }
+    }
+
+    /**
+     * @param $moduleName
+     * @return array
+     */
+    public function getClassesForModule($moduleName)
+    {
+        $classes = array();
+
+        foreach ($this->annotatableClasses as $class => $filePath) {
+            $classInfo = new AnnotateClassInfo($class);
+            if($moduleName === $classInfo->getModuleName()) {
+                $classes[$class] = $filePath;
+            }
+        }
+
+        return $classes;
     }
 
     /**
@@ -71,11 +111,9 @@ class DataObjectAnnotator extends Object
             return false;
         }
 
-        $classes = (array)ClassInfo::subclassesFor('DataObject');
-        $classes = array_merge($classes, (array)ClassInfo::subclassesFor('ContentController'));
-        $classes = array_merge($classes, (array)ClassInfo::subclassesFor('Extension'));
+        $classes = (array)$this->getClassesForModule($moduleName);
 
-        foreach ($classes as $className) {
+        foreach ($classes as $className => $filePath) {
             $this->annotateObject($className);
         }
 
@@ -91,35 +129,35 @@ class DataObjectAnnotator extends Object
      */
     public function annotateObject($className)
     {
-        if (!(bool)$className || !$this->permissionChecker->classNameIsAllowed($className)) {
+
+        if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
         }
 
-        $classInfo = new AnnotateClassInfo($className);
-        $filePath  = $classInfo->getWritableClassFilePath();
-
-        if ($filePath === false) {
-            return false;
-        }
-
-        $this->writeFileContent($filePath, $className);
+        $this->writeFileContent($className);
 
         return true;
     }
 
     /**
-     * @param $filePath
-     * @param $className
+     * @param string $className
      */
-    protected function writeFileContent($filePath, $className)
+    protected function writeFileContent($className)
     {
-        $original  = file_get_contents($filePath);
-        $generated = $this->getGeneratedFileContent($original, $className);
+        $classInfo = new AnnotateClassInfo($className);
+        $filePath  = $classInfo->getWritableClassFilePath();
 
-        // we have a change, so write the new file
-        if ($generated && $generated !== $original) {
-            file_put_contents($filePath, $generated);
-            DB::alteration_message($className . ' Annotated', 'created');
+        if ($filePath !== false) {
+            $original  = file_get_contents($filePath);
+            $generated = $this->getGeneratedFileContent($original, $className);
+
+            // we have a change, so write the new file
+            if ($generated && $generated !== $original) {
+                file_put_contents($filePath, $generated);
+                DB::alteration_message($className . ' Annotated', 'created');
+            }else{
+                DB::alteration_message($className);
+            }
         }
     }
 

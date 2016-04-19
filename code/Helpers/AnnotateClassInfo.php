@@ -38,6 +38,19 @@ class AnnotateClassInfo
     }
 
     /**
+     * Where module name is a folder in the webroot.
+     *
+     * @return string
+     */
+    public function getModuleName()
+    {
+        $relativePath     = str_replace(BASE_PATH . '/', '', $this->reflector->getFileName());
+        list($moduleName) = explode(DIRECTORY_SEPARATOR, $relativePath);
+
+        return (string)$moduleName;
+    }
+
+    /**
      * If the file writable, return the absolute path of the file that holds the ClassName
      * @todo should we check here for writable?
      *

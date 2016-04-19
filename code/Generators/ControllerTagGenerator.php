@@ -9,15 +9,15 @@ class ControllerTagGenerator extends AbstractTagGenerator
      */
     protected function generateTags()
     {
-        $this->generatePageObjectTags();
+        $this->generateControllerObjectTags();
         $this->generateExtensionsTags();
         $this->generateOwnerTags();
     }
 
-    protected function generatePageObjectTags()
+    protected function generateControllerObjectTags()
     {
         $pageClassname = str_replace("_Controller", "", $this->className);
-        if(class_exists($pageClassname)) {
+        if(class_exists($pageClassname) && $this->isContentController($this->className)) {
             $this->pushPropertyTag($pageClassname . ' dataRecord');
             $this->pushMethodTag($pageClassname, $pageClassname . ' data()');
 
@@ -26,5 +26,11 @@ class ControllerTagGenerator extends AbstractTagGenerator
                 $this->pushMixinTag($pageClassname);
             }
         }
+    }
+
+    protected function isContentController($className)
+    {
+        $reflector = new ReflectionClass($className);
+        return $reflector->isSubclassOf('ContentController');
     }
 }
