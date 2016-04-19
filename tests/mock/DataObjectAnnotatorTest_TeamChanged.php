@@ -4,20 +4,20 @@
  * Class DataObjectAnnotatorTest_Team
  *
  * @author Simon
- * @property string $Title
+ * @property string $Title The Team Name
  * @property int $VisitCount
  * @property string $ExtendedVarcharField
  * @property int $ExtendedIntField
  * @property int $CaptainID
  * @property int $HasOneRelationshipID
  * @property int $ExtendedHasOneRelationshipID
- * @method DataObjectAnnotatorTest_Player Captain()
+ * @method DataObjectAnnotatorTest_Player Captain() This is the Boss
  * @method DataObjectAnnotatorTest_Player HasOneRelationship()
  * @method DataObjectTest_Player ExtendedHasOneRelationship()
  * @method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()
  * @method DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
  * @method ManyManyList|DataObjectAnnotatorTest_Player[] Players()
- * @mixin DataObjectAnnotatorTest_Team_Extension
+ * @mixin DataObjectAnnotatorTest_Team_Extension This adds extra methods
  */
 
 class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly

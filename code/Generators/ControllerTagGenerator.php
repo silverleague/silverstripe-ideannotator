@@ -28,6 +28,10 @@ class ControllerTagGenerator extends AbstractTagGenerator
         }
     }
 
+    /**
+     * @param string $className
+     * @return bool
+     */
     protected function isContentController($className)
     {
         $reflector = new ReflectionClass($className);

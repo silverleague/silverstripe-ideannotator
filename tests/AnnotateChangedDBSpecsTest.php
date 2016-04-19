@@ -1,4 +1,5 @@
 <?php
+use phpDocumentor\Reflection\DocBlock\Tag\MethodTag;
 
 /**
  * This test should fail, if a DB property is removed from
@@ -44,6 +45,20 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $filePath  = $classInfo->getWritableClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
         $this->assertTrue(strpos($content, 'Simon') > 0);
+    }
+
+    public function testManuallyCommentedTagsWillNotBeRemoved()
+    {
+
+        Config::inst()->update('DataObjectAnnotatorTest_TeamChanged', 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));
+
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
+        $filePath  = $classInfo->getWritableClassFilePath();
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
+
+        $this->assertTrue(strpos($content, 'The Team Name') > 0);
+        $this->assertTrue(strpos($content, 'This adds extra methods') > 0);
+        $this->assertTrue(strpos($content, 'This is the Boss') > 0);
     }
 
 }

@@ -16,6 +16,12 @@ abstract class AbstractTagGenerator
     protected $className = '';
 
     /**
+     * The existing tags of the class we are working with
+     * @var phpDocumentor\Reflection\DocBlock\Tag[]
+     */
+    protected $existingTags = array();
+
+    /**
      * @var ReflectionClass
      */
     protected $reflector;
@@ -23,7 +29,7 @@ abstract class AbstractTagGenerator
     /**
      * List all the generated tags form the various generateSomeORMProperies methods
      * @see $this->getSupportedTagTypes();
-     * @var array
+     * @var phpDocumentor\Reflection\DocBlock\Tag[]
      */
     protected $tags = array();
 
@@ -38,9 +44,10 @@ abstract class AbstractTagGenerator
      *
      * @param string $className
      */
-    public function __construct($className)
+    public function __construct($className, $existingTags)
     {
         $this->className        = $className;
+        $this->existingTags     = (array)$existingTags;
         $this->reflector        = new ReflectionClass($className);
         $this->extensionClasses = (array)ClassInfo::subclassesFor('Object');
         $this->tags             = $this->getSupportedTagTypes();
@@ -54,6 +61,14 @@ abstract class AbstractTagGenerator
     public function getTags()
     {
         return (array)call_user_func_array('array_merge', $this->tags);
+    }
+
+    /**
+     * @return phpDocumentor\Reflection\DocBlock\Tag[]
+     */
+    public function getExistingTags()
+    {
+        return $this->existingTags;
     }
 
     /**
@@ -128,7 +143,7 @@ abstract class AbstractTagGenerator
      */
     protected function pushPropertyTag($tagString)
     {
-        $this->tags['properties'][$tagString] = new Tag('property', $tagString);
+        $this->tags['properties'][$tagString] = $this->pushTagWithExistingComment('property', $tagString);
     }
 
     /**
@@ -138,7 +153,7 @@ abstract class AbstractTagGenerator
     protected function pushMethodTag($methodName, $tagString)
     {
         if (!$this->reflector->hasMethod($methodName)) {
-            $this->tags['methods'][$tagString] = new Tag('method', $tagString);
+            $this->tags['methods'][$tagString] = $this->pushTagWithExistingComment('method', $tagString);
         }
     }
 
@@ -147,7 +162,7 @@ abstract class AbstractTagGenerator
      */
     protected function pushMixinTag($tagString)
     {
-        $this->tags['mixins'][$tagString] = new Tag('mixin', $tagString);
+        $this->tags['mixins'][$tagString] = $this->pushTagWithExistingComment('mixin', $tagString);
     }
 
     /**
@@ -157,5 +172,28 @@ abstract class AbstractTagGenerator
     protected function getClassConfig($key)
     {
         return Config::inst()->get($this->className, $key, Config::UNINHERITED);
+    }
+
+    /**
+     * @param $type
+     * @param $tagString
+     * @return Tag
+     */
+    protected function pushTagWithExistingComment($type, $tagString)
+    {
+        $tagString .= $this->getExistingTagCommentByTagString($type, $tagString);
+
+        return new Tag($type, $tagString);
+    }
+
+    public function getExistingTagCommentByTagString($type, $tagString)
+    {
+        foreach($this->getExistingTags() as $tag) {
+            $content = $tag->getContent();
+            if (strpos($content, $tagString) !== false) {
+                return str_replace($tagString, '', $content);
+            }
+        }
+        return '';
     }
 }

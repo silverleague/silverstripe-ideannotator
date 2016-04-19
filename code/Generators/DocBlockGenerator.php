@@ -40,7 +40,7 @@ class DocBlockGenerator
         $generatorClass = $this->reflector->isSubclassOf('Controller')
                         ? 'ControllerTagGenerator' : 'OrmTagGenerator';
 
-        $this->tagGenerator = new $generatorClass($className);
+        $this->tagGenerator = new $generatorClass($className, $this->getExistingTags());
     }
 
     /**
@@ -75,6 +75,14 @@ class DocBlockGenerator
         $docBlock = $this->removeOldStyleDocBlock($existing);
         $docBlock = new DocBlock($docBlock);
         return $docBlock->getTags();
+    }
+
+    /**
+     * @return array
+     */
+    public function getExistingTagComments()
+    {
+        return $this->tagGenerator->getExistingTagComments();
     }
 
     /**
