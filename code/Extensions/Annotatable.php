@@ -52,24 +52,23 @@ class Annotatable extends Extension
 
         if ($skipAnnotation === null || $this->permissionChecker->environmentIsAllowed()) {
 
-            $this->displayMessage('Generating class docblocks');
+            $this->displayMessage(' Generating class docblocks');
 
             $modules = $this->permissionChecker->enabledModules();
             foreach ($modules as $module) {
                 $this->annotator->annotateModule($module);
             }
 
-            $this->displayMessage('Docblock generation finished!');
+            $this->displayMessage(' Docblock generation finished!');
         }
     }
 
     /**
      * @param $message
-     * @return string
      */
     public function displayMessage($message)
     {
-        return Director::is_cli() ? "\n$message\n\n" : "<p><b>$message</b></p>";
+        echo Director::is_cli() ? "\n$message\n\n" : "<p><b>$message</b></p>";
     }
 
 }
