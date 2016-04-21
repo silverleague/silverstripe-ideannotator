@@ -49,8 +49,9 @@ class Annotatable extends Extension
         $this->setUp();
 
         $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
-
-        if ($skipAnnotation === null || $this->permissionChecker->environmentIsAllowed()) {
+        $envIsAllowed   = $this->permissionChecker->environmentIsAllowed();
+        
+        if ($skipAnnotation === null && $envIsAllowed) {
 
             $this->displayMessage(' Generating class docblocks');
 
