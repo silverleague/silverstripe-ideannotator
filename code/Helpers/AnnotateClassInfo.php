@@ -46,20 +46,11 @@ class AnnotateClassInfo
     }
 
     /**
-     * If the file writable, return the absolute path of the file that holds the ClassName
-     * @todo should we check here for writable?
-     *
-     * @return string|false
+     * @return string
      */
-    public function getWritableClassFilePath()
+    public function getClassFilePath()
     {
-        $filePath = $this->reflector->getFileName();
-
-        if (is_writable($filePath)) {
-            return $filePath;
-        }
-
-        return false;
+        return $this->reflector->getFileName();
     }
 
     /**
@@ -67,8 +58,6 @@ class AnnotateClassInfo
      */
     public function getDocComment()
     {
-        $docblock = $this->reflector->getDocComment();
-
-        return $docblock;
+        return $this->reflector->getDocComment();
     }
 }

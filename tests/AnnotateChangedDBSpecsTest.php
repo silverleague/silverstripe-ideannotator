@@ -34,7 +34,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function testChangedDBSpecifications()
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
         $this->assertFalse(strpos($content, 'VisitCount') > 0);
     }
@@ -42,7 +42,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function testNonSupportedTagsWillNotBeTouched()
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
         $this->assertTrue(strpos($content, 'Simon') > 0);
     }
@@ -53,7 +53,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         Config::inst()->update('DataObjectAnnotatorTest_TeamChanged', 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));
 
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
 
         $this->assertTrue(strpos($content, 'The Team Name') > 0);

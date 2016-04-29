@@ -55,7 +55,7 @@ class AnnotatePermissionChecker
         if ($this->classNameIsSupported($className)) {
 
             $classInfo = new AnnotateClassInfo($className);
-            $filePath  = $classInfo->getWritableClassFilePath();
+            $filePath  = $classInfo->getClassFilePath();
 
             $allowedModules = (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
 

@@ -46,7 +46,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testFileContentWithAnnotations()
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
 
@@ -76,7 +76,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testExistingMethodsWillNotBeTagged()
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_Team');
         $this->assertFalse((bool)strpos($content, '@method ManyManyList|DataObjectAnnotatorTest_SubTeam[] SecondarySubTeams()'));
@@ -88,7 +88,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testNothingHasChangedAfterSecondAnnotation()
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
         $firstRun = $this->annotator->getGeneratedFileContent($original, 'DataObjectAnnotatorTest_Team');
         $secondRun = $this->annotator->getGeneratedFileContent($firstRun, 'DataObjectAnnotatorTest_Team');
@@ -101,7 +101,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testAnnotateDataExtension()
     {
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Team_Extension');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, 'DataObjectAnnotatorTest_Team_Extension');
 
@@ -117,7 +117,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testRemoveOldStyleDocBlock()
     {
         $classInfo = new AnnotateClassInfo('DataObjectWithOldStyleTagMarkers');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $original  = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, 'DataObjectWithOldStyleTagMarkers');
         $this->assertFalse((bool)strpos($annotated, DataObjectAnnotator::STARTTAG));
@@ -133,7 +133,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testTwoClassesInOneFile()
     {
         $classInfo = new AnnotateClassInfo('DoubleDataObjectInOneFile1');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $original  = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, 'DoubleDataObjectInOneFile1');
 

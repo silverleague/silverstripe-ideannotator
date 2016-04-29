@@ -40,7 +40,7 @@ class ControllerAnnotatorTest extends SapphireTest
     public function testPageGetsAnnotated()
     {
         $classInfo = new AnnotateClassInfo('AnnotatorPageTest');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest');
 
@@ -51,7 +51,7 @@ class ControllerAnnotatorTest extends SapphireTest
     public function testPageControllerGetsAnnotator()
     {
         $classInfo = new AnnotateClassInfo('AnnotatorPageTest_Controller');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest_Controller');
 
@@ -68,7 +68,7 @@ class ControllerAnnotatorTest extends SapphireTest
     public function testAnnotateControllerExtension()
     {
         $classInfo = new AnnotateClassInfo('AnnotatorPageTest_Extension');
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, 'AnnotatorPageTest_Extension');
 

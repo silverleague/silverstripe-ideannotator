@@ -74,7 +74,7 @@ class DataObjectAnnotator extends Object
         {
             $classInfo = new AnnotateClassInfo($class);
             if($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
-                $this->annotatableClasses[$class] = $classInfo->getWritableClassFilePath();
+                $this->annotatableClasses[$class] = $classInfo->getClassFilePath();
             }
         }
     }
@@ -145,9 +145,11 @@ class DataObjectAnnotator extends Object
     protected function writeFileContent($className)
     {
         $classInfo = new AnnotateClassInfo($className);
-        $filePath  = $classInfo->getWritableClassFilePath();
+        $filePath  = $classInfo->getClassFilePath();
 
-        if ($filePath !== false) {
+        if (!is_writable($filePath)) {
+            DB::alteration_message($className . ' is not writable by ' . get_current_user(), 'error');
+        } else {
             $original  = file_get_contents($filePath);
             $generated = $this->getGeneratedFileContent($original, $className);
 
