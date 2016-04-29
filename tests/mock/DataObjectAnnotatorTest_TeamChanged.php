@@ -19,13 +19,12 @@
  * @method ManyManyList|DataObjectAnnotatorTest_Player[] Players()
  * @mixin DataObjectAnnotatorTest_Team_Extension This adds extra methods
  */
-
 class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
 {
 
     private static $db = array(
-        'Title'      => 'Varchar',
-        'Price'      => 'Currency'
+        'Title' => 'Varchar',
+        'Price' => 'Currency'
     );
 
     private static $has_one = array(
@@ -39,7 +38,7 @@ class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
     );
 
     private static $many_many = array(
-        'Players' => 'DataObjectAnnotatorTest_Player',
+        'Players'           => 'DataObjectAnnotatorTest_Player',
         'SecondarySubTeams' => 'DataObjectAnnotatorTest_SubTeam',
     );
 
@@ -50,4 +49,5 @@ class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
 
 }
 
-Config::inst()->update('DataObjectAnnotatorTest_TeamChanged', 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));
+Config::inst()->update('DataObjectAnnotatorTest_TeamChanged', 'extensions',
+    array('DataObjectAnnotatorTest_Team_Extension'));
