@@ -186,6 +186,8 @@ class DataObjectAnnotator extends Object
             $pos = strpos($fileContent, $needle);
             if ($pos !== false) {
                 $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
+            } else {
+                DB::alteration_message("Could not find string 'class $className'. Please check casing and whitespace.", 'error');
             }
         }
 
