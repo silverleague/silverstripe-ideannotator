@@ -21,3 +21,9 @@
 * Remove start/end tags
 * All classes in a single file annotated
 * Added DataRecord and Data() annotation for _Controller methods
+
+# 2.0.1 to 2.0.4
+* Minor fixes 
+* Check for Controller::curr(); to support cli
+* Correct environment checking
+* Added warning messages when a file is not writable or class defenition is misspelled
