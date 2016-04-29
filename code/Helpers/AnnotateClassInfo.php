@@ -39,7 +39,7 @@ class AnnotateClassInfo
      */
     public function getModuleName()
     {
-        $relativePath     = str_replace(BASE_PATH . '/', '', $this->reflector->getFileName());
+        $relativePath     = str_replace(BASE_PATH . DIRECTORY_SEPARATOR, '', $this->reflector->getFileName());
         list($moduleName) = explode(DIRECTORY_SEPARATOR, $relativePath);
 
         return (string)$moduleName;
