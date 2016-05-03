@@ -15,6 +15,7 @@ class DataObjectAnnotatorTest_Player extends Member implements TestOnly
     );
 
     private static $belongs_many_many = array(
-        'Teams' => 'DataObjectAnnotatorTest_Team'
+        'TeamPlayer'  => 'DataObjectAnnotatorTest_Team.Team',
+        'TeamReserve' => 'DataObjectAnnotatorTest_Team.Reserve'
     );
 }

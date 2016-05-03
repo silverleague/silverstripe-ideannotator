@@ -68,11 +68,28 @@ class DataObjectAnnotatorTest extends SapphireTest
         // has_many relation
         $this->assertContains('@method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()', $content);
         // many_many relation
-       // $this->assertContains('@method ManyManyList|DataObjectAnnotatorTest_Player[] Players()', $content);
-        //$this->assertContains('@method ManyManyList|DataObjectAnnotatorTest_Player[] Reserves()', $content);
+        $this->assertContains('@method ManyManyList|DataObjectAnnotatorTest_Player[] Players()', $content);
+        $this->assertContains('@method ManyManyList|DataObjectAnnotatorTest_Player[] Reserves()', $content);
 
         // DataExtension
         $this->assertContains('@mixin DataObjectAnnotatorTest_Team_Extension', $content);
+    }
+
+    public function testInversePlayerRelationOfTeam()
+    {
+        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_Player');
+        $filePath  = $classInfo->getClassFilePath();
+
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_Player');
+
+        $this->assertContains('@property boolean $IsRetired', $content);
+        $this->assertContains('@property string $ShirtNumber', $content);
+        $this->assertContains('@property int $FavouriteTeamID', $content);
+        $this->assertContains('@method DataObjectAnnotatorTest_Team FavouriteTeam()', $content);
+
+        $this->assertContains('@method ManyManyList|DataObjectAnnotatorTest_Team[] TeamPlayer()', $content);
+        $this->assertContains('@method ManyManyList|DataObjectAnnotatorTest_Team[] TeamReserve()', $content);
+
     }
 
     public function testExistingMethodsWillNotBeTagged()
