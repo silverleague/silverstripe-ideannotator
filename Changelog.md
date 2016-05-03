@@ -27,3 +27,6 @@
 * Check for Controller::curr(); to support cli
 * Correct environment checking
 * Added warning messages when a file is not writable or class defenition is misspelled
+
+# 2.0.5
+* Support dot notations in relations
