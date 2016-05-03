@@ -27,7 +27,8 @@ class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
     );
 
     private static $many_many = array(
-        'Players' => 'DataObjectAnnotatorTest_Player',
+        'Players'           => 'DataObjectAnnotatorTest_Player.Players',
+        'Reserves'          => 'DataObjectAnnotatorTest_Player.Reserves',
         'SecondarySubTeams' => 'DataObjectAnnotatorTest_SubTeam',
     );
 

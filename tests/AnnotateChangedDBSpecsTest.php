@@ -36,7 +36,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
         $filePath  = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
-        $this->assertFalse(strpos($content, 'VisitCount') > 0);
+        $this->assertNotContains('VisitCount', $content);
     }
 
     public function testNonSupportedTagsWillNotBeTouched()
@@ -44,7 +44,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
         $filePath  = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
-        $this->assertTrue(strpos($content, 'Simon') > 0);
+        $this->assertContains('Simon', $content);
     }
 
     public function testManuallyCommentedTagsWillNotBeRemoved()
@@ -56,9 +56,9 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $filePath  = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
 
-        $this->assertTrue(strpos($content, 'The Team Name') > 0);
-        $this->assertTrue(strpos($content, 'This adds extra methods') > 0);
-        $this->assertTrue(strpos($content, 'This is the Boss') > 0);
+        $this->assertContains('The Team Name', $content);
+        $this->assertContains('This adds extra methods', $content);
+        $this->assertContains('This is the Boss', $content);
     }
 
 }

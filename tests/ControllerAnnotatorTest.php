@@ -44,8 +44,8 @@ class ControllerAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest');
 
-        $this->assertTrue((bool)strpos($content, ' * Class AnnotatorPageTest'));
-        $this->assertTrue((bool)strpos($content, '@property string $SubTitle'));
+        $this->assertContains(' * Class AnnotatorPageTest', $content);
+        $this->assertContains('@property string $SubTitle', $content);
     }
 
     public function testPageControllerGetsAnnotator()
@@ -55,11 +55,11 @@ class ControllerAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest_Controller');
 
-        $this->assertTrue((bool)strpos($content, ' * Class AnnotatorPageTest_Controller'));
-        $this->assertTrue((bool)strpos($content, '@property AnnotatorPageTest dataRecord'));
-        $this->assertTrue((bool)strpos($content, '@method AnnotatorPageTest data()'));
-        $this->assertTrue((bool)strpos($content, '@mixin AnnotatorPageTest'));
-        $this->assertTrue((bool)strpos($content, '@mixin AnnotatorPageTest_Extension'));
+        $this->assertContains(' * Class AnnotatorPageTest_Controller', $content);
+        $this->assertContains('@property AnnotatorPageTest dataRecord', $content);
+        $this->assertContains('@method AnnotatorPageTest data()', $content);
+        $this->assertContains('@mixin AnnotatorPageTest', $content);
+        $this->assertContains('@mixin AnnotatorPageTest_Extension', $content);
     }
 
     /**
@@ -72,7 +72,7 @@ class ControllerAnnotatorTest extends SapphireTest
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, 'AnnotatorPageTest_Extension');
 
-        $this->assertTrue((bool)strpos($annotated, ' * Class AnnotatorPageTest_Extension'));
-        $this->assertTrue((bool)strpos($annotated, '@property AnnotatorPageTest_Controller $owner'));
+        $this->assertContains(' * Class AnnotatorPageTest_Extension', $annotated);
+        $this->assertContains('@property AnnotatorPageTest_Controller $owner', $annotated);
     }
 }
