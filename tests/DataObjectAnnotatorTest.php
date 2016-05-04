@@ -126,7 +126,7 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $this->assertNotContains(DataObjectAnnotator::STARTTAG, $annotated);
         $this->assertNotContains(DataObjectAnnotator::ENDTAG, $annotated);
-        $this->assertContains('@property DataObjectAnnotatorTest_Team|DataObjectAnnotatorTest_TeamChanged $owner', $annotated);
+        $this->assertContains('@property DataObjectAnnotatorTest_Team $owner', $annotated);
         $this->assertContains('@property string $ExtendedVarcharField', $annotated);
         $this->assertContains('@property int $ExtendedIntField', $annotated);
         $this->assertContains('@property int $ExtendedHasOneRelationshipID', $annotated);
