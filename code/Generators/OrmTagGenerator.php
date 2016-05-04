@@ -143,8 +143,7 @@ class OrmTagGenerator extends AbstractTagGenerator
         if(!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
                 // we might have dot notations
-                $dataObjectName = explode(".", $dataObjectName, 2);
-                $dataObjectName = $dataObjectName[0]; // php 5.3 : can't use a oneliner yet...
+                list($dataObjectName) = explode(".", $dataObjectName, 2);
                 $this->pushMethodTag($fieldName, "{$listType}|{$dataObjectName}[] {$fieldName}()");
             }
         }
