@@ -2,7 +2,6 @@
 
 /**
  * OrmTagGenerator
- *
  * This class generates DocBlock Tags for the ORM properties of a Dataobject of DataExtension
  * and adds $owner Tags for added DataExtensions
  *
@@ -27,7 +26,6 @@ class OrmTagGenerator extends AbstractTagGenerator
 
     /**
      * Default tagname is will be @string .
-     *
      * All exceptions for @see DBField types are listed here
      *
      * @see generateDBTags();
@@ -74,10 +72,10 @@ class OrmTagGenerator extends AbstractTagGenerator
         // some fields in 3rd-party modules require a name...
         $fieldObj = Object::create_from_string($dbFieldType, 'DummyName');
 
-        foreach(self::$dbfield_tagnames as $dbClass => $tagName) {
-            if(class_exists($dbClass)) {
+        foreach (self::$dbfield_tagnames as $dbClass => $tagName) {
+            if (class_exists($dbClass)) {
                 $obj = Object::create_from_string($dbClass);
-                if($fieldObj instanceof $obj) {
+                if ($fieldObj instanceof $obj) {
                     return $tagName;
                 }
             }
@@ -141,9 +139,8 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateTagsForDataLists($fields, $listType = 'DataList')
     {
-        if(!empty($fields)) {
+        if (!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
-                // we might have dot notations
                 $dataObjectName = $this->resolveDotNotation($dataObjectName);
                 $this->pushMethodTag($fieldName, "{$listType}|{$dataObjectName}[] {$fieldName}()");
             }
@@ -152,10 +149,10 @@ class OrmTagGenerator extends AbstractTagGenerator
 
     /**
      * @param $dataObjectName
-     *
      * @return mixed
      */
-    protected function resolveDotNotation($dataObjectName) {
+    protected function resolveDotNotation($dataObjectName)
+    {
         list($dataObjectName) = explode(".", $dataObjectName, 2);
         return $dataObjectName;
     }
