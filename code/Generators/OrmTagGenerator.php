@@ -92,7 +92,8 @@ class OrmTagGenerator extends AbstractTagGenerator
     {
         if ($fields = (array)$this->getClassConfig('belongs_to')) {
             foreach ($fields as $fieldName => $dataObjectName) {
-                $this->pushMethodTag($fieldName, $dataObjectName . " \$$fieldName");
+                $dataObjectName = $this->resolveDotNotation($dataObjectName);
+                $this->pushMethodTag($fieldName, "{$dataObjectName} {$fieldName}()");
             }
         }
     }
@@ -143,9 +144,19 @@ class OrmTagGenerator extends AbstractTagGenerator
         if(!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
                 // we might have dot notations
-                list($dataObjectName) = explode(".", $dataObjectName, 2);
+                $dataObjectName = $this->resolveDotNotation($dataObjectName);
                 $this->pushMethodTag($fieldName, "{$listType}|{$dataObjectName}[] {$fieldName}()");
             }
         }
+    }
+
+    /**
+     * @param $dataObjectName
+     *
+     * @return mixed
+     */
+    protected function resolveDotNotation($dataObjectName) {
+        list($dataObjectName) = explode(".", $dataObjectName, 2);
+        return $dataObjectName;
     }
 }
