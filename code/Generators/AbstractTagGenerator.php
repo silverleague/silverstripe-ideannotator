@@ -134,6 +134,9 @@ abstract class AbstractTagGenerator
         });
 
         if (!empty($owners)) {
+            if($this->reflector->isSubclassOf('DataExtension')) {
+                $owners[] = $this->className;
+            }
             $this->pushPropertyTag(implode("|", $owners) . " \$owner");
         }
     }
