@@ -9,7 +9,7 @@ use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
  *
  * @package IDEAnnotator/Generators
  */
-class DocBlockGenerator
+class DocBlockGenerator extends Object
 {
     /**
      * The current class we are working with
@@ -34,11 +34,13 @@ class DocBlockGenerator
      */
     public function __construct($className)
     {
+        parent::__construct();
+
         $this->className    = $className;
         $this->reflector    = new ReflectionClass($className);
 
         $generatorClass = $this->reflector->isSubclassOf('Controller')
-                        ? 'ControllerTagGenerator' : 'OrmTagGenerator';
+            ? 'ControllerTagGenerator' : 'OrmTagGenerator';
 
         $this->tagGenerator = new $generatorClass($className, $this->getExistingTags());
     }
@@ -86,11 +88,17 @@ class DocBlockGenerator
     }
 
     /**
-     * @return DocBlock\Tag[]
+     * @return ArrayList|DocBlock\Tag[]
      */
     public function getGeneratedTags()
     {
-        return $this->tagGenerator->getTags();
+        $this->extend('beforeGeneratedTags');
+
+        $tags = $this->tagGenerator->getTags();
+
+        $this->extend('updateGeneratedTags', $tags);
+
+        return $tags;
     }
 
     /**
