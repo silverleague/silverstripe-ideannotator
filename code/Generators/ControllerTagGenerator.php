@@ -35,6 +35,6 @@ class ControllerTagGenerator extends AbstractTagGenerator
     protected function isContentController($className)
     {
         $reflector = new ReflectionClass($className);
-        return $reflector->isSubclassOf('ContentController');
+        return SS_ClassLoader::instance()->classExists('ContentController') && $reflector->isSubclassOf('ContentController');
     }
 }
