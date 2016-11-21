@@ -187,7 +187,16 @@ class DataObjectAnnotator extends Object
             if ($pos !== false) {
                 $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
             } else {
-                DB::alteration_message("Could not find string 'class $className'. Please check casing and whitespace.", 'error');
+                if (strrpos($className, "\\") !== false  && class_exists($className)) {
+                    $classNameNew = end(explode("\\", $className));
+                    $needle = "class {$classNameNew}";
+                    $replace = "{$generated}\nclass {$classNameNew}";
+                    $pos = strpos($fileContent, $needle);
+                    $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
+                    DB::alteration_message("Found namespaced Class: ". $classNameNew);
+                } else {
+                    DB::alteration_message("Could not find string 'class $className'. Please check casing and whitespace.", 'error');
+                }
             }
         }
 
