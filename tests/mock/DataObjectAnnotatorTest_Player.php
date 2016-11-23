@@ -1,5 +1,8 @@
 <?php
 
+use SilverStripe\Security\Member;
+use SilverStripe\Dev\TestOnly;
+
 /**
  * Class DataObjectAnnotatorTest_Player
  */

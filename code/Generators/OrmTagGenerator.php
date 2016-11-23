@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Core\Object;
+
 /**
  * OrmTagGenerator
  * This class generates DocBlock Tags for the ORM properties of a Dataobject of DataExtension
@@ -114,7 +116,7 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateHasManyTags()
     {
-        $this->generateTagsForDataLists($this->getClassConfig('has_many'), 'DataList');
+        $this->generateTagsForDataLists($this->getClassConfig('has_many'), 'SilverStripe\\ORM\\DataList');
     }
 
     /**
@@ -122,7 +124,7 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateManyManyTags()
     {
-        $this->generateTagsForDataLists($this->getClassConfig('many_many'), 'ManyManyList');
+        $this->generateTagsForDataLists($this->getClassConfig('many_many'), 'SilverStripe\\ORM\\ManyManyList');
     }
 
     /**
@@ -130,14 +132,14 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateBelongsManyManyTags()
     {
-        $this->generateTagsForDataLists($this->getClassConfig('belongs_many_many'), 'ManyManyList');
+        $this->generateTagsForDataLists($this->getClassConfig('belongs_many_many'), 'SilverStripe\\ORM\\ManyManyList');
     }
 
     /**
      * @param array $fields
      * @param string $listType
      */
-    protected function generateTagsForDataLists($fields, $listType = 'DataList')
+    protected function generateTagsForDataLists($fields, $listType = 'SilverStripe\\ORM\\DataList')
     {
         if (!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {

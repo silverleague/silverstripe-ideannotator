@@ -1,5 +1,8 @@
 <?php
 
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\Core\Extension;
+
 
 class AnnotatorPageTest extends Page implements TestOnly
 {

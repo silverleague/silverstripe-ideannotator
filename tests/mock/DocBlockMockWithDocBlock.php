@@ -1,5 +1,8 @@
 <?php
 
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
+
 /**
  * Class DocBlockMockWithDocBlock
  * Couldn't help it...

@@ -1,5 +1,9 @@
 <?php
 
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\Core\Config\Config;
+
 /**
  *
  */

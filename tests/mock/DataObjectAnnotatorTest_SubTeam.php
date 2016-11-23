@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Dev\TestOnly;
+
 
 class DataObjectAnnotatorTest_SubTeam extends DataObjectAnnotatorTest_Team implements TestOnly
 {
