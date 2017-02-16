@@ -1,5 +1,11 @@
 <?php
 
+namespace Axyr\IDEAnnotator\Tests;
+
+use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
+
 /**
  * Class DataObjectAnnotatorTest_Team
  *
@@ -11,15 +17,15 @@
  * @property int $CaptainID
  * @property int $HasOneRelationshipID
  * @property int $ExtendedHasOneRelationshipID
- * @method DataObjectAnnotatorTest_Player Captain() This is the Boss
- * @method DataObjectAnnotatorTest_Player HasOneRelationship()
- * @method DataObjectTest_Player ExtendedHasOneRelationship()
- * @method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()
- * @method DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
- * @method ManyManyList|DataObjectAnnotatorTest_Player[] Players()
- * @mixin DataObjectAnnotatorTest_Team_Extension This adds extra methods
+ * @method \Axyr\IDEAnnotator\Tests\Player Captain() This is the Boss
+ * @method \Axyr\IDEAnnotator\Tests\Player HasOneRelationship()
+ * @method \Axyr\IDEAnnotator\Tests\Player ExtendedHasOneRelationship()
+ * @method \SilverStripe\ORM\DataList|\Axyr\IDEAnnotator\Tests\SubTeam[] SubTeams()
+ * @method \SilverStripe\ORM\DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
+ * @method \SilverStripe\ORM\ManyManyList|\Axyr\IDEAnnotator\Tests\Player[] Players()
+ * @mixin \Axyr\IDEAnnotator\Tests\Team_Extension This adds extra methods
  */
-class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
+class TeamChanged extends DataObject implements TestOnly
 {
 
     private static $db = array(
@@ -28,18 +34,18 @@ class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
     );
 
     private static $has_one = array(
-        "Captain"            => 'DataObjectAnnotatorTest_Player',
-        'HasOneRelationship' => 'DataObjectAnnotatorTest_Player',
+        "Captain"            => 'Axyr\IDEAnnotator\Tests\Player',
+        'HasOneRelationship' => 'Axyr\IDEAnnotator\Tests\Player',
     );
 
     private static $has_many = array(
-        'SubTeams' => 'DataObjectAnnotatorTest_SubTeam',
-        'Comments' => 'DataObjectAnnotatorTest_TeamComment'
+        'SubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
+        'Comments' => 'Axyr\IDEAnnotator\Tests\TeamComment'
     );
 
     private static $many_many = array(
-        'Players'           => 'DataObjectAnnotatorTest_Player',
-        'SecondarySubTeams' => 'DataObjectAnnotatorTest_SubTeam',
+        'Players'           => 'Axyr\IDEAnnotator\Tests\Player',
+        'SecondarySubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
     );
 
     public function SecondarySubTeams()
@@ -49,5 +55,4 @@ class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
 
 }
 
-Config::inst()->update('DataObjectAnnotatorTest_TeamChanged', 'extensions',
-    array('DataObjectAnnotatorTest_Team_Extension'));
+Config::modify()->set('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));

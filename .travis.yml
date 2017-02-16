@@ -1,20 +1,17 @@
+# See https://github.com/silverstripe/silverstripe-travis-support for setup details
+
+sudo: false
+
 language: php
 
 php:
-  - 5.3
-  - 5.4
-  - 5.5
   - 5.6
+  - 7.0
+  - 7.1
 
 env:
-  - DB=MYSQL CORE_RELEASE=3.4
-
-matrix:
-  include:
-    - php: 7.1
-      env: DB=MYSQL CORE_RELEASE=3.6 COVERAGE="--coverage-clover=coverage.xml"
-    - php: 7.1
-      env: DB=PGSQL CORE_RELEASE=3
+  global:
+    - DB=MYSQL CORE_RELEASE=master
 
 before_script:
   - git clone git://github.com/silverstripe/silverstripe-travis-support.git ~/travis-support
@@ -22,12 +19,8 @@ before_script:
   - cd ~/builds/ss
 
 script:
-  - vendor/bin/phpunit "$COVERAGE" ideannotator/tests
+  - vendor/bin/phpunit ideannotator/tests
 
-# Share coverage results with codecov.io
 after_success:
-  - >
-    test "$COVERAGE" != ""
-    && mv coverage.xml ~/build/$TRAVIS_REPO_SLUG
-    && cd ~/build/$TRAVIS_REPO_SLUG
-    && bash <(curl -s https://codecov.io/bash)
+  - cd ~/builds/ss/ideannotator
+  - bash <(curl -s https://codecov.io/bash) -f coverage.xml

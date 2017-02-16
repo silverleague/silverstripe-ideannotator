@@ -1,7 +1,11 @@
 <?php
 
+namespace Axyr\IDEAnnotator\Tests;
 
-class DataObjectAnnotatorTest_TeamComment extends DataObject implements TestOnly
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
+
+class TeamComment extends DataObject implements TestOnly
 {
     private static $db = array(
         'Name'    => 'Varchar',
@@ -9,7 +13,7 @@ class DataObjectAnnotatorTest_TeamComment extends DataObject implements TestOnly
     );
 
     private static $has_one = array(
-        'Team' => 'DataObjectAnnotatorTest_Team'
+        'Team' => 'Axyr\IDEAnnotator\Tests\Team'
     );
 
 }

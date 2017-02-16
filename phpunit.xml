@@ -1,11 +1,13 @@
-<phpunit bootstrap="framework/tests/bootstrap.php" colors="true">
+<phpunit printerClass="ScriptFUSION\PHPUnitImmediateExceptionPrinter\ImmediateExceptionPrinter"
+         bootstrap="framework/tests/bootstrap.php"
+         colors="true">
 
-    <testsuite name="Default">
+<testsuite name="Default">
         <directory>tests</directory>
     </testsuite>
 
     <listeners>
-        <listener class="SS_TestListener" file="framework/dev/TestListener.php"/>
+        <listener class="\SilverStripe\Dev\TestListener" file="framework/src/Dev/TestListener.php"/>
     </listeners>
 
     <groups>

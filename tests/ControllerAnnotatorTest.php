@@ -1,14 +1,19 @@
 <?php
 
+namespace Axyr\IDEAnnotator\Tests;
+
+use Axyr\IDEAnnotator\AnnotateClassInfo;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Config\Config;
 
 /**
  * Class DataObjectAnnotatorTest
  *
  * Several tests to make sure the Annotator does it's job correctly
  *
- * @mixin PHPUnit_Framework_TestCase
+ * @mixin \PHPUnit_Framework_TestCase
  */
-class ControllerAnnotatorTest extends SapphireTest
+class ControllerAnnotatorTest extends \SilverStripe\Dev\SapphireTest
 {
     /**
      * @var MockDataObjectAnnotator
@@ -16,7 +21,7 @@ class ControllerAnnotatorTest extends SapphireTest
     private $annotator;
 
     /**
-     * @var AnnotatePermissionChecker $permissionChecker
+     * @var \Axyr\IDEAnnotator\AnnotatePermissionChecker $permissionChecker
      */
     private $permissionChecker;
 
@@ -26,40 +31,40 @@ class ControllerAnnotatorTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
-        Config::inst()->update('AnnotatorPageTest_Controller', 'extensions',
-            array('AnnotatorPageTest_Extension')
+        Config::modify()->set('Axyr\IDEAnnotator\Tests\AnnotatorPageTestController', 'extensions',
+            array('Axyr\IDEAnnotator\Tests\AnnotatorPageTest_Extension')
         );
 
-        $this->annotator = Injector::inst()->get('MockDataObjectAnnotator');
-        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\Tests\MockDataObjectAnnotator');
+        $this->permissionChecker = Injector::inst()->get('Axyr\IDEAnnotator\AnnotatePermissionChecker');
     }
 
     public function testPageGetsAnnotated()
     {
-        $classInfo = new AnnotateClassInfo('AnnotatorPageTest');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\AnnotatorPageTest');
         $filePath  = $classInfo->getClassFilePath();
 
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\AnnotatorPageTest');
 
-        $this->assertContains(' * Class AnnotatorPageTest', $content);
+        $this->assertContains(' * Class \Axyr\IDEAnnotator\Tests\AnnotatorPageTest', $content);
         $this->assertContains('@property string $SubTitle', $content);
     }
 
     public function testPageControllerGetsAnnotator()
     {
-        $classInfo = new AnnotateClassInfo('AnnotatorPageTest_Controller');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\AnnotatorPageTestController');
         $filePath  = $classInfo->getClassFilePath();
 
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'AnnotatorPageTest_Controller');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\AnnotatorPageTestController');
 
-        $this->assertContains(' * Class AnnotatorPageTest_Controller', $content);
-        $this->assertContains('@property AnnotatorPageTest dataRecord', $content);
-        $this->assertContains('@method AnnotatorPageTest data()', $content);
-        $this->assertContains('@mixin AnnotatorPageTest', $content);
-        $this->assertContains('@mixin AnnotatorPageTest_Extension', $content);
+        $this->assertContains(' * Class \Axyr\IDEAnnotator\Tests\AnnotatorPageTestController', $content);
+        $this->assertContains('@property \Axyr\IDEAnnotator\Tests\AnnotatorPageTest dataRecord', $content);
+        $this->assertContains('@method \Axyr\IDEAnnotator\Tests\AnnotatorPageTest data()', $content);
+        $this->assertContains('@mixin \Axyr\IDEAnnotator\Tests\AnnotatorPageTest', $content);
+        $this->assertContains('@mixin \Axyr\IDEAnnotator\Tests\AnnotatorPageTest_Extension', $content);
     }
 
     /**
@@ -67,12 +72,12 @@ class ControllerAnnotatorTest extends SapphireTest
      */
     public function testAnnotateControllerExtension()
     {
-        $classInfo = new AnnotateClassInfo('AnnotatorPageTest_Extension');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\AnnotatorPageTest_Extension');
         $filePath  = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->getGeneratedFileContent($original, 'AnnotatorPageTest_Extension');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'Axyr\IDEAnnotator\Tests\AnnotatorPageTest_Extension');
 
-        $this->assertContains(' * Class AnnotatorPageTest_Extension', $annotated);
-        $this->assertContains('@property AnnotatorPageTest_Controller $owner', $annotated);
+        $this->assertContains(' * Class \Axyr\IDEAnnotator\Tests\AnnotatorPageTest_Extension', $annotated);
+        $this->assertContains('@property \Axyr\IDEAnnotator\Tests\AnnotatorPageTestController $owner', $annotated);
     }
 }

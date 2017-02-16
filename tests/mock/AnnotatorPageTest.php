@@ -1,14 +1,18 @@
 <?php
 
+namespace Axyr\IDEAnnotator\Tests;
 
-class AnnotatorPageTest extends Page implements TestOnly
+use SilverStripe\Core\Extension;
+use SilverStripe\Dev\TestOnly;
+
+class AnnotatorPageTest extends \Page implements TestOnly
 {
     private static $db = array(
         'SubTitle'    => 'Varchar(255)'
     );
 }
 
-class AnnotatorPageTest_Controller extends Page_Controller implements TestOnly
+class AnnotatorPageTestController extends \PageController implements TestOnly
 {
 
 }

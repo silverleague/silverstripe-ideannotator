@@ -1,11 +1,17 @@
 <?php
-use phpDocumentor\Reflection\DocBlock\Tag\MethodTag;
+
+namespace Axyr\IDEAnnotator\Tests;
+
+use Axyr\IDEAnnotator\AnnotateClassInfo;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\SapphireTest;
 
 /**
  * This test should fail, if a DB property is removed from
  * a class, but the property itself still exists after generation
  *
- * @mixin PHPUnit_Framework_TestCase
+ * @mixin \PHPUnit_Framework_TestCase
  */
 class AnnotateChangedDBSpecsTest extends SapphireTest
 {
@@ -15,7 +21,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     protected $annotator;
 
     /**
-     * @var AnnotatePermissionChecker
+     * @var \Axyr\IDEAnnotator\AnnotatePermissionChecker
      */
     protected $permissionChecker;
     /**
@@ -24,37 +30,37 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('Director', 'environment_type', 'dev');
-        Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::modify()->set('SilverStripe\Control\Director', 'environment_type', 'dev');
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
-        $this->annotator = Injector::inst()->get('MockDataObjectAnnotator');
+        $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\Tests\MockDataObjectAnnotator');
     }
 
     public function testChangedDBSpecifications()
     {
-        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\TeamChanged');
         $filePath  = $classInfo->getClassFilePath();
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\TeamChanged');
         $this->assertNotContains('VisitCount', $content);
     }
 
     public function testNonSupportedTagsWillNotBeTouched()
     {
-        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\TeamChanged');
         $filePath  = $classInfo->getClassFilePath();
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\TeamChanged');
         $this->assertContains('Simon', $content);
     }
 
     public function testManuallyCommentedTagsWillNotBeRemoved()
     {
 
-        Config::inst()->update('DataObjectAnnotatorTest_TeamChanged', 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));
+        Config::modify()->set('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
 
-        $classInfo = new AnnotateClassInfo('DataObjectAnnotatorTest_TeamChanged');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\TeamChanged');
         $filePath  = $classInfo->getClassFilePath();
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'DataObjectAnnotatorTest_TeamChanged');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\TeamChanged');
 
         $this->assertContains('The Team Name', $content);
         $this->assertContains('This adds extra methods', $content);

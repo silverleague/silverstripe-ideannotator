@@ -1,15 +1,21 @@
 <?php
 
+namespace Axyr\IDEAnnotator\Tests;
+
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\SapphireTest;
+
 /**
  * Class DataObjectAnnotatorTest
  *
- * @mixin PHPUnit_Framework_TestCase
+ * @mixin \PHPUnit_Framework_TestCase
  */
 class AnnotatePermissionCheckerTest extends SapphireTest
 {
 
     /**
-     * @var AnnotatePermissionChecker $permissionChecker
+     * @var \Axyr\IDEAnnotator\AnnotatePermissionChecker $permissionChecker
      */
     private $permissionChecker = null;
 
@@ -24,52 +30,23 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('Director', 'environment_type', 'dev');
-        Config::inst()->update('DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::modify()->set('SilverStripe\Control\Director', 'environment_type', 'dev');
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator', 'mysite'));
 
-        Config::inst()->update('DataObjectAnnotatorTest_Team', 'extensions',
-            array('DataObjectAnnotatorTest_Team_Extension')
-        );
+        Config::modify()->set('Axyr\IDEAnnotator\Tests\Team', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
 
-        $this->annotator = Injector::inst()->get('MockDataObjectAnnotator');
-        $this->permissionChecker =  Injector::inst()->get('AnnotatePermissionChecker');
+        $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\Tests\MockDataObjectAnnotator');
+        $this->permissionChecker =  Injector::inst()->get('Axyr\IDEAnnotator\AnnotatePermissionChecker');
     }
 
     public function testIsEnabled()
     {
         $this->assertTrue($this->permissionChecker->isEnabled());
 
-        Config::inst()->remove('DataObjectAnnotator', 'enabled');
-        Config::inst()->update('DataObjectAnnotator', 'enabled', false);
+        Config::inst()->remove('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled');
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', false);
         $this->assertFalse($this->permissionChecker->isEnabled());
-    }
-
-    public function testEnvironmentIsDev()
-    {
-        $this->assertTrue($this->permissionChecker->environmentIsDev());
-
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'live');
-        $this->assertFalse($this->permissionChecker->environmentIsDev());
-
-
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'test');
-        $this->assertFalse($this->permissionChecker->environmentIsDev());
-    }
-
-    public function testEnvironmentIsAllowed()
-    {
-        $this->assertTrue($this->permissionChecker->environmentIsAllowed());
-
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'test');
-        $this->assertFalse($this->permissionChecker->environmentIsAllowed());
-
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'live');
-        $this->assertFalse($this->permissionChecker->environmentIsAllowed());
     }
 
     /**
@@ -89,15 +66,15 @@ class AnnotatePermissionCheckerTest extends SapphireTest
      */
     public function testDataObjectIsAllowed()
     {
-        $this->assertTrue($this->permissionChecker->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
-        $this->assertTrue($this->permissionChecker->classNameIsAllowed('DataObjectAnnotatorTest_Team_Extension'));
+        $this->assertTrue($this->permissionChecker->classNameIsAllowed('Axyr\IDEAnnotator\Tests\Team'));
+        $this->assertTrue($this->permissionChecker->classNameIsAllowed('Axyr\IDEAnnotator\Tests\Team_Extension'));
 
-        $this->assertFalse($this->permissionChecker->classNameIsAllowed('DataObject'));
-        $this->assertFalse($this->permissionChecker->classNameIsAllowed('File'));
+        $this->assertFalse($this->permissionChecker->classNameIsAllowed('SilverStripe\ORM\DataObject'));
+        $this->assertFalse($this->permissionChecker->classNameIsAllowed('SilverStripe\Assets\File'));
 
-        Config::inst()->remove('DataObjectAnnotator', 'enabled_modules');
-        Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite'));
+        Config::inst()->remove('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules');
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('mysite'));
 
-        $this->assertFalse($this->permissionChecker->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
+        $this->assertFalse($this->permissionChecker->classNameIsAllowed('Axyr\IDEAnnotator\Tests\Team'));
     }
 }

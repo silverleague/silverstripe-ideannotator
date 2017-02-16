@@ -1,6 +1,6 @@
 {
-    "name": "silverleague/ideannotator",
-    "description": "Generate PHP DocBlock annotations for DataObject and DataExtension database fields and relation methods",
+    "name": "silverleague/silverstripe-ideannotator",
+    "description": "Generate PHP DocBlock annotations for DataObject and DataExtension databasefields and relation methods",
     "type": "silverstripe-module",
     "keywords": [
         "silverstripe",
@@ -10,9 +10,6 @@
         "ide",
         "annotations"
     ],
-    "replace": {
-        "axyr/silverstripe-ideannotator": "*"
-    },
     "license": "BSD-3-Clause",
     "authors": [
         {
@@ -25,18 +22,15 @@
         }
     ],
     "require": {
-        "silverstripe/framework": "^3.1",
+        "silverstripe/framework": "^4@dev",
         "phpdocumentor/reflection-docblock": "^2.0.4"
     },
     "require-dev": {
-        "silverstripe/cms": "^3.1",
-        "phpunit/PHPUnit": "~3.7@stable"
+        "scriptfusion/phpunit-immediate-exception-printer": "^1",
+        "phpunit/phpunit": "^5.7"
     },
     "extra": {
-        "installer-name": "ideannotator",
-        "branch-alias": {
-            "dev-master": "3.0.x-dev"
-        }
+        "installer-name": "ideannotator"
     },
     "target-dir": "ideannotator"
 }

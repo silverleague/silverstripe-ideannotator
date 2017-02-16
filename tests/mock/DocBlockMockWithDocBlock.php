@@ -1,5 +1,10 @@
 <?php
 
+namespace Axyr\IDEAnnotator\Tests;
+
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataObject;
+
 /**
  * Class DocBlockMockWithDocBlock
  * Couldn't help it...

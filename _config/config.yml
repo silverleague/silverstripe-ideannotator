@@ -1,14 +1,9 @@
 ---
 Name: ideannotator
-Before:
-  - 'mysite/*'
-After:
-  - 'framework/*'
-  - 'cms/*'
 ---
-DevBuildController:
+SilverStripe\Dev\DevBuildController:
   extensions:
-    - Annotatable
-DataObjectAnnotator:
+    - Axyr\IDEAnnotator\Annotatable
+Axyr\IDEAnnotator\DataObjectAnnotator:
     enabled_modules:
       - mysite

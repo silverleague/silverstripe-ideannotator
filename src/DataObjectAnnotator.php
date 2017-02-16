@@ -1,5 +1,15 @@
 <?php
 
+namespace Axyr\IDEAnnotator;
+
+use SilverStripe\Control\Director;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DB;
+
 /**
  * Class DataObjectAnnotator
  * Generates phpdoc annotations for database fields and orm relations
@@ -14,17 +24,12 @@
  *
  * @package IDEAnnotator/Core
  */
-class DataObjectAnnotator extends Object
+class DataObjectAnnotator
 {
-    /**
-     * This string marks the beginning of a generated annotations block
-     */
-    const STARTTAG = 'StartGeneratedWithDataObjectAnnotator';
 
-    /**
-     * This string marks the end of a generated annotations block
-     */
-    const ENDTAG = 'EndGeneratedWithDataObjectAnnotator';
+    use Injectable;
+    use Configurable;
+    use Extensible;
 
     /**
      * @config
@@ -52,13 +57,13 @@ class DataObjectAnnotator extends Object
 
     /**
      * DataObjectAnnotator constructor.
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __construct()
     {
-        parent::__construct();
         // Don't instantiate anything if annotations are not enabled.
-        if(static::config()->get('enabled') === true) {
-            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        if (static::config()->get('enabled') === true && Director::isDev()) {
+            $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
             foreach ($this->permissionChecker->getSupportedParentClasses() as $supportedParentClass) {
                 $this->setEnabledClasses($supportedParentClass);
             }
@@ -70,137 +75,12 @@ class DataObjectAnnotator extends Object
      */
     protected function setEnabledClasses($supportedParentClass)
     {
-        foreach((array)ClassInfo::subclassesFor($supportedParentClass) as $class)
-        {
+        foreach ((array)ClassInfo::subclassesFor($supportedParentClass) as $class) {
             $classInfo = new AnnotateClassInfo($class);
-            if($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
+            if ($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
                 $this->annotatableClasses[$class] = $classInfo->getClassFilePath();
             }
         }
-    }
-
-    /**
-     * @param $moduleName
-     * @return array
-     */
-    public function getClassesForModule($moduleName)
-    {
-        $classes = array();
-
-        foreach ($this->annotatableClasses as $class => $filePath) {
-            $classInfo = new AnnotateClassInfo($class);
-            if($moduleName === $classInfo->getModuleName()) {
-                $classes[$class] = $filePath;
-            }
-        }
-
-        return $classes;
-    }
-
-    /**
-     * @param string $moduleName
-     *
-     * Generate docblock for all subclasses of DataObjects and DataExtenions
-     * within a module.
-     *
-     * @return bool
-     */
-    public function annotateModule($moduleName)
-    {
-        if (!(bool)$moduleName || !$this->permissionChecker->moduleIsAllowed($moduleName)) {
-            return false;
-        }
-
-        $classes = (array)$this->getClassesForModule($moduleName);
-
-        foreach ($classes as $className => $filePath) {
-            $this->annotateObject($className);
-        }
-
-        return true;
-    }
-
-    /**
-     * @param string     $className
-     *
-     * Generate docblock for a single subclass of DataObject or DataExtenions
-     *
-     * @return bool
-     */
-    public function annotateObject($className)
-    {
-
-        if (!$this->permissionChecker->classNameIsAllowed($className)) {
-            return false;
-        }
-
-        $this->writeFileContent($className);
-
-        return true;
-    }
-
-    /**
-     * @param string $className
-     */
-    protected function writeFileContent($className)
-    {
-        $classInfo = new AnnotateClassInfo($className);
-        $filePath  = $classInfo->getClassFilePath();
-
-        if (!is_writable($filePath)) {
-            DB::alteration_message($className . ' is not writable by ' . get_current_user(), 'error');
-        } else {
-            $original  = file_get_contents($filePath);
-            $generated = $this->getGeneratedFileContent($original, $className);
-
-            // we have a change, so write the new file
-            if ($generated && $generated !== $original) {
-                file_put_contents($filePath, $generated);
-                DB::alteration_message($className . ' Annotated', 'created');
-            }else{
-                DB::alteration_message($className);
-            }
-        }
-    }
-
-    /**
-     * @param $fileContent
-     * @param $className
-     *
-     * Return the complete File content with the newly generated DocBlocks
-     *
-     * @return mixed
-     */
-    protected function getGeneratedFileContent($fileContent, $className)
-    {
-        $generator = new DocBlockGenerator($className);
-
-        $existing  = $generator->getExistingDocBlock();
-        $generated = $generator->getGeneratedDocBlock();
-
-        if($existing) {
-            $fileContent = str_replace($existing, $generated, $fileContent);
-        }else{
-            $needle = "class {$className}";
-            $replace = "{$generated}\nclass {$className}";
-            $pos = strpos($fileContent, $needle);
-            if ($pos !== false) {
-                $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
-            } else {
-                if (strrpos($className, "\\") !== false  && class_exists($className)) {
-                    $classNameNew = end(explode("\\", $className));
-                    $needle = "class {$classNameNew}";
-                    $replace = "{$generated}\nclass {$classNameNew}";
-                    $pos = strpos($fileContent, $needle);
-                    $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
-                    DB::alteration_message("Found namespaced Class: ". $classNameNew);
-                } else {
-                    DB::alteration_message("Could not find string 'class $className'. Please check casing and whitespace.", 'error');
-                }
-            }
-        }
-
-        return $fileContent;
     }
 
     /**
@@ -233,6 +113,132 @@ class DataObjectAnnotator extends Object
     public static function setEnabledModules($enabled_modules)
     {
         static::config()->enabled_modules = $enabled_modules;
+    }
+
+    /**
+     * @param string $moduleName
+     *
+     * Generate docblock for all subclasses of DataObjects and DataExtenions
+     * within a module.
+     *
+     * @return bool
+     */
+    public function annotateModule($moduleName)
+    {
+        if (!(bool)$moduleName || !$this->permissionChecker->moduleIsAllowed($moduleName)) {
+            return false;
+        }
+
+        $classes = (array)$this->getClassesForModule($moduleName);
+
+        foreach ($classes as $className => $filePath) {
+            $this->annotateObject($className);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $moduleName
+     * @return array
+     */
+    public function getClassesForModule($moduleName)
+    {
+        $classes = array();
+
+        foreach ($this->annotatableClasses as $class => $filePath) {
+            $classInfo = new AnnotateClassInfo($class);
+            if ($moduleName === $classInfo->getModuleName()) {
+                $classes[$class] = $filePath;
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
+     * @param string $className
+     *
+     * Generate docblock for a single subclass of DataObject or DataExtenions
+     *
+     * @return bool
+     */
+    public function annotateObject($className)
+    {
+
+        if (!$this->permissionChecker->classNameIsAllowed($className)) {
+            return false;
+        }
+
+        $this->writeFileContent($className);
+
+        return true;
+    }
+
+    /**
+     * @param string $className
+     */
+    protected function writeFileContent($className)
+    {
+        $classInfo = new AnnotateClassInfo($className);
+        $filePath = $classInfo->getClassFilePath();
+
+        if (!is_writable($filePath)) {
+            DB::alteration_message($className . ' is not writable by ' . get_current_user(), 'error');
+        } else {
+            $original = file_get_contents($filePath);
+            $generated = $this->getGeneratedFileContent($original, $className);
+
+            // we have a change, so write the new file
+            if ($generated && $generated !== $original && $className) {
+                file_put_contents($filePath, $generated);
+                DB::alteration_message($className . ' Annotated', 'created');
+            } elseif($generated === $original && $className) {
+                DB::alteration_message($className);
+            }
+        }
+    }
+
+    /**
+     * @param $fileContent
+     * @param $className
+     *
+     * Return the complete File content with the newly generated DocBlocks
+     *
+     * @return mixed
+     */
+    protected function getGeneratedFileContent($fileContent, $className)
+    {
+        $generator = new DocBlockGenerator($className);
+
+        $existing = $generator->getExistingDocBlock();
+        $generated = $generator->getGeneratedDocBlock();
+
+        if ($existing) {
+            $fileContent = str_replace($existing, $generated, $fileContent);
+        } else {
+            $needle = "class {$className}";
+            $replace = "{$generated}\nclass {$className}";
+            $pos = strpos($fileContent, $needle);
+            if ($pos !== false) {
+                $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
+            } else {
+                if (strrpos($className, "\\") !== false && class_exists($className)) {
+                    $exploded = explode("\\", $className);
+                    $classNameNew = end($exploded);
+                    $needle = "class {$classNameNew}";
+                    $replace = "{$generated}\nclass {$classNameNew}";
+                    $pos = strpos($fileContent, $needle);
+                    $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
+                    DB::alteration_message("Found namespaced Class: " . $classNameNew);
+                } else {
+                    DB::alteration_message("Could not find string 'class $className'. Please check casing and whitespace.",
+                        'error');
+                }
+            }
+        }
+
+        return $fileContent;
     }
 
 }
