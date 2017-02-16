@@ -1,5 +1,10 @@
 <?php
 
+namespace IDEAnnotator;
+
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\BuildTask;
+
 /**
  * Class DataObjectAnnotatorTask
  *
@@ -23,13 +28,13 @@ class DataObjectAnnotatorTask extends BuildTask
     }
 
     /**
-     * @param SS_HTTPRequest $request
+     * @param \SilverStripe\Control\HTTPRequest $request
      * @return bool
      */
     public function run($request)
     {
         /* @var $permissionChecker AnnotatePermissionChecker */
-        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        $permissionChecker = Injector::inst()->get('IDEAnnotator\AnnotatePermissionChecker');
 
         if (!$permissionChecker->environmentIsAllowed()) {
             return false;

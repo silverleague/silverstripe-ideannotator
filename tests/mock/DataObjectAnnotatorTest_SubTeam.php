@@ -1,18 +1,21 @@
 <?php
 
+namespace IDEAnnotator\Tests;
 
-class DataObjectAnnotatorTest_SubTeam extends DataObjectAnnotatorTest_Team implements TestOnly
+use SilverStripe\Dev\TestOnly;
+
+class SubTeam extends Team implements TestOnly
 {
     private static $db = array(
         'SubclassDatabaseField' => 'Varchar'
     );
 
     private static $has_one = array(
-        "ParentTeam" => 'DataObjectAnnotatorTest_Team',
+        "ParentTeam" => 'IDEAnnotator\Tests\Team',
     );
 
     private static $many_many = array(
-        'FormerPlayers' => 'DataObjectAnnotatorTest_Player'
+        'FormerPlayers' => 'IDEAnnotator\Tests\Player'
     );
 
     private static $many_many_extraFields = array(

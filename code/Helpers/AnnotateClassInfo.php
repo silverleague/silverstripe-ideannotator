@@ -1,10 +1,10 @@
 <?php
 
+namespace IDEAnnotator;
+
 /**
  * Class AnnotateClassInfo
  * We will need this for phpDocumentor as well.
- *
- * @todo namespace this...
  *
  * @package IDEAnnotator/Helpers
  */
@@ -16,7 +16,7 @@ class AnnotateClassInfo
     protected $className = '';
 
     /**
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     protected $reflector;
 
@@ -29,7 +29,7 @@ class AnnotateClassInfo
     {
         $this->className = $className;
 
-        $this->reflector = new ReflectionClass($className);
+        $this->reflector = new \ReflectionClass($className);
     }
 
     /**

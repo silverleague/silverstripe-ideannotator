@@ -1,5 +1,11 @@
 <?php
 
+namespace IDEAnnotator\Tests;
+
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataObject;
+
 /**
  *
  */
@@ -7,7 +13,7 @@
 /* comment */
 
 // Another comment
-class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
+class Team extends DataObject implements TestOnly
 {
 
     private static $db = array(
@@ -17,19 +23,19 @@ class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
     );
 
     private static $has_one = array(
-        "Captain"            => 'DataObjectAnnotatorTest_Player',
-        'HasOneRelationship' => 'DataObjectAnnotatorTest_Player',
+        "Captain"            => 'IDEAnnotator\Tests\Player',
+        'HasOneRelationship' => 'IDEAnnotator\Tests\Player',
     );
 
     private static $has_many = array(
-        'SubTeams' => 'DataObjectAnnotatorTest_SubTeam',
-        'Comments' => 'DataObjectAnnotatorTest_TeamComment'
+        'SubTeams' => 'IDEAnnotator\Tests\SubTeam',
+        'Comments' => 'IDEAnnotator\Tests\TeamComment'
     );
 
     private static $many_many = array(
-        'Players'           => 'DataObjectAnnotatorTest_Player.Players',
-        'Reserves'          => 'DataObjectAnnotatorTest_Player.Reserves',
-        'SecondarySubTeams' => 'DataObjectAnnotatorTest_SubTeam',
+        'Players'           => 'IDEAnnotator\Tests\Player.Players',
+        'Reserves'          => 'IDEAnnotator\Tests\Player.Reserves',
+        'SecondarySubTeams' => 'IDEAnnotator\Tests\SubTeam',
     );
 
     public function SecondarySubTeams()
@@ -39,4 +45,4 @@ class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
 
 }
 
-Config::inst()->update('DataObjectAnnotatorTest_Team', 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));
+Config::inst()->update('IDEAnnotator\Tests\Team', 'extensions', array('IDEAnnotator\Tests\Team_Extension'));

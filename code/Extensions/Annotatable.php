@@ -1,5 +1,11 @@
 <?php
 
+namespace IDEAnnotator;
+
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
+
 /**
  * Class Annotatable
  *
@@ -8,7 +14,7 @@
  *
  * @package IDEAnnotator/Extensions
  *
- * @property DevBuildController $owner
+ * @property \SilverStripe\Dev\DevBuildController $owner
  */
 class Annotatable extends Extension
 {
@@ -37,8 +43,8 @@ class Annotatable extends Extension
      */
     public function setUp()
     {
-        $this->annotator = Injector::inst()->get('DataObjectAnnotator');
-        $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        $this->annotator = Injector::inst()->get('IDEAnnotator\DataObjectAnnotator');
+        $this->permissionChecker = Injector::inst()->get('IDEAnnotator\AnnotatePermissionChecker');
     }
 
     /**

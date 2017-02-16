@@ -1,5 +1,8 @@
 <?php
 
+namespace IDEAnnotator;
+
+use SilverStripe\Core\Manifest\ClassLoader;
 
 class ControllerTagGenerator extends AbstractTagGenerator
 {
@@ -16,14 +19,14 @@ class ControllerTagGenerator extends AbstractTagGenerator
 
     protected function generateControllerObjectTags()
     {
-        $pageClassname = str_replace("_Controller", "", $this->className);
+        $pageClassname = str_replace(["_Controller", "Controller"], "", $this->className);
         if(class_exists($pageClassname) && $this->isContentController($this->className)) {
-            $this->pushPropertyTag($pageClassname . ' dataRecord');
-            $this->pushMethodTag($pageClassname, $pageClassname . ' data()');
+            $this->pushPropertyTag("\\$pageClassname" . ' dataRecord');
+            $this->pushMethodTag($pageClassname, "\\$pageClassname" . ' data()');
 
             // don't mixin Page, since this is a ContentController method
             if($pageClassname !== 'Page') {
-                $this->pushMixinTag($pageClassname);
+                $this->pushMixinTag("\\$pageClassname");
             }
         }
     }
@@ -34,7 +37,7 @@ class ControllerTagGenerator extends AbstractTagGenerator
      */
     protected function isContentController($className)
     {
-        $reflector = new ReflectionClass($className);
-        return SS_ClassLoader::instance()->classExists('ContentController') && $reflector->isSubclassOf('ContentController');
+        $reflector = new \ReflectionClass($className);
+        return ClassLoader::instance()->classExists('\SilverStripe\CMS\Controllers\ContentController') && $reflector->isSubclassOf('\SilverStripe\CMS\Controllers\ContentController');
     }
 }

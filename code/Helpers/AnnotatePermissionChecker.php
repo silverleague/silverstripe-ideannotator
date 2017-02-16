@@ -1,5 +1,9 @@
 <?php
 
+namespace IDEAnnotator;
+
+use SilverStripe\Core\Config\Config;
+
 /**
  * Class AnnotatePermissionChecker
  *
@@ -17,10 +21,10 @@ class AnnotatePermissionChecker
      * @see AnnotatePermissionChecker::classNameIsSupported();
      */
     protected $supportedParentClasses = array(
-        'DataObject',
-        'DataExtension',
-        'Controller',
-        'Extension'
+        'SilverStripe\ORM\DataObject',
+        'SilverStripe\ORM\DataExtension',
+        'SilverStripe\Control\Controller',
+        'SilverStripe\Core\Extension'
     );
 
     /**
@@ -57,7 +61,7 @@ class AnnotatePermissionChecker
             $classInfo = new AnnotateClassInfo($className);
             $filePath  = $classInfo->getClassFilePath();
 
-            $allowedModules = (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
+            $allowedModules = (array)Config::inst()->get('IDEAnnotator\DataObjectAnnotator', 'enabled_modules');
 
             foreach ($allowedModules as $moduleName) {
                 $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
@@ -105,7 +109,7 @@ class AnnotatePermissionChecker
      */
     public function enabledModules()
     {
-        $enabled = (array)Config::inst()->get('DataObjectAnnotator', 'enabled_modules');
+        $enabled = (array)Config::inst()->get('IDEAnnotator\DataObjectAnnotator', 'enabled_modules');
 
         // modules might be enabled more then once.
         return array_combine($enabled, $enabled);
@@ -116,7 +120,7 @@ class AnnotatePermissionChecker
      */
     public function isEnabled()
     {
-        return (bool)Config::inst()->get('DataObjectAnnotator', 'enabled');
+        return (bool)Config::inst()->get('IDEAnnotator\DataObjectAnnotator', 'enabled');
     }
 
     /**
@@ -134,9 +138,9 @@ class AnnotatePermissionChecker
      */
     public function environmentIsDev()
     {
-        $devServers = (array)Config::inst()->get('Director', 'dev_servers');
+        $devServers = (array)Config::inst()->get('SilverStripe\Control\Director', 'dev_servers');
 
-        return Config::inst()->get('Director', 'environment_type') === 'dev'
+        return Config::inst()->get('SilverStripe\Control\Director', 'environment_type') === 'dev'
             || (isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers));
     }
 }

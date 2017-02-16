@@ -1,6 +1,11 @@
 <?php
 
-class DataObjectAnnotatorTest_Team_Extension extends DataExtension implements TestOnly
+namespace IDEAnnotator\Tests;
+
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataExtension;
+
+class Team_Extension extends DataExtension implements TestOnly
 {
 
     private static $db = array(
@@ -9,6 +14,6 @@ class DataObjectAnnotatorTest_Team_Extension extends DataExtension implements Te
     );
 
     private static $has_one = array(
-        'ExtendedHasOneRelationship' => 'DataObjectTest_Player'
+        'ExtendedHasOneRelationship' => 'IDEAnnotator\Tests\Player'
     );
 }

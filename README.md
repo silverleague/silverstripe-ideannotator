@@ -7,7 +7,7 @@
 [![Packagist](https://img.shields.io/badge/unstable-dev--master-orange.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 
 
-This module generates @property, @method and @mixin tags for DataObjects, Page_Controllers and (Data)Extensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
+This module generates @property, @method and @mixin tags for DataObjects, PageControllers and (Data)Extensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
 
 The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
 
@@ -23,12 +23,12 @@ The docblocks can be generated/updated with each dev/build and with a DataObject
  * @property int $Sort
  * @property int $Version
  * @property int $AuthorID
- * @method Member Author()
- * @method DataList|Category[] Categories()
- * @method ManyManyList|Tag[] Tags()
+ * @method \SilverStripe\Security\Member Author()
+ * @method \SilverStripe\ORM\DataList|Category[] Categories()
+ * @method \SilverStripe\ORM\ManyManyList|Tag[] Tags()
  * @mixin Versioned
  */
-class NewsItem extends DataObject
+class NewsItem extends \SilverStripe\ORM\DataObject
 {
     private static $db = array(
         'Title'	=> 'Varchar(255)',
@@ -36,7 +36,7 @@ class NewsItem extends DataObject
     );
 
     private static $has_one = array(
-        'Author'    => 'Member'
+        'Author'    => 'SilverStripe\Security\Member'
     );
 
     private static $has_many = array(

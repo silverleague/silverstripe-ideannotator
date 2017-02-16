@@ -1,5 +1,12 @@
 <?php
 
+namespace IDEAnnotator;
+
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Object;
+use SilverStripe\ORM\DB;
+
 /**
  * Class DataObjectAnnotator
  * Generates phpdoc annotations for database fields and orm relations
@@ -58,7 +65,7 @@ class DataObjectAnnotator extends Object
         parent::__construct();
         // Don't instantiate anything if annotations are not enabled.
         if(static::config()->get('enabled') === true) {
-            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+            $this->permissionChecker = Injector::inst()->get('IDEAnnotator\AnnotatePermissionChecker');
             foreach ($this->permissionChecker->getSupportedParentClasses() as $supportedParentClass) {
                 $this->setEnabledClasses($supportedParentClass);
             }
@@ -187,8 +194,9 @@ class DataObjectAnnotator extends Object
             if ($pos !== false) {
                 $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
             } else {
-                if (strrpos($className, "\\") !== false  && class_exists($className)) {
-                    $classNameNew = end(explode("\\", $className));
+                if (strrpos($className, "\\") !== false && class_exists($className)) {
+                    $exploded = explode("\\", $className);
+                    $classNameNew = end($exploded);
                     $needle = "class {$classNameNew}";
                     $replace = "{$generated}\nclass {$classNameNew}";
                     $pos = strpos($fileContent, $needle);

@@ -1,6 +1,10 @@
 <?php
 
+namespace IDEAnnotator;
+
 use phpDocumentor\Reflection\DocBlock\Tag;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Config;
 
 /**
  * AbstractTagGenerator
@@ -17,19 +21,19 @@ abstract class AbstractTagGenerator
 
     /**
      * The existing tags of the class we are working with
-     * @var phpDocumentor\Reflection\DocBlock\Tag[]
+     * @var Tag[]
      */
     protected $existingTags = array();
 
     /**
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     protected $reflector;
 
     /**
      * List all the generated tags form the various generateSomeORMProperies methods
      * @see $this->getSupportedTagTypes();
-     * @var phpDocumentor\Reflection\DocBlock\Tag[]
+     * @var Tag[]
      */
     protected $tags = array();
 
@@ -48,15 +52,15 @@ abstract class AbstractTagGenerator
     {
         $this->className        = $className;
         $this->existingTags     = (array)$existingTags;
-        $this->reflector        = new ReflectionClass($className);
-        $this->extensionClasses = (array)ClassInfo::subclassesFor('Object');
+        $this->reflector        = new \ReflectionClass($className);
+        $this->extensionClasses = (array)ClassInfo::subclassesFor('SilverStripe\Core\Object');
         $this->tags             = $this->getSupportedTagTypes();
 
         $this->generateTags();
     }
 
     /**
-     * @return phpDocumentor\Reflection\DocBlock\Tag[]
+     * @return Tag[]
      */
     public function getTags()
     {
@@ -64,7 +68,7 @@ abstract class AbstractTagGenerator
     }
 
     /**
-     * @return phpDocumentor\Reflection\DocBlock\Tag[]
+     * @return Tag[]
      */
     public function getExistingTags()
     {
@@ -117,7 +121,7 @@ abstract class AbstractTagGenerator
     {
         if ($fields = (array)$this->getClassConfig('extensions')) {
             foreach ($fields as $fieldName) {
-                $this->pushMixinTag($fieldName);
+                $this->pushMixinTag("\\$fieldName");
             }
         }
     }
@@ -134,10 +138,10 @@ abstract class AbstractTagGenerator
         });
 
         if (!empty($owners)) {
-            if($this->reflector->isSubclassOf('DataExtension')) {
+            if($this->reflector->isSubclassOf('SilverStripe\ORM\DataExtension')) {
                 $owners[] = $this->className;
             }
-            $this->pushPropertyTag(implode("|", $owners) . " \$owner");
+            $this->pushPropertyTag('\\' . implode("|\\", $owners) . " \$owner");
         }
     }
 

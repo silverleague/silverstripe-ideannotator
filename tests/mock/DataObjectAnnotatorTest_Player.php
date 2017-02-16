@@ -1,9 +1,14 @@
 <?php
 
+namespace IDEAnnotator\Tests;
+
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\Security\Member;
+
 /**
- * Class DataObjectAnnotatorTest_Player
+ * Class Player
  */
-class DataObjectAnnotatorTest_Player extends Member implements TestOnly
+class Player extends Member implements TestOnly
 {
     private static $db = array(
         'IsRetired'   => 'Boolean',
@@ -11,11 +16,11 @@ class DataObjectAnnotatorTest_Player extends Member implements TestOnly
     );
 
     private static $has_one = array(
-        'FavouriteTeam' => 'DataObjectAnnotatorTest_Team',
+        'FavouriteTeam' => 'IDEAnnotator\Tests\Team',
     );
 
     private static $belongs_many_many = array(
-        'TeamPlayer'  => 'DataObjectAnnotatorTest_Team.Team',
-        'TeamReserve' => 'DataObjectAnnotatorTest_Team.Reserve'
+        'TeamPlayer'  => 'IDEAnnotator\Tests\Team.Team',
+        'TeamReserve' => 'IDEAnnotator\Tests\Team.Reserve'
     );
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace IDEAnnotator;
+
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
@@ -18,7 +20,7 @@ class DocBlockGenerator
     protected $className = '';
 
     /**
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     protected $reflector;
 
@@ -35,10 +37,10 @@ class DocBlockGenerator
     public function __construct($className)
     {
         $this->className    = $className;
-        $this->reflector    = new ReflectionClass($className);
+        $this->reflector    = new \ReflectionClass($className);
 
-        $generatorClass = $this->reflector->isSubclassOf('Controller')
-                        ? 'ControllerTagGenerator' : 'OrmTagGenerator';
+        $generatorClass = $this->reflector->isSubclassOf('SilverStripe\Control\Controller')
+                        ? 'IDEAnnotator\ControllerTagGenerator' : 'IDEAnnotator\OrmTagGenerator';
 
         $this->tagGenerator = new $generatorClass($className, $this->getExistingTags());
     }
@@ -67,7 +69,7 @@ class DocBlockGenerator
     }
 
     /**
-     * @return DocBlock\Tag[]
+     * @return Tag[]
      */
     public function getExistingTags()
     {
@@ -86,7 +88,7 @@ class DocBlockGenerator
     }
 
     /**
-     * @return DocBlock\Tag[]
+     * @return Tag[]
      */
     public function getGeneratedTags()
     {
@@ -102,7 +104,7 @@ class DocBlockGenerator
         $docBlock = new DocBlock($this->removeExistingSupportedTags($existingDocBlock));
 
         if (!$docBlock->getText()) {
-            $docBlock->setText('Class ' . $this->className);
+            $docBlock->setText('Class \\' . $this->className);
         }
 
         foreach($this->getGeneratedTags() as $tag) {

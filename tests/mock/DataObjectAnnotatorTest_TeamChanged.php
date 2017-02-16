@@ -1,5 +1,11 @@
 <?php
 
+namespace IDEAnnotator\Tests;
+
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataObject;
+
 /**
  * Class DataObjectAnnotatorTest_Team
  *
@@ -11,15 +17,15 @@
  * @property int $CaptainID
  * @property int $HasOneRelationshipID
  * @property int $ExtendedHasOneRelationshipID
- * @method DataObjectAnnotatorTest_Player Captain() This is the Boss
- * @method DataObjectAnnotatorTest_Player HasOneRelationship()
- * @method DataObjectTest_Player ExtendedHasOneRelationship()
- * @method DataList|DataObjectAnnotatorTest_SubTeam[] SubTeams()
- * @method DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
- * @method ManyManyList|DataObjectAnnotatorTest_Player[] Players()
- * @mixin DataObjectAnnotatorTest_Team_Extension This adds extra methods
+ * @method \IDEAnnotator\Tests\Player Captain() This is the Boss
+ * @method \IDEAnnotator\Tests\Player HasOneRelationship()
+ * @method \IDEAnnotator\Tests\Player ExtendedHasOneRelationship()
+ * @method \SilverStripe\ORM\DataList|\IDEAnnotator\Tests\SubTeam[] SubTeams()
+ * @method \SilverStripe\ORM\DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
+ * @method \SilverStripe\ORM\ManyManyList|\IDEAnnotator\Tests\Player[] Players()
+ * @mixin \IDEAnnotator\Tests\Team_Extension This adds extra methods
  */
-class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
+class TeamChanged extends DataObject implements TestOnly
 {
 
     private static $db = array(
@@ -28,18 +34,18 @@ class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
     );
 
     private static $has_one = array(
-        "Captain"            => 'DataObjectAnnotatorTest_Player',
-        'HasOneRelationship' => 'DataObjectAnnotatorTest_Player',
+        "Captain"            => 'IDEAnnotator\Tests\Player',
+        'HasOneRelationship' => 'IDEAnnotator\Tests\Player',
     );
 
     private static $has_many = array(
-        'SubTeams' => 'DataObjectAnnotatorTest_SubTeam',
-        'Comments' => 'DataObjectAnnotatorTest_TeamComment'
+        'SubTeams' => 'IDEAnnotator\Tests\SubTeam',
+        'Comments' => 'IDEAnnotator\Tests\TeamComment'
     );
 
     private static $many_many = array(
-        'Players'           => 'DataObjectAnnotatorTest_Player',
-        'SecondarySubTeams' => 'DataObjectAnnotatorTest_SubTeam',
+        'Players'           => 'IDEAnnotator\Tests\Player',
+        'SecondarySubTeams' => 'IDEAnnotator\Tests\SubTeam',
     );
 
     public function SecondarySubTeams()
@@ -49,5 +55,4 @@ class DataObjectAnnotatorTest_TeamChanged extends DataObject implements TestOnly
 
 }
 
-Config::inst()->update('DataObjectAnnotatorTest_TeamChanged', 'extensions',
-    array('DataObjectAnnotatorTest_Team_Extension'));
+Config::inst()->update('IDEAnnotator\Tests\TeamChanged', 'extensions', array('IDEAnnotator\Tests\Team_Extension'));
