@@ -2,8 +2,8 @@
 
 namespace Axyr\IDEAnnotator\Tests;
 
-use SilverStripe\ORM\DataObject;
 use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataObject;
 
 /**
  * Class DocBlockMockWithDocBlock
@@ -33,7 +33,6 @@ class OtherDocBlockMockWithDocBlock extends DataObject implements TestOnly
 }
 
 /**
- *
  * StartGeneratedWithDataObjectAnnotator
  *
  * @property string $Street
