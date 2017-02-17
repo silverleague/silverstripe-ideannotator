@@ -1,10 +1,10 @@
 <?php
 
-namespace IDEAnnotator;
+namespace Axyr\IDEAnnotator;
 
 use phpDocumentor\Reflection\DocBlock\Tag;
-use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\ClassInfo;
 
 /**
  * AbstractTagGenerator

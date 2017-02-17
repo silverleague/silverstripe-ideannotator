@@ -1,8 +1,8 @@
 <?php
 
-namespace IDEAnnotator\Tests;
+namespace Axyr\IDEAnnotator\Tests;
 
-use IDEAnnotator\AnnotateClassInfo;
+use Axyr\IDEAnnotator\AnnotateClassInfo;
 use SilverStripe\Dev\SapphireTest;
 
 /**
@@ -14,7 +14,7 @@ class AnnotateClassInfoTest extends SapphireTest
 {
     public function testItGetsTheCorrectModuleName()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\AnnotatorPageTest');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\AnnotatorPageTest');
         $this->assertEquals('ideannotator', $classInfo->getModuleName());
     }
 

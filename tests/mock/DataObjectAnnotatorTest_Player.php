@@ -1,9 +1,9 @@
 <?php
 
-namespace IDEAnnotator\Tests;
+namespace Axyr\IDEAnnotator\Tests;
 
-use SilverStripe\Dev\TestOnly;
 use SilverStripe\Security\Member;
+use SilverStripe\Dev\TestOnly;
 
 /**
  * Class Player
@@ -16,11 +16,11 @@ class Player extends Member implements TestOnly
     );
 
     private static $has_one = array(
-        'FavouriteTeam' => 'IDEAnnotator\Tests\Team',
+        'FavouriteTeam' => 'Axyr\IDEAnnotator\Tests\Team',
     );
 
     private static $belongs_many_many = array(
-        'TeamPlayer'  => 'IDEAnnotator\Tests\Team.Team',
-        'TeamReserve' => 'IDEAnnotator\Tests\Team.Reserve'
+        'TeamPlayer'  => 'Axyr\IDEAnnotator\Tests\Team.Team',
+        'TeamReserve' => 'Axyr\IDEAnnotator\Tests\Team.Reserve'
     );
 }

@@ -8,7 +8,7 @@ After:
 ---
 SilverStripe\Dev\DevBuildController:
   extensions:
-    - IDEAnnotator\Annotatable
-IDEAnnotator\DataObjectAnnotator:
+    - Axyr\IDEAnnotator\Annotatable
+Axyr\IDEAnnotator\DataObjectAnnotator:
     enabled_modules:
       - mysite

@@ -1,10 +1,10 @@
 <?php
 
-namespace IDEAnnotator;
+namespace Axyr\IDEAnnotator;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Tag;
-use phpDocumentor\Reflection\DocBlock\Serializer as DocBlockSerializer;
+use phpDocumentor\Reflection\DocBlock\Serializer;
 
 /**
  * Class DocBlockGenerator
@@ -40,7 +40,7 @@ class DocBlockGenerator
         $this->reflector    = new \ReflectionClass($className);
 
         $generatorClass = $this->reflector->isSubclassOf('SilverStripe\Control\Controller')
-                        ? 'IDEAnnotator\ControllerTagGenerator' : 'IDEAnnotator\OrmTagGenerator';
+                        ? 'Axyr\IDEAnnotator\ControllerTagGenerator' : 'Axyr\IDEAnnotator\OrmTagGenerator';
 
         $this->tagGenerator = new $generatorClass($className, $this->getExistingTags());
     }
@@ -111,7 +111,7 @@ class DocBlockGenerator
             $docBlock->appendTag($tag);
         }
 
-        $serializer = new DocBlockSerializer();
+        $serializer = new Serializer();
         $docBlock = $serializer->getDocComment($docBlock);
 
         return $docBlock;

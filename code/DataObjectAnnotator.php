@@ -1,9 +1,9 @@
 <?php
 
-namespace IDEAnnotator;
+namespace Axyr\IDEAnnotator;
 
-use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Object;
 use SilverStripe\ORM\DB;
 
@@ -65,7 +65,7 @@ class DataObjectAnnotator extends Object
         parent::__construct();
         // Don't instantiate anything if annotations are not enabled.
         if(static::config()->get('enabled') === true) {
-            $this->permissionChecker = Injector::inst()->get('IDEAnnotator\AnnotatePermissionChecker');
+            $this->permissionChecker = Injector::inst()->get('Axyr\IDEAnnotator\AnnotatePermissionChecker');
             foreach ($this->permissionChecker->getSupportedParentClasses() as $supportedParentClass) {
                 $this->setEnabledClasses($supportedParentClass);
             }

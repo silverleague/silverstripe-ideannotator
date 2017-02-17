@@ -1,9 +1,9 @@
 <?php
 
-namespace IDEAnnotator\Tests;
+namespace Axyr\IDEAnnotator\Tests;
 
-use SilverStripe\Dev\TestOnly;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
 
 class TeamComment extends DataObject implements TestOnly
 {
@@ -13,7 +13,7 @@ class TeamComment extends DataObject implements TestOnly
     );
 
     private static $has_one = array(
-        'Team' => 'IDEAnnotator\Tests\Team'
+        'Team' => 'Axyr\IDEAnnotator\Tests\Team'
     );
 
 }

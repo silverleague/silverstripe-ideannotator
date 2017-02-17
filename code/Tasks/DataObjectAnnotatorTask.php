@@ -1,6 +1,6 @@
 <?php
 
-namespace IDEAnnotator;
+namespace Axyr\IDEAnnotator;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
@@ -34,7 +34,7 @@ class DataObjectAnnotatorTask extends BuildTask
     public function run($request)
     {
         /* @var $permissionChecker AnnotatePermissionChecker */
-        $permissionChecker = Injector::inst()->get('IDEAnnotator\AnnotatePermissionChecker');
+        $permissionChecker = Injector::inst()->get('Axyr\IDEAnnotator\AnnotatePermissionChecker');
 
         if (!$permissionChecker->environmentIsAllowed()) {
             return false;

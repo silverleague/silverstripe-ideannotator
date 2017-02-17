@@ -1,9 +1,9 @@
 <?php
 
-namespace IDEAnnotator\Tests;
+namespace Axyr\IDEAnnotator\Tests;
 
-use SilverStripe\Dev\TestOnly;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
 
 class DoubleDataObjectInOneFile1 extends DataObject implements TestOnly
 {

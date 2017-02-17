@@ -1,6 +1,6 @@
 <?php
 
-namespace IDEAnnotator;
+namespace Axyr\IDEAnnotator;
 
 use SilverStripe\Core\Config\Config;
 
@@ -61,7 +61,7 @@ class AnnotatePermissionChecker
             $classInfo = new AnnotateClassInfo($className);
             $filePath  = $classInfo->getClassFilePath();
 
-            $allowedModules = (array)Config::inst()->get('IDEAnnotator\DataObjectAnnotator', 'enabled_modules');
+            $allowedModules = (array)Config::inst()->get('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules');
 
             foreach ($allowedModules as $moduleName) {
                 $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
@@ -109,7 +109,7 @@ class AnnotatePermissionChecker
      */
     public function enabledModules()
     {
-        $enabled = (array)Config::inst()->get('IDEAnnotator\DataObjectAnnotator', 'enabled_modules');
+        $enabled = (array)Config::inst()->get('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules');
 
         // modules might be enabled more then once.
         return array_combine($enabled, $enabled);
@@ -120,7 +120,7 @@ class AnnotatePermissionChecker
      */
     public function isEnabled()
     {
-        return (bool)Config::inst()->get('IDEAnnotator\DataObjectAnnotator', 'enabled');
+        return (bool)Config::inst()->get('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled');
     }
 
     /**

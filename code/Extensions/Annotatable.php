@@ -1,10 +1,10 @@
 <?php
 
-namespace IDEAnnotator;
+namespace Axyr\IDEAnnotator;
 
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Extension;
-use SilverStripe\Core\Injector\Injector;
 
 /**
  * Class Annotatable
@@ -43,8 +43,8 @@ class Annotatable extends Extension
      */
     public function setUp()
     {
-        $this->annotator = Injector::inst()->get('IDEAnnotator\DataObjectAnnotator');
-        $this->permissionChecker = Injector::inst()->get('IDEAnnotator\AnnotatePermissionChecker');
+        $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\DataObjectAnnotator');
+        $this->permissionChecker = Injector::inst()->get('Axyr\IDEAnnotator\AnnotatePermissionChecker');
     }
 
     /**

@@ -1,13 +1,13 @@
 <?php
 
-namespace IDEAnnotator\Tests;
+namespace Axyr\IDEAnnotator\Tests;
 
-use IDEAnnotator\AnnotateClassInfo;
-use IDEAnnotator\AnnotatePermissionChecker;
-use IDEAnnotator\DataObjectAnnotator;
-use IDEAnnotator\DocBlockGenerator;
-use SilverStripe\Core\Config\Config;
+use Axyr\IDEAnnotator\AnnotatePermissionChecker;
+use Axyr\IDEAnnotator\DataObjectAnnotator;
+use Axyr\IDEAnnotator\AnnotateClassInfo;
+use Axyr\IDEAnnotator\DocBlockGenerator;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Dev\TestOnly;
 
@@ -38,13 +38,13 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('IDEAnnotator\DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
+        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
-        Config::inst()->update('IDEAnnotator\Tests\Team', 'extensions', array('IDEAnnotator\Tests\Team_Extension'));
+        Config::inst()->update('Axyr\IDEAnnotator\Tests\Team', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
 
-        $this->annotator = Injector::inst()->get('IDEAnnotator\Tests\MockDataObjectAnnotator');
-        $this->permissionChecker = Injector::inst()->get('IDEAnnotator\AnnotatePermissionChecker');
+        $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\Tests\MockDataObjectAnnotator');
+        $this->permissionChecker = Injector::inst()->get('Axyr\IDEAnnotator\AnnotatePermissionChecker');
     }
 
     /**
@@ -54,16 +54,16 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testFileContentWithAnnotations()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\Team');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\Team');
         $filePath  = $classInfo->getClassFilePath();
 
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'IDEAnnotator\Tests\Team');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\Team');
 
         $this->assertNotContains(DataObjectAnnotator::STARTTAG, $content);
         $this->assertNotContains(DataObjectAnnotator::ENDTAG, $content);
 
         // ClassName title
-        $this->assertContains(' * Class \IDEAnnotator\Tests\Team', $content);
+        $this->assertContains(' * Class \Axyr\IDEAnnotator\Tests\Team', $content);
 
         // database fields
         $this->assertContains('@property string $Title', $content);
@@ -73,41 +73,41 @@ class DataObjectAnnotatorTest extends SapphireTest
         // has_one ID
         $this->assertContains('@property int $CaptainID', $content);
         // has_one relation
-        $this->assertContains('@method \IDEAnnotator\Tests\Player Captain()', $content);
+        $this->assertContains('@method \Axyr\IDEAnnotator\Tests\Player Captain()', $content);
         // has_many relation
-        $this->assertContains('@method \SilverStripe\ORM\DataList|\IDEAnnotator\Tests\SubTeam[] SubTeams()', $content);
+        $this->assertContains('@method \SilverStripe\ORM\DataList|\Axyr\IDEAnnotator\Tests\SubTeam[] SubTeams()', $content);
         // many_many relation
-        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\IDEAnnotator\Tests\Player[] Players()', $content);
-        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\IDEAnnotator\Tests\Player[] Reserves()', $content);
+        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\Axyr\IDEAnnotator\Tests\Player[] Players()', $content);
+        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\Axyr\IDEAnnotator\Tests\Player[] Reserves()', $content);
 
         // DataExtension
-        $this->assertContains('@mixin \IDEAnnotator\Tests\Team_Extension', $content);
+        $this->assertContains('@mixin \Axyr\IDEAnnotator\Tests\Team_Extension', $content);
     }
 
     public function testInversePlayerRelationOfTeam()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\Player');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\Player');
         $filePath  = $classInfo->getClassFilePath();
 
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'IDEAnnotator\Tests\Player');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\Player');
 
         $this->assertContains('@property boolean $IsRetired', $content);
         $this->assertContains('@property string $ShirtNumber', $content);
         $this->assertContains('@property int $FavouriteTeamID', $content);
-        $this->assertContains('@method \IDEAnnotator\Tests\Team FavouriteTeam()', $content);
+        $this->assertContains('@method \Axyr\IDEAnnotator\Tests\Team FavouriteTeam()', $content);
 
-        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\IDEAnnotator\Tests\Team[] TeamPlayer()', $content);
-        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\IDEAnnotator\Tests\Team[] TeamReserve()', $content);
+        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\Axyr\IDEAnnotator\Tests\Team[] TeamPlayer()', $content);
+        $this->assertContains('@method \SilverStripe\ORM\ManyManyList|\Axyr\IDEAnnotator\Tests\Team[] TeamReserve()', $content);
 
     }
 
     public function testExistingMethodsWillNotBeTagged()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\Team');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\Team');
         $filePath  = $classInfo->getClassFilePath();
 
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'IDEAnnotator\Tests\Team');
-        $this->assertNotContains('@method \SilverStripe\ORM\ManyManyList|\IDEAnnotator\Tests\SubTeam[] SecondarySubTeams()', $content);
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\Team');
+        $this->assertNotContains('@method \SilverStripe\ORM\ManyManyList|\Axyr\IDEAnnotator\Tests\SubTeam[] SecondarySubTeams()', $content);
     }
 
     /**
@@ -115,11 +115,11 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testNothingHasChangedAfterSecondAnnotation()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\Team');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\Team');
         $filePath  = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
-        $firstRun = $this->annotator->getGeneratedFileContent($original, 'IDEAnnotator\Tests\Team');
-        $secondRun = $this->annotator->getGeneratedFileContent($firstRun, 'IDEAnnotator\Tests\Team');
+        $firstRun = $this->annotator->getGeneratedFileContent($original, 'Axyr\IDEAnnotator\Tests\Team');
+        $secondRun = $this->annotator->getGeneratedFileContent($firstRun, 'Axyr\IDEAnnotator\Tests\Team');
         $this->assertEquals($firstRun, $secondRun);
     }
 
@@ -128,30 +128,30 @@ class DataObjectAnnotatorTest extends SapphireTest
      */
     public function testAnnotateDataExtension()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\Team_Extension');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\Team_Extension');
         $filePath  = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->getGeneratedFileContent($original, 'IDEAnnotator\Tests\Team_Extension');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'Axyr\IDEAnnotator\Tests\Team_Extension');
 
         $this->assertNotContains(DataObjectAnnotator::STARTTAG, $annotated);
         $this->assertNotContains(DataObjectAnnotator::ENDTAG, $annotated);
-        $this->assertContains('@property \IDEAnnotator\Tests\Team|\IDEAnnotator\Tests\Team_Extension $owner', $annotated);
+        $this->assertContains('@property \Axyr\IDEAnnotator\Tests\Team|\Axyr\IDEAnnotator\Tests\Team_Extension $owner', $annotated);
         $this->assertContains('@property string $ExtendedVarcharField', $annotated);
         $this->assertContains('@property int $ExtendedIntField', $annotated);
         $this->assertContains('@property int $ExtendedHasOneRelationshipID', $annotated);
-        $this->assertContains('@method \IDEAnnotator\Tests\Player ExtendedHasOneRelationship()', $annotated);
+        $this->assertContains('@method \Axyr\IDEAnnotator\Tests\Player ExtendedHasOneRelationship()', $annotated);
     }
 
     public function testRemoveOldStyleDocBlock()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\DataObjectWithOldStyleTagMarkers');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\DataObjectWithOldStyleTagMarkers');
         $filePath  = $classInfo->getClassFilePath();
         $original  = file_get_contents($filePath);
-        $annotated = $this->annotator->getGeneratedFileContent($original, 'IDEAnnotator\Tests\DataObjectWithOldStyleTagMarkers');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'Axyr\IDEAnnotator\Tests\DataObjectWithOldStyleTagMarkers');
         $this->assertNotContains(DataObjectAnnotator::STARTTAG, $annotated);
         $this->assertNotContains(DataObjectAnnotator::ENDTAG, $annotated);
 
-        $generator = new MockDocBlockGenerator('IDEAnnotator\Tests\DataObjectWithOldStyleTagMarkers');
+        $generator = new MockDocBlockGenerator('Axyr\IDEAnnotator\Tests\DataObjectWithOldStyleTagMarkers');
         $startAndEndTagsAreRemoved = $generator->removeOldStyleDocBlock($annotated);
 
         $this->assertNotContains(DataObjectAnnotator::STARTTAG, $startAndEndTagsAreRemoved);
@@ -160,14 +160,14 @@ class DataObjectAnnotatorTest extends SapphireTest
 
     public function testTwoClassesInOneFile()
     {
-        $classInfo = new AnnotateClassInfo('IDEAnnotator\Tests\DoubleDataObjectInOneFile1');
+        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\DoubleDataObjectInOneFile1');
         $filePath  = $classInfo->getClassFilePath();
         $original  = file_get_contents($filePath);
-        $annotated = $this->annotator->getGeneratedFileContent($original, 'IDEAnnotator\Tests\DoubleDataObjectInOneFile1');
+        $annotated = $this->annotator->getGeneratedFileContent($original, 'Axyr\IDEAnnotator\Tests\DoubleDataObjectInOneFile1');
 
         $this->assertContains('@property string $Title', $annotated);
 
-        $annotated = $this->annotator->getGeneratedFileContent($annotated, 'IDEAnnotator\Tests\DoubleDataObjectInOneFile2');
+        $annotated = $this->annotator->getGeneratedFileContent($annotated, 'Axyr\IDEAnnotator\Tests\DoubleDataObjectInOneFile2');
 
         $this->assertContains('@property string $Name', $annotated);
     }

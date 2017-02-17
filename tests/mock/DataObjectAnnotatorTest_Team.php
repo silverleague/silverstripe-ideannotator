@@ -1,10 +1,10 @@
 <?php
 
-namespace IDEAnnotator\Tests;
+namespace Axyr\IDEAnnotator\Tests;
 
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\TestOnly;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
 
 /**
  *
@@ -23,19 +23,19 @@ class Team extends DataObject implements TestOnly
     );
 
     private static $has_one = array(
-        "Captain"            => 'IDEAnnotator\Tests\Player',
-        'HasOneRelationship' => 'IDEAnnotator\Tests\Player',
+        "Captain"            => 'Axyr\IDEAnnotator\Tests\Player',
+        'HasOneRelationship' => 'Axyr\IDEAnnotator\Tests\Player',
     );
 
     private static $has_many = array(
-        'SubTeams' => 'IDEAnnotator\Tests\SubTeam',
-        'Comments' => 'IDEAnnotator\Tests\TeamComment'
+        'SubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
+        'Comments' => 'Axyr\IDEAnnotator\Tests\TeamComment'
     );
 
     private static $many_many = array(
-        'Players'           => 'IDEAnnotator\Tests\Player.Players',
-        'Reserves'          => 'IDEAnnotator\Tests\Player.Reserves',
-        'SecondarySubTeams' => 'IDEAnnotator\Tests\SubTeam',
+        'Players'           => 'Axyr\IDEAnnotator\Tests\Player.Players',
+        'Reserves'          => 'Axyr\IDEAnnotator\Tests\Player.Reserves',
+        'SecondarySubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
     );
 
     public function SecondarySubTeams()
@@ -45,4 +45,4 @@ class Team extends DataObject implements TestOnly
 
 }
 
-Config::inst()->update('IDEAnnotator\Tests\Team', 'extensions', array('IDEAnnotator\Tests\Team_Extension'));
+Config::inst()->update('Axyr\IDEAnnotator\Tests\Team', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));

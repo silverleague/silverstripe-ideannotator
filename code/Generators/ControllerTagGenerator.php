@@ -1,6 +1,6 @@
 <?php
 
-namespace IDEAnnotator;
+namespace Axyr\IDEAnnotator;
 
 use SilverStripe\Core\Manifest\ClassLoader;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace IDEAnnotator\Tests;
+namespace Axyr\IDEAnnotator\Tests;
 
 use SilverStripe\Dev\TestOnly;
 
@@ -11,11 +11,11 @@ class SubTeam extends Team implements TestOnly
     );
 
     private static $has_one = array(
-        "ParentTeam" => 'IDEAnnotator\Tests\Team',
+        "ParentTeam" => 'Axyr\IDEAnnotator\Tests\Team',
     );
 
     private static $many_many = array(
-        'FormerPlayers' => 'IDEAnnotator\Tests\Player'
+        'FormerPlayers' => 'Axyr\IDEAnnotator\Tests\Player'
     );
 
     private static $many_many_extraFields = array(
