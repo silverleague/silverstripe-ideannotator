@@ -33,6 +33,7 @@ class OtherDocBlockMockWithDocBlock extends DataObject implements TestOnly
 }
 
 /**
+ *
  * StartGeneratedWithDataObjectAnnotator
  *
  * @property string $Street
