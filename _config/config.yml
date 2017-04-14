@@ -1,10 +1,5 @@
 ---
 Name: ideannotator
-Before:
-  - 'mysite/*'
-After:
-  - 'framework/*'
-  - 'cms/*'
 ---
 SilverStripe\Dev\DevBuildController:
   extensions:

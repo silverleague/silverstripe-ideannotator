@@ -38,10 +38,10 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
-        Config::inst()->update('Axyr\IDEAnnotator\Tests\Team', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
+        Config::modify()->set('Axyr\IDEAnnotator\Tests\Team', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
 
         $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\Tests\MockDataObjectAnnotator');
         $this->permissionChecker = Injector::inst()->get('Axyr\IDEAnnotator\AnnotatePermissionChecker');

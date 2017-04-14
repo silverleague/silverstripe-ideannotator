@@ -31,10 +31,10 @@ class ControllerAnnotatorTest extends \SilverStripe\Dev\SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
-        Config::inst()->update('Axyr\IDEAnnotator\Tests\AnnotatorPageTestController', 'extensions',
+        Config::modify()->set('Axyr\IDEAnnotator\Tests\AnnotatorPageTestController', 'extensions',
             array('Axyr\IDEAnnotator\Tests\AnnotatorPageTest_Extension')
         );
 

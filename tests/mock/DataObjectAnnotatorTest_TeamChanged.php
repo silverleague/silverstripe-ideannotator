@@ -55,4 +55,4 @@ class TeamChanged extends DataObject implements TestOnly
 
 }
 
-Config::inst()->update('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
+Config::modify()->set('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));

@@ -30,9 +30,9 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('SilverStripe\Control\Director', 'environment_type', 'dev');
-        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
-        Config::inst()->update('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::modify()->set('SilverStripe\Control\Director', 'environment_type', 'dev');
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
+        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
         $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\Tests\MockDataObjectAnnotator');
     }
@@ -56,7 +56,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function testManuallyCommentedTagsWillNotBeRemoved()
     {
 
-        Config::inst()->update('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
+        Config::modify()->set('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
 
         $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\TeamChanged');
         $filePath  = $classInfo->getClassFilePath();
