@@ -2,6 +2,7 @@
 
 namespace Axyr\IDEAnnotator;
 
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
@@ -38,7 +39,7 @@ class AnnotatePermissionChecker
     {
         if(!$this->isEnabled()) return false;
 
-        return $this->environmentIsDev();
+        return Director::get_environment_type() === 'dev';
     }
 
     /**
