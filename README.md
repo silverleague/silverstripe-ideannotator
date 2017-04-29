@@ -13,15 +13,15 @@ The docblocks can be generated/updated with each dev/build and with a DataObject
 
 # Owners
 
-Martijn @axyr van Nieuwenhoven - Originator and original maintainer
-Simon @Firesphere Erkelens - SilverLeague maintainer
+- Martijn @axyr van Nieuwenhoven - Originator and original maintainer
+- Simon @Firesphere Erkelens - SilverLeague maintainer
 
 No changes with serious impact will be accepted without either Martijn or Simon's approvement. 
 
 Big thanks to @axyr for the initialisation of this module and his initial work. Very much appreciated by the community.
 
 
-##Example result
+## Example result
 
 ```php
 <?php
