@@ -11,6 +11,15 @@ This module generates @property, @method and @mixin tags for DataObjects, Page_C
 
 The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
 
+# Owners
+
+Martijn @axyr van Nieuwenhoven - Originator and original maintainer
+Simon @Firesphere Erkelens - SilverLeague maintainer
+
+No changes with serious impact will be accepted without either Martijn or Simon's approvement. 
+
+Big thanks to @axyr for the initialisation of this module and his initial work. Very much appreciated by the community.
+
 ##Example result
 
 ```php
