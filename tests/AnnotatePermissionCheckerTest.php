@@ -49,20 +49,6 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->assertFalse($this->permissionChecker->isEnabled());
     }
 
-    public function testEnvironmentIsDev()
-    {
-        $this->assertTrue($this->permissionChecker->environmentIsDev());
-
-        Config::inst()->remove('SilverStripe\Control\Director', 'environment_type');
-        Config::modify()->set('SilverStripe\Control\Director', 'environment_type', 'live');
-        $this->assertFalse($this->permissionChecker->environmentIsDev());
-
-
-        Config::inst()->remove('SilverStripe\Control\Director', 'environment_type');
-        Config::modify()->set('SilverStripe\Control\Director', 'environment_type', 'test');
-        $this->assertFalse($this->permissionChecker->environmentIsDev());
-    }
-
     public function testEnvironmentIsAllowed()
     {
         $this->assertTrue($this->permissionChecker->environmentIsAllowed());
