@@ -3,6 +3,10 @@
 namespace Axyr\IDEAnnotator;
 
 use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Extension;
 
 /**
  * Class AnnotatePermissionChecker
@@ -21,10 +25,10 @@ class AnnotatePermissionChecker
      * @see AnnotatePermissionChecker::classNameIsSupported();
      */
     protected $supportedParentClasses = array(
-        'SilverStripe\ORM\DataObject',
-        'SilverStripe\ORM\DataExtension',
-        'SilverStripe\Control\Controller',
-        'SilverStripe\Core\Extension'
+        DataObject::class,
+        DataExtension::class,
+        Controller::class,
+        Extension::class
     );
 
     /**
@@ -120,27 +124,6 @@ class AnnotatePermissionChecker
      */
     public function isEnabled()
     {
-        return (bool)Config::inst()->get('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled');
-    }
-
-    /**
-     * Since we are changing php files, generation of docblocks should never be done on a live server.
-     * We can't prevent this, but we should make it as hard as possible.
-     *
-     * Generation is only allowed when :
-     * - The module is enabled
-     * - The site is in dev mode by configuration
-     *
-     * This means we will not change files if the ?isDev=1 $_GET variable is used to put a live site into dev mode.
-     * This also means we can't use Director::isDev();
-     *
-     * @return bool
-     */
-    public function environmentIsDev()
-    {
-        $devServers = (array)Config::inst()->get('SilverStripe\Control\Director', 'dev_servers');
-
-        return Config::inst()->get('SilverStripe\Control\Director', 'environment_type') === 'dev'
-            || (isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers));
+        return (bool)Config::inst()->get(DataObjectAnnotator::class, 'enabled');
     }
 }

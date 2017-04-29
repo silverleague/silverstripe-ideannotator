@@ -55,7 +55,7 @@ class Annotatable extends Extension
         $this->setUp();
 
         $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
-        $envIsAllowed   = $this->permissionChecker->environmentIsAllowed();
+        $envIsAllowed   = Director::get_environment_type() === 'dev';
         
         if ($skipAnnotation === null && $envIsAllowed) {
 
