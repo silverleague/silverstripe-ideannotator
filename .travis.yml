@@ -19,7 +19,7 @@ before_script:
   - cd ~/builds/ss
 
 script:
-  - vendor/bin/phpunit ideannotator/tests  --coverage-clover=coverage.xml
+  - vendor/bin/phpunit ideannotator/tests
 
 after_success:
   - cd ~/builds/ss/ideannotator
