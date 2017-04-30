@@ -1,22 +1,33 @@
-before_script:
-- composer self-update || true
-- phpenv rehash
-- git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
-- php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
-- cd ~/builds/ss
 language: php
+
 php:
-  [5.3,5.4,5.5,5.6,7.0]
-matrix:
-  allow_failures:
-    - php: 7.0
-script:
-- vendor/bin/phpunit ideannotator/tests/
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+
 env:
-  matrix:
-  - DB=MYSQL CORE_RELEASE=3.1
-  global:
-    secure: HJ7sHJww/NX3PPVGjy0ggZyZSLoAdGB4BZJ0UEnIDNhR1fZ1aF4pAEA1K5cvksV9FGCbQ9Z/2JfRk8csDgWIybkBuckZsj+7yjd8u6AEPLKve+GA/Z3iN21jrDZiCC/gugAWJl7OdmR+64bFBjHbvZzYUusjSjpSRO5EqqWPgWA=
-addons:
-  code_climate:
-    repo_token: edaded3f06ffcb76affdc4e747ad6a8d29093594ad2df74405d000da9c9e6899
+  - DB=MYSQL CORE_RELEASE=3.4
+
+matrix:
+  include:
+    - php: 7.1
+      env: DB=MYSQL CORE_RELEASE=3.6 COVERAGE="--coverage-clover=coverage.xml"
+    - php: 7.1
+      env: DB=PGSQL CORE_RELEASE=3
+
+before_script:
+  - git clone git://github.com/silverstripe/silverstripe-travis-support.git ~/travis-support
+  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
+  - cd ~/builds/ss
+
+script:
+  - vendor/bin/phpunit "$COVERAGE" ideannotator/tests
+
+# Share coverage results with codecov.io
+after_success:
+  - >
+    test "$COVERAGE" != ""
+    && mv coverage.xml ~/build/$TRAVIS_REPO_SLUG
+    && cd ~/build/$TRAVIS_REPO_SLUG
+    && bash <(curl -s https://codecov.io/bash)
