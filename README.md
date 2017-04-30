@@ -1,7 +1,8 @@
 # silverstripe-ideannotator
 
-[![Scrutinizer](https://img.shields.io/scrutinizer/g/axyr/silverstripe-ideannotator.svg)](https://scrutinizer-ci.com/g/axyr/silverstripe-ideannotator/)
-[![Travis](https://img.shields.io/travis/axyr/silverstripe-ideannotator.svg)](https://travis-ci.org/axyr/silverstripe-ideannotator)
+[![Travis branch](https://img.shields.io/travis/silverleague/silverstripe-ideannotator/master.svg)](https://github.com/silverleague/silverstripe-ideannotator)
+[![Scrutinizer](https://img.shields.io/scrutinizer/g/silverleague/silverstripe-ideannotator.svg)](https://scrutinizer-ci.com/g/silverleague/silverstripe-ideannotator/)
+[![Codecov branch](https://img.shields.io/codecov/c/github/silverleague/silverstripe-ideannotator/master.svg)](https://github.com/silverleague/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/packagist/dt/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/packagist/v/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/badge/unstable-dev--master-orange.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
@@ -16,7 +17,7 @@ The docblocks can be generated/updated with each dev/build and with a DataObject
 - Martijn @axyr van Nieuwenhoven - Originator and original maintainer
 - Simon @Firesphere Erkelens - SilverLeague maintainer
 
-No changes with serious impact will be accepted without either Martijn or Simon's approvement. 
+No changes with serious impact will be accepted without either Martijn or Simon's approvement.
 
 Big thanks to @axyr for the initialisation of this module and his initial work. Very much appreciated by the community.
 
