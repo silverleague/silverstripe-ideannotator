@@ -8,18 +8,32 @@
 [![Packagist](https://img.shields.io/badge/unstable-dev--master-orange.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 
 
-This module generates @property, @method and @mixin tags for DataObjects, Page_Controllers and (Data)Extensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
+This module generates `@property`, `@method` and `@mixin` tags for sub classes of `DataObject`, `Page_Controller` and `Extension`/`DataExtension` so that IDEs like PHPStorm can recognize the database fields and relations that are set in `$db`, `$has_one`, `$has_many` and `$many_many` arrays.
 
-The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
+The docblocks can be generated/updated with each `dev/build` and with a `DataObjectAnnotatorTask` per module or classname.
 
-# Owners
+## Requirements
+
+* PHP 5.3.3+
+* SilverStripe ^3.1
+* Composer
+
+## Installation
+
+Install with composer:
+
+```
+composer require silverleague/ideannotator
+```
+
+## Maintainers
 
 - Martijn @axyr van Nieuwenhoven - Originator and original maintainer
 - Simon @Firesphere Erkelens - SilverLeague maintainer
 
-No changes with serious impact will be accepted without either Martijn or Simon's approvement.
+No changes with serious impact will be accepted without either Martijn or Simon's approval.
 
-Big thanks to @axyr for the initialisation of this module and his initial work. Very much appreciated by the community.
+Big thanks to @axyr for the initial work to create and maintain this module. It is very much appreciated by the community.
 
 
 ## Example result
@@ -61,18 +75,13 @@ class NewsItem extends DataObject
 ```
 
 ## Further information
-For installation, see [installation](docs/en/Installation.md)
 
-For the Code of Conduct, see [CodeOfConduct](docs/en/CodeOfConduct.md)
+For further information please see the [user guide documentation](docs/en/Index.md).
 
-For contributing, see [Contributing](CONTRIBUTING.md)
+Please see [the contributing guide](CONTRIBUTING.md) for more information on how to contribute to this project.
 
-For further documentation information, see the [docs](docs/en/Index.md)
+## Caution
 
-##Caution
-This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...
-I tried to add complete UnitTests, but I can't garantuee every situation is covered.
+This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled... Unit tests are in place, but it can't be guaranteed that every situation is covered.
 
-
-
-
+Please use carefully, and only install in development environments.
