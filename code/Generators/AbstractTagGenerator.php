@@ -174,7 +174,21 @@ abstract class AbstractTagGenerator
      */
     protected function getClassConfig($key)
     {
-        return Config::inst()->get($this->className, $key, Config::UNINHERITED);
+        $config = Config::inst()->get($this->className, $key, Config::UNINHERITED);
+        if($config && $key == 'db') {
+            // If we use Fluent, it's better to not document translated fields
+            if(class_exists('Fluent')) {
+                $translatedFields = FluentExtension::translated_fields_for($this->className);
+                if(!empty($translatedFields)) {
+                    $extraConfig = FluentExtension::generate_extra_config($this->className);
+                    if(!empty($extraConfig['db'])) {
+                        $config = array_diff($config, $extraConfig['db']);
+                    }
+                    $config = array_merge($config,$translatedFields);
+                }
+            }
+        }
+        return $config;
     }
 
     /**
