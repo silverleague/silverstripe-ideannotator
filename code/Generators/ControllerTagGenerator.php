@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Core\Manifest\ClassLoader;
+
 
 class ControllerTagGenerator extends AbstractTagGenerator
 {
@@ -35,6 +37,6 @@ class ControllerTagGenerator extends AbstractTagGenerator
     protected function isContentController($className)
     {
         $reflector = new ReflectionClass($className);
-        return SS_ClassLoader::instance()->classExists('ContentController') && $reflector->isSubclassOf('ContentController');
+        return ClassLoader::instance()->classExists('ContentController') && $reflector->isSubclassOf('ContentController');
     }
 }

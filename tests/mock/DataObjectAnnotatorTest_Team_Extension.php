@@ -1,5 +1,8 @@
 <?php
 
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Dev\TestOnly;
+
 class DataObjectAnnotatorTest_Team_Extension extends DataExtension implements TestOnly
 {
 
@@ -9,6 +12,6 @@ class DataObjectAnnotatorTest_Team_Extension extends DataExtension implements Te
     );
 
     private static $has_one = array(
-        'ExtendedHasOneRelationship' => 'DataObjectTest_Player'
+        'ExtendedHasOneRelationship' => 'SilverStripe\\ORM\\Tests\\DataObjectTest\\DataObjectTest_Player'
     );
 }

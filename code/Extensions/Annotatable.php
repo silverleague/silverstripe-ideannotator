@@ -1,5 +1,9 @@
 <?php
 
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Extension;
+
 /**
  * Class Annotatable
  *

@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Core\Config\Config;
+
 /**
  * Class AnnotatePermissionChecker
  *
@@ -17,10 +19,10 @@ class AnnotatePermissionChecker
      * @see AnnotatePermissionChecker::classNameIsSupported();
      */
     protected $supportedParentClasses = array(
-        'DataObject',
-        'DataExtension',
-        'Controller',
-        'Extension'
+        'SilverStripe\\ORM\\DataObject',
+        'SilverStripe\\ORM\\DataExtension',
+        'SilverStripe\\Control\\Controller',
+        'SilverStripe\\Core\\Extension'
     );
 
     /**
@@ -134,9 +136,9 @@ class AnnotatePermissionChecker
      */
     public function environmentIsDev()
     {
-        $devServers = (array)Config::inst()->get('Director', 'dev_servers');
+        $devServers = (array)Config::inst()->get('SilverStripe\\Control\\Director', 'dev_servers');
 
-        return Config::inst()->get('Director', 'environment_type') === 'dev'
+        return Config::inst()->get('SilverStripe\\Control\\Director', 'environment_type') === 'dev'
             || (isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $devServers));
     }
 }

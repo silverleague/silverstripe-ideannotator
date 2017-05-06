@@ -1,5 +1,8 @@
 <?php
 
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\BuildTask;
+
 /**
  * Class DataObjectAnnotatorTask
  *

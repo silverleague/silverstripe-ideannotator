@@ -1,6 +1,9 @@
 <?php
 
 use phpDocumentor\Reflection\DocBlock\Tag;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Config;
+
 
 /**
  * AbstractTagGenerator
@@ -49,7 +52,7 @@ abstract class AbstractTagGenerator
         $this->className        = $className;
         $this->existingTags     = (array)$existingTags;
         $this->reflector        = new ReflectionClass($className);
-        $this->extensionClasses = (array)ClassInfo::subclassesFor('Object');
+        $this->extensionClasses = (array)ClassInfo::subclassesFor('SilverStripe\\Core\\Object');
         $this->tags             = $this->getSupportedTagTypes();
 
         $this->generateTags();
@@ -134,7 +137,7 @@ abstract class AbstractTagGenerator
         });
 
         if (!empty($owners)) {
-            if($this->reflector->isSubclassOf('DataExtension')) {
+            if($this->reflector->isSubclassOf('SilverStripe\\ORM\\DataExtension')) {
                 $owners[] = $this->className;
             }
             $this->pushPropertyTag(implode("|", $owners) . " \$owner");

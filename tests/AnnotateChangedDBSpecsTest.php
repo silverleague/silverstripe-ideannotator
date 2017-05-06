@@ -1,5 +1,9 @@
 <?php
 use phpDocumentor\Reflection\DocBlock\Tag\MethodTag;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\SapphireTest;
+
 
 /**
  * This test should fail, if a DB property is removed from
@@ -24,7 +28,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('Director', 'environment_type', 'dev');
+        Config::inst()->update('SilverStripe\\Control\\Director', 'environment_type', 'dev');
         Config::inst()->update('DataObjectAnnotator', 'enabled', true);
         Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 

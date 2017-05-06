@@ -1,5 +1,9 @@
 <?php
 
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\SapphireTest;
+
 /**
  * Class DataObjectAnnotatorTest
  *
@@ -24,7 +28,7 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::inst()->update('Director', 'environment_type', 'dev');
+        Config::inst()->update('SilverStripe\\Control\\Director', 'environment_type', 'dev');
         Config::inst()->update('DataObjectAnnotator', 'enabled', true);
         Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
 
@@ -49,13 +53,13 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     {
         $this->assertTrue($this->permissionChecker->environmentIsDev());
 
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'live');
+        Config::inst()->remove('SilverStripe\\Control\\Director', 'environment_type');
+        Config::inst()->update('SilverStripe\\Control\\Director', 'environment_type', 'live');
         $this->assertFalse($this->permissionChecker->environmentIsDev());
 
 
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'test');
+        Config::inst()->remove('SilverStripe\\Control\\Director', 'environment_type');
+        Config::inst()->update('SilverStripe\\Control\\Director', 'environment_type', 'test');
         $this->assertFalse($this->permissionChecker->environmentIsDev());
     }
 
@@ -63,12 +67,12 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     {
         $this->assertTrue($this->permissionChecker->environmentIsAllowed());
 
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'test');
+        Config::inst()->remove('SilverStripe\\Control\\Director', 'environment_type');
+        Config::inst()->update('SilverStripe\\Control\\Director', 'environment_type', 'test');
         $this->assertFalse($this->permissionChecker->environmentIsAllowed());
 
-        Config::inst()->remove('Director', 'environment_type');
-        Config::inst()->update('Director', 'environment_type', 'live');
+        Config::inst()->remove('SilverStripe\\Control\\Director', 'environment_type');
+        Config::inst()->update('SilverStripe\\Control\\Director', 'environment_type', 'live');
         $this->assertFalse($this->permissionChecker->environmentIsAllowed());
     }
 
@@ -92,8 +96,8 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->assertTrue($this->permissionChecker->classNameIsAllowed('DataObjectAnnotatorTest_Team'));
         $this->assertTrue($this->permissionChecker->classNameIsAllowed('DataObjectAnnotatorTest_Team_Extension'));
 
-        $this->assertFalse($this->permissionChecker->classNameIsAllowed('DataObject'));
-        $this->assertFalse($this->permissionChecker->classNameIsAllowed('File'));
+        $this->assertFalse($this->permissionChecker->classNameIsAllowed('SilverStripe\\ORM\\DataObject'));
+        $this->assertFalse($this->permissionChecker->classNameIsAllowed('SilverStripe\\Assets\\File'));
 
         Config::inst()->remove('DataObjectAnnotator', 'enabled_modules');
         Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite'));

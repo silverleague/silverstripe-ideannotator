@@ -1,5 +1,10 @@
 <?php
 
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\ORM\DB;
+use SilverStripe\Core\Object;
+
 /**
  * Class DataObjectAnnotator
  * Generates phpdoc annotations for database fields and orm relations
