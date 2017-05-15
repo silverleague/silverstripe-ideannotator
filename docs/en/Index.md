@@ -1,7 +1,7 @@
-###[API Documentation](https://axyr.github.io/ideannotator)
+# silverstripe-ideannotator
 
-###[Installation](Installation.md)
+### [API Documentation](https://axyr.github.io/ideannotator)
 
-###[Code of Conduct](CodeOfConduct.md)
+### [Installation](Installation.md)
 
-###[Contributing](../../CONTRIBUTING.md)
+### [Contributing](../../CONTRIBUTING.md)
