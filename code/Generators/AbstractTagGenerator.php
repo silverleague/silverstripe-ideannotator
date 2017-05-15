@@ -174,7 +174,7 @@ abstract class AbstractTagGenerator
      */
     protected function getClassConfig($key)
     {
-        return Config::inst()->get($this->className, $key, Config::UNINHERITED);
+        return Config::inst()->get($this->className, $key, Config::UNINHERITED | Config::EXCLUDE_EXTRA_SOURCES);
     }
 
     /**
