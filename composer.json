@@ -33,7 +33,10 @@
         "phpunit/PHPUnit": "~3.7@stable"
     },
     "extra": {
-        "installer-name": "ideannotator"
+        "installer-name": "ideannotator",
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
+        }
     },
     "target-dir": "ideannotator"
 }
