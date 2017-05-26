@@ -19,7 +19,7 @@ class ControllerTagGenerator extends AbstractTagGenerator
         $pageClassname = str_replace("_Controller", "", $this->className);
         if(class_exists($pageClassname) && $this->isContentController($this->className)) {
             $this->pushPropertyTag($pageClassname . ' dataRecord');
-            $this->pushMethodTag($pageClassname, $pageClassname . ' data()');
+            $this->pushMethodTag('data', $pageClassname . ' data()');
 
             // don't mixin Page, since this is a ContentController method
             if($pageClassname !== 'Page') {
