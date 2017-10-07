@@ -1,36 +1,41 @@
 {
-    "name": "silverleague/silverstripe-ideannotator",
-    "description": "Generate PHP DocBlock annotations for DataObject and DataExtension databasefields and relation methods",
-    "type": "silverstripe-module",
-    "keywords": [
-        "silverstripe",
-        "database",
-        "orm",
-        "docblock",
-        "ide",
-        "annotations"
-    ],
-    "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Martijn van Nieuwenhoven",
-            "email": "info@axyrmedia.nl"
-        },
-        {
-            "name": "Simon 'Firesphere' Erkelens",
-            "email": "simonerkelens@silverstripe.com"
-        }
-    ],
-    "require": {
-        "silverstripe/framework": "^4@dev",
-        "phpdocumentor/reflection-docblock": "^2.0.4"
+  "name": "silverleague/silverstripe-ideannotator",
+  "description": "Generate PHP DocBlock annotations for DataObject and DataExtension databasefields and relation methods",
+  "type": "silverstripe-module",
+  "keywords": [
+    "silverstripe",
+    "database",
+    "orm",
+    "docblock",
+    "ide",
+    "annotations"
+  ],
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Martijn van Nieuwenhoven",
+      "email": "info@axyrmedia.nl"
     },
-    "require-dev": {
-        "scriptfusion/phpunit-immediate-exception-printer": "^1",
-        "phpunit/phpunit": "^5.7"
-    },
-    "extra": {
-        "installer-name": "ideannotator"
-    },
-    "target-dir": "ideannotator"
+    {
+      "name": "Simon 'Firesphere' Erkelens",
+      "email": "simonerkelens@silverstripe.com"
+    }
+  ],
+  "require": {
+    "silverstripe/framework": "^4@dev",
+    "phpdocumentor/reflection-docblock": "^2.0.4"
+  },
+  "require-dev": {
+    "scriptfusion/phpunit-immediate-exception-printer": "^1",
+    "phpunit/phpunit": "^5.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Axyr\\IDEAnnotator\\": "src"
+    }
+  },
+  "extra": {
+    "installer-name": "ideannotator"
+  },
+  "target-dir": "ideannotator"
 }
