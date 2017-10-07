@@ -1,5 +1,5 @@
 <phpunit printerClass="ScriptFUSION\PHPUnitImmediateExceptionPrinter\ImmediateExceptionPrinter"
-         bootstrap="framework/tests/bootstrap.php"
+         bootstrap="vendor/silverstripe/framework/tests/bootstrap.php"
          colors="true">
 
 <testsuite name="Default">
@@ -7,7 +7,7 @@
     </testsuite>
 
     <listeners>
-        <listener class="\SilverStripe\Dev\TestListener" file="framework/src/Dev/TestListener.php"/>
+        <listener class="\SilverStripe\Dev\TestListener" file="vendor/silverstripe/framework/src/Dev/TestListener.php"/>
     </listeners>
 
     <groups>

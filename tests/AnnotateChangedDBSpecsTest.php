@@ -6,6 +6,7 @@ use Axyr\IDEAnnotator\AnnotateClassInfo;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\Control\Director;
 
 /**
  * This test should fail, if a DB property is removed from
@@ -30,37 +31,37 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        Config::modify()->set('SilverStripe\Control\Director', 'environment_type', 'dev');
-        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
-        Config::modify()->set('Axyr\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('ideannotator'));
+        Config::modify()->set(Director::class, 'environment_type', 'dev');
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator']);
 
-        $this->annotator = Injector::inst()->get('Axyr\IDEAnnotator\Tests\MockDataObjectAnnotator');
+        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
     }
 
     public function testChangedDBSpecifications()
     {
-        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\TeamChanged');
+        $classInfo = new AnnotateClassInfo(TeamChanged::class);
         $filePath  = $classInfo->getClassFilePath();
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\TeamChanged');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TeamChanged::class);
         $this->assertNotContains('VisitCount', $content);
     }
 
     public function testNonSupportedTagsWillNotBeTouched()
     {
-        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\TeamChanged');
+        $classInfo = new AnnotateClassInfo(TeamChanged::class);
         $filePath  = $classInfo->getClassFilePath();
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\TeamChanged');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TeamChanged::class);
         $this->assertContains('Simon', $content);
     }
 
     public function testManuallyCommentedTagsWillNotBeRemoved()
     {
 
-        Config::modify()->set('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));
+        Config::modify()->set(TeamChanged::class, 'extensions', [Team_Extension::class]);
 
-        $classInfo = new AnnotateClassInfo('Axyr\IDEAnnotator\Tests\TeamChanged');
+        $classInfo = new AnnotateClassInfo(TeamChanged::class);
         $filePath  = $classInfo->getClassFilePath();
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), 'Axyr\IDEAnnotator\Tests\TeamChanged');
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TeamChanged::class);
 
         $this->assertContains('The Team Name', $content);
         $this->assertContains('This adds extra methods', $content);

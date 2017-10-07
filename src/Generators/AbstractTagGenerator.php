@@ -56,10 +56,11 @@ abstract class AbstractTagGenerator
         $this->className = $className;
         $this->existingTags = (array)$existingTags;
         $this->reflector = new \ReflectionClass($className);
-        $class = Config::inst()->getAll();
+        $extendableClasses = Config::inst()->getAll();
         $this->extensionClasses = [];
         // We need to check all config to see if the class is extensible
-        foreach ($class as $key => $configClass) {
+        // @todo find a cleaner method
+        foreach ($extendableClasses as $key => $configClass) {
             if (isset($configClass['extensions']) && count($configClass['extensions']) > 0) {
                 $this->extensionClasses[] = $key;
             }
@@ -134,7 +135,7 @@ abstract class AbstractTagGenerator
      */
     protected function getClassConfig($key)
     {
-        return Config::inst()->get($this->className, $key, Config::UNINHERITED);
+        return Config::inst()->get($this->className, $key, CONFIG::UNINHERITED);
     }
 
     /**
@@ -157,6 +158,11 @@ abstract class AbstractTagGenerator
         return new Tag($type, $tagString);
     }
 
+    /**
+     * @param $type
+     * @param string $tagString
+     * @return mixed|string
+     */
     public function getExistingTagCommentByTagString($type, $tagString)
     {
         foreach ($this->getExistingTags() as $tag) {
