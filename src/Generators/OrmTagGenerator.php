@@ -111,7 +111,7 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function resolveDotNotation($dataObjectName)
     {
-        list($dataObjectName) = explode(".", $dataObjectName, 2);
+        list($dataObjectName) = explode('.', $dataObjectName, 2);
 
         return $dataObjectName;
     }

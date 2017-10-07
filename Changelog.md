@@ -30,3 +30,6 @@
 
 # 2.0.5
 * Support dot notations in relations
+
+# 3.0 beta-1
+* Support for SilverStripe 4
