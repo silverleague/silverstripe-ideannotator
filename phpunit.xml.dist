@@ -1,0 +1,18 @@
+<phpunit printerClass="ScriptFUSION\PHPUnitImmediateExceptionPrinter\ImmediateExceptionPrinter"
+         bootstrap="vendor/silverstripe/framework/tests/bootstrap.php"
+         colors="true">
+
+<testsuite name="Default">
+        <directory>tests</directory>
+    </testsuite>
+
+    <listeners>
+        <listener class="\SilverStripe\Dev\TestListener" file="vendor/silverstripe/framework/src/Dev/TestListener.php"/>
+    </listeners>
+
+    <groups>
+        <exclude>
+            <group>sanitychecks</group>
+        </exclude>
+    </groups>
+</phpunit>

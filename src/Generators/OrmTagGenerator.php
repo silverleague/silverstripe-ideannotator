@@ -7,6 +7,8 @@ use SilverStripe\ORM\FieldType\DBBoolean;
 use SilverStripe\ORM\FieldType\DBDecimal;
 use SilverStripe\ORM\FieldType\DBFloat;
 use SilverStripe\ORM\FieldType\DBInt;
+use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\ManyManyList;
 
 /**
  * OrmTagGenerator
@@ -132,14 +134,14 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateHasManyTags()
     {
-        $this->generateTagsForDataLists($this->getClassConfig('has_many'), 'SilverStripe\ORM\DataList');
+        $this->generateTagsForDataLists($this->getClassConfig('has_many'), DataList::class);
     }
 
     /**
      * @param array $fields
      * @param string $listType
      */
-    protected function generateTagsForDataLists($fields, $listType = 'SilverStripe\ORM\DataList')
+    protected function generateTagsForDataLists($fields, $listType = DataList::class)
     {
         if (!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
@@ -154,7 +156,7 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateManyManyTags()
     {
-        $this->generateTagsForDataLists($this->getClassConfig('many_many'), 'SilverStripe\ORM\ManyManyList');
+        $this->generateTagsForDataLists($this->getClassConfig('many_many'), ManyManyList::class);
     }
 
     /**
@@ -162,6 +164,6 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateBelongsManyManyTags()
     {
-        $this->generateTagsForDataLists($this->getClassConfig('belongs_many_many'), 'SilverStripe\ORM\ManyManyList');
+        $this->generateTagsForDataLists($this->getClassConfig('belongs_many_many'), ManyManyList::class);
     }
 }

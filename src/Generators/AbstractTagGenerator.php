@@ -3,6 +3,7 @@
 namespace Axyr\IDEAnnotator;
 
 use phpDocumentor\Reflection\DocBlock\Tag;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
@@ -62,7 +63,7 @@ abstract class AbstractTagGenerator
         // @todo find a cleaner method
         foreach ($extendableClasses as $key => $configClass) {
             if (isset($configClass['extensions']) && count($configClass['extensions']) > 0) {
-                $this->extensionClasses[] = $key;
+                $this->extensionClasses[] = ClassInfo::class_name($key);
             }
         }
         $this->tags = $this->getSupportedTagTypes();
