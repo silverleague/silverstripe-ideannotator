@@ -1,8 +1,9 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
 
@@ -25,7 +26,7 @@ class Annotatable extends Extension
      * This prevents that an Extension is ran twice on dev/build
      * @var array
      */
-    public static $annotated_extensions = array();
+    public static $annotated_extensions = [];
     /**
      * @var DataObjectAnnotator
      */
@@ -44,11 +45,9 @@ class Annotatable extends Extension
         $this->setUp();
 
         $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
-        $envIsAllowed = Director::get_environment_type() === 'dev';
+        $envIsAllowed = Director::isDev() && Config::inst()->get(DataObjectAnnotator::class, 'enabled');
 
         if ($skipAnnotation === null && $envIsAllowed) {
-
-            // @todo make this work with a proper list <ul>. Or CLI equivalent.
             $this->displayMessage("<div class='build'><p><b>Generating class docblocks</b></p><ul>\n\n");
 
             $modules = $this->permissionChecker->enabledModules();
@@ -76,7 +75,6 @@ class Annotatable extends Extension
      */
     public function displayMessage($message)
     {
-        echo Director::is_cli() ? "\n" . strip_tags($message) . "\n\n" : "<p><b>$message</b></p>";
+        echo Director::is_cli() ? "\n" . $message . "\n\n" : "<p><b>$message</b></p>";
     }
-
 }

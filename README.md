@@ -2,6 +2,7 @@
 
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/axyr/silverstripe-ideannotator.svg)](https://scrutinizer-ci.com/g/axyr/silverstripe-ideannotator/)
 [![Travis](https://img.shields.io/travis/axyr/silverstripe-ideannotator.svg)](https://travis-ci.org/axyr/silverstripe-ideannotator)
+[![codecov](https://codecov.io/gh/silverleague/silverstripe-ideannotator/branch/master/graph/badge.svg)](https://codecov.io/gh/silverleague/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/packagist/dt/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/packagist/v/axyr/silverstripe-ideannotator.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/badge/unstable-dev--master-orange.svg)](https://packagist.org/packages/axyr/silverstripe-ideannotator)
@@ -11,7 +12,25 @@ This module generates @property, @method and @mixin tags for DataObjects, PageCo
 
 The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
 
-##Example result
+## Installation
+
+Until the repository is fully transferred to SilverLeage, you can install it using the following in your `composer.json`
+```json
+{
+  "require-dev": {
+    "silverleague/ideannotator": "3.x-dev"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git://github.com/silverleague/silverstripe-ideannotator"
+    }
+  ]
+}
+```
+Please note, this example omitted any possible modules you require yourself!
+
+## Example result
 
 ```php
 <?php
@@ -36,15 +55,15 @@ class NewsItem extends \SilverStripe\ORM\DataObject
     );
 
     private static $has_one = array(
-        'Author'    => 'SilverStripe\Security\Member'
+        'Author' => Member::class
     );
 
     private static $has_many = array(
-        'Categories' => 'Category'
+        'Categories' => Category::class
     );
 
     private static $many_many = array(
-        'Tags'  => 'Tag'
+        'Tags' => Tag::class
     );
 }
 ```
@@ -58,6 +77,6 @@ For contributing, see [Contributing](CONTRIBUTING.md)
 
 For further documentation information, see the [docs](docs/en/Index.md)
 
-##Caution
+## A word of caution
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...
 I tried to add complete UnitTests, but I can't garantuee every situation is covered.

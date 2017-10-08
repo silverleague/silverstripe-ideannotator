@@ -1,8 +1,9 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 use phpDocumentor\Reflection\DocBlock\Tag;
+use Psr\Container\NotFoundExceptionInterface;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
@@ -25,7 +26,7 @@ abstract class AbstractTagGenerator
      * The existing tags of the class we are working with
      * @var Tag[]
      */
-    protected $existingTags = array();
+    protected $existingTags = [];
 
     /**
      * @var \ReflectionClass
@@ -37,7 +38,7 @@ abstract class AbstractTagGenerator
      * @see $this->getSupportedTagTypes();
      * @var Tag[]
      */
-    protected $tags = array();
+    protected $tags = [];
 
     /**
      * All classes that subclass Object
@@ -81,12 +82,12 @@ abstract class AbstractTagGenerator
      */
     public function getSupportedTagTypes()
     {
-        return array(
-            'properties' => array(),
-            'methods'    => array(),
-            'mixins'     => array(),
-            'other'      => array()
-        );
+        return [
+            'properties' => [],
+            'methods'    => [],
+            'mixins'     => [],
+            'other'      => []
+        ];
     }
 
     /**
@@ -154,17 +155,16 @@ abstract class AbstractTagGenerator
      */
     protected function pushTagWithExistingComment($type, $tagString)
     {
-        $tagString .= $this->getExistingTagCommentByTagString($type, $tagString);
+        $tagString .= $this->getExistingTagCommentByTagString($tagString);
 
         return new Tag($type, $tagString);
     }
 
     /**
-     * @param $type
      * @param string $tagString
-     * @return mixed|string
+     * @return string
      */
-    public function getExistingTagCommentByTagString($type, $tagString)
+    public function getExistingTagCommentByTagString($tagString)
     {
         foreach ($this->getExistingTags() as $tag) {
             $content = $tag->getContent();
@@ -186,7 +186,8 @@ abstract class AbstractTagGenerator
 
     /**
      * Generate the Owner-properties for extensions.
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @throws NotFoundExceptionInterface
      */
     protected function generateOwnerTags()
     {
@@ -197,6 +198,7 @@ abstract class AbstractTagGenerator
 
                 return ($config !== null && in_array($className, $config, null));
             });
+            $owners[] = $this->className;
             if (!empty($owners)) {
                 $this->pushPropertyTag('\\' . implode("|\\", array_values($owners)) . ' $owner');
             }
@@ -204,7 +206,7 @@ abstract class AbstractTagGenerator
     }
 
     /**
-     * @param $tagString
+     * @param string $tagString
      */
     protected function pushPropertyTag($tagString)
     {

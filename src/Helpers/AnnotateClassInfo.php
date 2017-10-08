@@ -1,6 +1,6 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 /**
  * Class AnnotateClassInfo

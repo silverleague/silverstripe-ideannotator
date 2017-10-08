@@ -1,6 +1,6 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
@@ -50,5 +50,4 @@ class DataObjectAnnotatorTask extends BuildTask
 
         return true;
     }
-
 }

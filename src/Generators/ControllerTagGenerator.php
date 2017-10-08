@@ -1,6 +1,6 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Core\ClassInfo;

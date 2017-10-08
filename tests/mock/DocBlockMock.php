@@ -1,6 +1,6 @@
 <?php
 
-namespace Axyr\IDEAnnotator\Tests;
+namespace SilverLeague\IDEAnnotator\Tests;
 
 use SilverStripe\Dev\TestOnly;
 

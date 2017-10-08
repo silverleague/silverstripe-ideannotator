@@ -1,13 +1,13 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\FieldType\DBBoolean;
 use SilverStripe\ORM\FieldType\DBDecimal;
 use SilverStripe\ORM\FieldType\DBFloat;
 use SilverStripe\ORM\FieldType\DBInt;
-use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ManyManyList;
 
 /**
@@ -23,7 +23,7 @@ class OrmTagGenerator extends AbstractTagGenerator
      * @var array
      * Available properties to generate docblocks for.
      */
-    protected static $propertyTypes = array(
+    protected static $propertyTypes = [
         'Owner',
         'DB',
         'HasOne',
@@ -32,7 +32,7 @@ class OrmTagGenerator extends AbstractTagGenerator
         'ManyMany',
         'BelongsManyMany',
         'Extensions',
-    );
+    ];
 
     /**
      * Default tagname is will be @string .
@@ -41,12 +41,12 @@ class OrmTagGenerator extends AbstractTagGenerator
      * @see generateDBTags();
      * @var array
      */
-    protected static $dbfield_tagnames = array(
+    protected static $dbfield_tagnames = [
         DBInt::class     => 'int',
         DBBoolean::class => 'boolean',
         DBFloat::class   => 'float',
         DBDecimal::class => 'float',
-    );
+    ];
 
     /**
      * Generates all ORM Tags

@@ -1,7 +1,9 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Configurable;
@@ -26,7 +28,6 @@ use SilverStripe\ORM\DB;
  */
 class DataObjectAnnotator
 {
-
     use Injectable;
     use Configurable;
     use Extensible;
@@ -43,7 +44,7 @@ class DataObjectAnnotator
      * Enable modules that are allowed to have generated docblocks for DataObjects and DataExtensions
      * @var array
      */
-    private static $enabled_modules = array('mysite');
+    private static $enabled_modules = ['mysite'];
 
     /**
      * @var AnnotatePermissionChecker
@@ -53,11 +54,11 @@ class DataObjectAnnotator
     /**
      * @var array
      */
-    private $annotatableClasses = array();
+    private $annotatableClasses = [];
 
     /**
      * DataObjectAnnotator constructor.
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function __construct()
     {
@@ -92,35 +93,10 @@ class DataObjectAnnotator
     }
 
     /**
-     * @param boolean $enabled
-     */
-    public static function setEnabled($enabled)
-    {
-        static::config()->enabled = $enabled;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getEnabledModules()
-    {
-        return (array)static::config()->get('enabled_modules');
-    }
-
-    /**
-     * @param array $enabled_modules
-     */
-    public static function setEnabledModules($enabled_modules)
-    {
-        static::config()->enabled_modules = $enabled_modules;
-    }
-
-    /**
-     * @param string $moduleName
-     *
      * Generate docblock for all subclasses of DataObjects and DataExtenions
      * within a module.
      *
+     * @param string $moduleName
      * @return bool
      */
     public function annotateModule($moduleName)
@@ -141,10 +117,11 @@ class DataObjectAnnotator
     /**
      * @param $moduleName
      * @return array
+     * @throws ReflectionException
      */
     public function getClassesForModule($moduleName)
     {
-        $classes = array();
+        $classes = [];
 
         foreach ($this->annotatableClasses as $class => $filePath) {
             $classInfo = new AnnotateClassInfo($class);
@@ -157,15 +134,14 @@ class DataObjectAnnotator
     }
 
     /**
-     * @param string $className
-     *
      * Generate docblock for a single subclass of DataObject or DataExtenions
      *
+     * @param string $className
      * @return bool
+     * @throws ReflectionException
      */
     public function annotateObject($className)
     {
-
         if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
         }
@@ -177,6 +153,7 @@ class DataObjectAnnotator
 
     /**
      * @param string $className
+     * @throws ReflectionException
      */
     protected function writeFileContent($className)
     {
@@ -193,19 +170,19 @@ class DataObjectAnnotator
             if ($generated && $generated !== $original && $className) {
                 file_put_contents($filePath, $generated);
                 DB::alteration_message($className . ' Annotated', 'created');
-            } elseif($generated === $original && $className) {
+            } elseif ($generated === $original && $className) {
                 DB::alteration_message($className);
             }
         }
     }
 
     /**
-     * @param $fileContent
-     * @param $className
-     *
      * Return the complete File content with the newly generated DocBlocks
      *
+     * @param string $fileContent
+     * @param string $className
      * @return mixed
+     * @throws ReflectionException
      */
     protected function getGeneratedFileContent($fileContent, $className)
     {
@@ -230,15 +207,16 @@ class DataObjectAnnotator
                     $replace = "{$generated}\nclass {$classNameNew}";
                     $pos = strpos($fileContent, $needle);
                     $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
-                    DB::alteration_message("Found namespaced Class: " . $classNameNew);
+                    DB::alteration_message('Found namespaced Class: ' . $classNameNew);
                 } else {
-                    DB::alteration_message("Could not find string 'class $className'. Please check casing and whitespace.",
-                        'error');
+                    DB::alteration_message(
+                        "Could not find string 'class $className'. Please check casing and whitespace.",
+                        'error'
+                    );
                 }
             }
         }
 
         return $fileContent;
     }
-
 }

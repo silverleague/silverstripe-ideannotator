@@ -1,6 +1,6 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
@@ -25,12 +25,12 @@ class AnnotatePermissionChecker
      * We list the core classes, but in fact only it's subclasses are supported
      * @see AnnotatePermissionChecker::classNameIsSupported();
      */
-    protected $supportedParentClasses = array(
+    protected $supportedParentClasses = [
         DataObject::class,
         DataExtension::class,
         Controller::class,
         Extension::class
-    );
+    ];
 
     /**
      * @return bool
@@ -41,7 +41,7 @@ class AnnotatePermissionChecker
             return false;
         }
 
-        return Director::get_environment_type() === 'dev';
+        return Director::isDev();
     }
 
     /**
@@ -73,7 +73,6 @@ class AnnotatePermissionChecker
     public function classNameIsAllowed($className)
     {
         if ($this->classNameIsSupported($className)) {
-
             $classInfo = new AnnotateClassInfo($className);
             $filePath = $classInfo->getClassFilePath();
 

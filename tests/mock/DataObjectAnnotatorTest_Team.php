@@ -1,8 +1,9 @@
 <?php
 
-namespace Axyr\IDEAnnotator\Tests;
+namespace SilverLeague\IDEAnnotator\Tests;
 
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Extensible;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Dev\TestOnly;
 
@@ -16,33 +17,34 @@ use SilverStripe\Dev\TestOnly;
 class Team extends DataObject implements TestOnly
 {
 
-    private static $db = array(
+    private static $extensions = [
+        Team_Extension::class
+    ];
+
+    private static $db = [
         'Title'      => 'Varchar',
         'VisitCount' => 'Int',
         'Price'      => 'Currency'
-    );
+    ];
 
-    private static $has_one = array(
-        "Captain"            => 'Axyr\IDEAnnotator\Tests\Player',
-        'HasOneRelationship' => 'Axyr\IDEAnnotator\Tests\Player',
-    );
+    private static $has_one = [
+        'Captain'            => Player::class,
+        'HasOneRelationship' => Player::class,
+    ];
 
-    private static $has_many = array(
-        'SubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
-        'Comments' => 'Axyr\IDEAnnotator\Tests\TeamComment'
-    );
+    private static $has_many = [
+        'SubTeams' => SubTeam::class,
+        'Comments' => TeamComment::class
+    ];
 
-    private static $many_many = array(
-        'Players'           => 'Axyr\IDEAnnotator\Tests\Player.Players',
-        'Reserves'          => 'Axyr\IDEAnnotator\Tests\Player.Reserves',
-        'SecondarySubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
-    );
+    private static $many_many = [
+        'Players'           => 'SilverLeague\IDEAnnotator\Tests\Player.Players',
+        'Reserves'          => 'SilverLeague\IDEAnnotator\Tests\Player.Reserves',
+        'SecondarySubTeams' => SubTeam::class,
+    ];
 
     public function SecondarySubTeams()
     {
 
     }
-
 }
-
-Config::modify()->set('Axyr\IDEAnnotator\Tests\Team', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));

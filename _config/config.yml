@@ -3,7 +3,7 @@ Name: ideannotator
 ---
 SilverStripe\Dev\DevBuildController:
   extensions:
-    - Axyr\IDEAnnotator\Annotatable
-Axyr\IDEAnnotator\DataObjectAnnotator:
+    - SilverLeague\IDEAnnotator\Annotatable
+SilverLeague\IDEAnnotator\DataObjectAnnotator:
     enabled_modules:
       - mysite

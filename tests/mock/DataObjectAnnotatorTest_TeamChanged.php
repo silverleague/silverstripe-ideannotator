@@ -1,6 +1,6 @@
 <?php
 
-namespace Axyr\IDEAnnotator\Tests;
+namespace SilverLeague\IDEAnnotator\Tests;
 
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\DataObject;
@@ -17,42 +17,39 @@ use SilverStripe\Dev\TestOnly;
  * @property int $CaptainID
  * @property int $HasOneRelationshipID
  * @property int $ExtendedHasOneRelationshipID
- * @method \Axyr\IDEAnnotator\Tests\Player Captain() This is the Boss
- * @method \Axyr\IDEAnnotator\Tests\Player HasOneRelationship()
- * @method \Axyr\IDEAnnotator\Tests\Player ExtendedHasOneRelationship()
- * @method \SilverStripe\ORM\DataList|\Axyr\IDEAnnotator\Tests\SubTeam[] SubTeams()
+ * @method \SilverLeague\IDEAnnotator\Tests\Player Captain() This is the Boss
+ * @method \SilverLeague\IDEAnnotator\Tests\Player HasOneRelationship()
+ * @method \SilverLeague\IDEAnnotator\Tests\Player ExtendedHasOneRelationship()
+ * @method \SilverStripe\ORM\DataList|\SilverLeague\IDEAnnotator\Tests\SubTeam[] SubTeams()
  * @method \SilverStripe\ORM\DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
- * @method \SilverStripe\ORM\ManyManyList|\Axyr\IDEAnnotator\Tests\Player[] Players()
- * @mixin \Axyr\IDEAnnotator\Tests\Team_Extension This adds extra methods
+ * @method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Player[] Players()
+ * @mixin \SilverLeague\IDEAnnotator\Tests\Team_Extension This adds extra methods
  */
 class TeamChanged extends DataObject implements TestOnly
 {
 
-    private static $db = array(
+    private static $db = [
         'Title' => 'Varchar',
         'Price' => 'Currency'
-    );
+    ];
 
-    private static $has_one = array(
-        "Captain"            => 'Axyr\IDEAnnotator\Tests\Player',
-        'HasOneRelationship' => 'Axyr\IDEAnnotator\Tests\Player',
-    );
+    private static $has_one = [
+        "Captain"            => Player::class,
+        'HasOneRelationship' => Player::class,
+    ];
 
-    private static $has_many = array(
-        'SubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
-        'Comments' => 'Axyr\IDEAnnotator\Tests\TeamComment'
-    );
+    private static $has_many = [
+        'SubTeams' => SubTeam::class,
+        'Comments' => TeamComment::class
+    ];
 
-    private static $many_many = array(
-        'Players'           => 'Axyr\IDEAnnotator\Tests\Player',
-        'SecondarySubTeams' => 'Axyr\IDEAnnotator\Tests\SubTeam',
-    );
+    private static $many_many = [
+        'Players'           => Player::class,
+        'SecondarySubTeams' => SubTeam::class,
+    ];
 
     public function SecondarySubTeams()
     {
 
     }
-
 }
-
-Config::modify()->set('Axyr\IDEAnnotator\Tests\TeamChanged', 'extensions', array('Axyr\IDEAnnotator\Tests\Team_Extension'));

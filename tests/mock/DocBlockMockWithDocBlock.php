@@ -1,7 +1,8 @@
 <?php
 
-namespace Axyr\IDEAnnotator\Tests;
+namespace SilverLeague\IDEAnnotator\Tests;
 
+use \Page;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\ORM\DataObject;
 
@@ -14,9 +15,9 @@ class DocBlockMockWithDocBlock extends DataObject implements TestOnly
     /**
      * @var array
      */
-    private static $db = array(
-        'Title'    => 'Varchar(255)'
-    );
+    private static $db = [
+        'Title' => 'Varchar(255)'
+    ];
 }
 
 /**
@@ -27,9 +28,9 @@ class OtherDocBlockMockWithDocBlock extends DataObject implements TestOnly
     /**
      * @var array
      */
-    private static $db = array(
-        'Name'    => 'Varchar(255)'
-    );
+    private static $db = [
+        'Name' => 'Varchar(255)'
+    ];
 }
 
 /**
@@ -47,15 +48,15 @@ class DataObjectWithOldStyleTagMarkers extends DataObject implements TestOnly
     /**
      * @var array
      */
-    private static $db = array(
+    private static $db = [
         'Street' => 'Varchar(255)',
         'Nr'     => 'Int'
-    );
+    ];
 
     /**
      * @var array
      */
-    private static $has_one = array(
-        'Page'    => 'Page'
-    );
+    private static $has_one = [
+        'Page' => Page::class
+    ];
 }

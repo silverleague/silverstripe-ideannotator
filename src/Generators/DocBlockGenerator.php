@@ -1,6 +1,6 @@
 <?php
 
-namespace Axyr\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Serializer;
@@ -116,11 +116,11 @@ class DocBlockGenerator
      */
     public function removeExistingSupportedTags($docBlock)
     {
-        $replacements = array(
+        $replacements = [
             "/ \* @property ([\s\S]*?)\n/",
             "/ \* @method ([\s\S]*?)\n/",
             "/ \* @mixin ([\s\S]*?)\n/"
-        );
+        ];
 
         return (string)preg_replace($replacements, '', $docBlock);
     }
