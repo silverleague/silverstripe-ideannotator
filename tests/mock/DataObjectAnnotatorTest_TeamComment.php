@@ -1,15 +1,19 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator\Tests;
 
-class DataObjectAnnotatorTest_TeamComment extends DataObject implements TestOnly
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
+
+class TeamComment extends DataObject implements TestOnly
 {
-    private static $db = array(
+    private static $db = [
         'Name'    => 'Varchar',
         'Comment' => 'Text'
-    );
+    ];
 
-    private static $has_one = array(
-        'Team' => 'DataObjectAnnotatorTest_Team'
-    );
+    private static $has_one = [
+        'Team' => Team::class
+    ];
 
 }

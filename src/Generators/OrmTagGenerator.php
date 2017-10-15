@@ -1,5 +1,15 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator;
+
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\FieldType\DBBoolean;
+use SilverStripe\ORM\FieldType\DBDecimal;
+use SilverStripe\ORM\FieldType\DBFloat;
+use SilverStripe\ORM\FieldType\DBInt;
+use SilverStripe\ORM\ManyManyList;
+
 /**
  * OrmTagGenerator
  * This class generates DocBlock Tags for the ORM properties of a Dataobject of DataExtension
@@ -13,7 +23,7 @@ class OrmTagGenerator extends AbstractTagGenerator
      * @var array
      * Available properties to generate docblocks for.
      */
-    protected static $propertyTypes = array(
+    protected static $propertyTypes = [
         'Owner',
         'DB',
         'HasOne',
@@ -22,7 +32,7 @@ class OrmTagGenerator extends AbstractTagGenerator
         'ManyMany',
         'BelongsManyMany',
         'Extensions',
-    );
+    ];
 
     /**
      * Default tagname is will be @string .
@@ -31,14 +41,12 @@ class OrmTagGenerator extends AbstractTagGenerator
      * @see generateDBTags();
      * @var array
      */
-    protected static $dbfield_tagnames = array(
-        'Int'     => 'int',
-        'DBInt'   => 'int',
-        'Boolean' => 'boolean',
-        'Float'   => 'float',
-        'DBFloat' => 'float',
-        'Decimal' => 'float'
-    );
+    protected static $dbfield_tagnames = [
+        DBInt::class     => 'int',
+        DBBoolean::class => 'boolean',
+        DBFloat::class   => 'float',
+        DBDecimal::class => 'float',
+    ];
 
     /**
      * Generates all ORM Tags
@@ -70,16 +78,17 @@ class OrmTagGenerator extends AbstractTagGenerator
     public function getTagNameForDBField($dbFieldType)
     {
         // some fields in 3rd-party modules require a name...
-        $fieldObj = Object::create_from_string($dbFieldType, 'DummyName');
+        $fieldObj = Injector::inst()->create($dbFieldType, 'DummyName');
 
         foreach (self::$dbfield_tagnames as $dbClass => $tagName) {
             if (class_exists($dbClass)) {
-                $obj = Object::create_from_string($dbClass);
+                $obj = Injector::inst()->create($dbClass);
                 if ($fieldObj instanceof $obj) {
                     return $tagName;
                 }
             }
         }
+
         return 'string';
     }
 
@@ -91,58 +100,7 @@ class OrmTagGenerator extends AbstractTagGenerator
         if ($fields = (array)$this->getClassConfig('belongs_to')) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $dataObjectName = $this->resolveDotNotation($dataObjectName);
-                $this->pushMethodTag($fieldName, "{$dataObjectName} {$fieldName}()");
-            }
-        }
-    }
-
-    /**
-     * Generate the $has_one property and method values.
-     */
-    protected function generateHasOneTags()
-    {
-        if ($fields = (array)$this->getClassConfig('has_one')) {
-            foreach ($fields as $fieldName => $dataObjectName) {
-                $this->pushPropertyTag("int \${$fieldName}ID");
-                $this->pushMethodTag($fieldName, "{$dataObjectName} {$fieldName}()");
-            }
-        }
-    }
-
-    /**
-     * Generate the $has_many method values.
-     */
-    protected function generateHasManyTags()
-    {
-        $this->generateTagsForDataLists($this->getClassConfig('has_many'), 'DataList');
-    }
-
-    /**
-     * Generate the $many_many method values.
-     */
-    protected function generateManyManyTags()
-    {
-        $this->generateTagsForDataLists($this->getClassConfig('many_many'), 'ManyManyList');
-    }
-
-    /**
-     * Generate the $belongs_many_many method values.
-     */
-    protected function generateBelongsManyManyTags()
-    {
-        $this->generateTagsForDataLists($this->getClassConfig('belongs_many_many'), 'ManyManyList');
-    }
-
-    /**
-     * @param array $fields
-     * @param string $listType
-     */
-    protected function generateTagsForDataLists($fields, $listType = 'DataList')
-    {
-        if (!empty($fields)) {
-            foreach ((array)$fields as $fieldName => $dataObjectName) {
-                $dataObjectName = $this->resolveDotNotation($dataObjectName);
-                $this->pushMethodTag($fieldName, "{$listType}|{$dataObjectName}[] {$fieldName}()");
+                $this->pushMethodTag($fieldName, "\\{$dataObjectName} {$fieldName}()");
             }
         }
     }
@@ -153,7 +111,59 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function resolveDotNotation($dataObjectName)
     {
-        list($dataObjectName) = explode(".", $dataObjectName, 2);
+        list($dataObjectName) = explode('.', $dataObjectName, 2);
+
         return $dataObjectName;
+    }
+
+    /**
+     * Generate the $has_one property and method values.
+     */
+    protected function generateHasOneTags()
+    {
+        if ($fields = (array)$this->getClassConfig('has_one')) {
+            foreach ($fields as $fieldName => $dataObjectName) {
+                $this->pushPropertyTag("int \${$fieldName}ID");
+                $this->pushMethodTag($fieldName, "\\{$dataObjectName} {$fieldName}()");
+            }
+        }
+    }
+
+    /**
+     * Generate the $has_many method values.
+     */
+    protected function generateHasManyTags()
+    {
+        $this->generateTagsForDataLists($this->getClassConfig('has_many'), DataList::class);
+    }
+
+    /**
+     * @param array $fields
+     * @param string $listType
+     */
+    protected function generateTagsForDataLists($fields, $listType = DataList::class)
+    {
+        if (!empty($fields)) {
+            foreach ((array)$fields as $fieldName => $dataObjectName) {
+                $dataObjectName = $this->resolveDotNotation($dataObjectName);
+                $this->pushMethodTag($fieldName, "\\{$listType}|\\{$dataObjectName}[] {$fieldName}()");
+            }
+        }
+    }
+
+    /**
+     * Generate the $many_many method values.
+     */
+    protected function generateManyManyTags()
+    {
+        $this->generateTagsForDataLists($this->getClassConfig('many_many'), ManyManyList::class);
+    }
+
+    /**
+     * Generate the $belongs_many_many method values.
+     */
+    protected function generateBelongsManyManyTags()
+    {
+        $this->generateTagsForDataLists($this->getClassConfig('belongs_many_many'), ManyManyList::class);
     }
 }

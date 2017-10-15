@@ -1,5 +1,13 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator;
+
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\BuildTask;
+
 /**
  * Class DataObjectAnnotatorTask
  *
@@ -23,13 +31,15 @@ class DataObjectAnnotatorTask extends BuildTask
     }
 
     /**
-     * @param SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @return bool
+     * @throws ReflectionException
+     * @throws NotFoundExceptionInterface
      */
     public function run($request)
     {
         /* @var $permissionChecker AnnotatePermissionChecker */
-        $permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        $permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
 
         if (!$permissionChecker->environmentIsAllowed()) {
             return false;
@@ -44,5 +54,4 @@ class DataObjectAnnotatorTask extends BuildTask
 
         return true;
     }
-
 }

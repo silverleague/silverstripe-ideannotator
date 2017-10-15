@@ -1,5 +1,17 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator;
+
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DB;
+
 /**
  * Class DataObjectAnnotator
  * Generates phpdoc annotations for database fields and orm relations
@@ -14,17 +26,11 @@
  *
  * @package IDEAnnotator/Core
  */
-class DataObjectAnnotator extends Object
+class DataObjectAnnotator
 {
-    /**
-     * This string marks the beginning of a generated annotations block
-     */
-    const STARTTAG = 'StartGeneratedWithDataObjectAnnotator';
-
-    /**
-     * This string marks the end of a generated annotations block
-     */
-    const ENDTAG = 'EndGeneratedWithDataObjectAnnotator';
+    use Injectable;
+    use Configurable;
+    use Extensible;
 
     /**
      * @config
@@ -38,7 +44,7 @@ class DataObjectAnnotator extends Object
      * Enable modules that are allowed to have generated docblocks for DataObjects and DataExtensions
      * @var array
      */
-    private static $enabled_modules = array('mysite');
+    private static $enabled_modules = ['mysite'];
 
     /**
      * @var AnnotatePermissionChecker
@@ -48,17 +54,17 @@ class DataObjectAnnotator extends Object
     /**
      * @var array
      */
-    private $annotatableClasses = array();
+    private $annotatableClasses = [];
 
     /**
      * DataObjectAnnotator constructor.
+     * @throws NotFoundExceptionInterface
      */
     public function __construct()
     {
-        parent::__construct();
         // Don't instantiate anything if annotations are not enabled.
-        if(static::config()->get('enabled') === true) {
-            $this->permissionChecker = Injector::inst()->get('AnnotatePermissionChecker');
+        if (static::config()->get('enabled') === true && Director::isDev()) {
+            $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
             foreach ($this->permissionChecker->getSupportedParentClasses() as $supportedParentClass) {
                 $this->setEnabledClasses($supportedParentClass);
             }
@@ -70,39 +76,27 @@ class DataObjectAnnotator extends Object
      */
     protected function setEnabledClasses($supportedParentClass)
     {
-        foreach((array)ClassInfo::subclassesFor($supportedParentClass) as $class)
-        {
+        foreach ((array)ClassInfo::subclassesFor($supportedParentClass) as $class) {
             $classInfo = new AnnotateClassInfo($class);
-            if($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
+            if ($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
                 $this->annotatableClasses[$class] = $classInfo->getClassFilePath();
             }
         }
     }
 
     /**
-     * @param $moduleName
-     * @return array
+     * @return boolean
      */
-    public function getClassesForModule($moduleName)
+    public static function isEnabled()
     {
-        $classes = array();
-
-        foreach ($this->annotatableClasses as $class => $filePath) {
-            $classInfo = new AnnotateClassInfo($class);
-            if($moduleName === $classInfo->getModuleName()) {
-                $classes[$class] = $filePath;
-            }
-        }
-
-        return $classes;
+        return (bool)static::config()->get('enabled');
     }
 
     /**
-     * @param string $moduleName
-     *
      * Generate docblock for all subclasses of DataObjects and DataExtenions
      * within a module.
      *
+     * @param string $moduleName
      * @return bool
      */
     public function annotateModule($moduleName)
@@ -121,15 +115,33 @@ class DataObjectAnnotator extends Object
     }
 
     /**
-     * @param string     $className
-     *
+     * @param $moduleName
+     * @return array
+     * @throws ReflectionException
+     */
+    public function getClassesForModule($moduleName)
+    {
+        $classes = [];
+
+        foreach ($this->annotatableClasses as $class => $filePath) {
+            $classInfo = new AnnotateClassInfo($class);
+            if ($moduleName === $classInfo->getModuleName()) {
+                $classes[$class] = $filePath;
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
      * Generate docblock for a single subclass of DataObject or DataExtenions
      *
+     * @param string $className
      * @return bool
+     * @throws ReflectionException
      */
     public function annotateObject($className)
     {
-
         if (!$this->permissionChecker->classNameIsAllowed($className)) {
             return false;
         }
@@ -141,98 +153,70 @@ class DataObjectAnnotator extends Object
 
     /**
      * @param string $className
+     * @throws ReflectionException
      */
     protected function writeFileContent($className)
     {
         $classInfo = new AnnotateClassInfo($className);
-        $filePath  = $classInfo->getClassFilePath();
+        $filePath = $classInfo->getClassFilePath();
 
         if (!is_writable($filePath)) {
             DB::alteration_message($className . ' is not writable by ' . get_current_user(), 'error');
         } else {
-            $original  = file_get_contents($filePath);
+            $original = file_get_contents($filePath);
             $generated = $this->getGeneratedFileContent($original, $className);
 
             // we have a change, so write the new file
-            if ($generated && $generated !== $original) {
+            if ($generated && $generated !== $original && $className) {
                 file_put_contents($filePath, $generated);
                 DB::alteration_message($className . ' Annotated', 'created');
-            }else{
+            } elseif ($generated === $original && $className) {
                 DB::alteration_message($className);
             }
         }
     }
 
     /**
-     * @param $fileContent
-     * @param $className
-     *
      * Return the complete File content with the newly generated DocBlocks
      *
+     * @param string $fileContent
+     * @param string $className
      * @return mixed
+     * @throws ReflectionException
      */
     protected function getGeneratedFileContent($fileContent, $className)
     {
         $generator = new DocBlockGenerator($className);
 
-        $existing  = $generator->getExistingDocBlock();
+        $existing = $generator->getExistingDocBlock();
         $generated = $generator->getGeneratedDocBlock();
 
-        if($existing) {
+        if ($existing) {
             $fileContent = str_replace($existing, $generated, $fileContent);
-        }else{
+        } else {
             $needle = "class {$className}";
             $replace = "{$generated}\nclass {$className}";
             $pos = strpos($fileContent, $needle);
             if ($pos !== false) {
                 $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
             } else {
-                if (strrpos($className, "\\") !== false  && class_exists($className)) {
-                    $classNameNew = end(explode("\\", $className));
+                if (strrpos($className, "\\") !== false && class_exists($className)) {
+                    $exploded = explode("\\", $className);
+                    $classNameNew = end($exploded);
                     $needle = "class {$classNameNew}";
                     $replace = "{$generated}\nclass {$classNameNew}";
                     $pos = strpos($fileContent, $needle);
                     $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
-                    DB::alteration_message("Found namespaced Class: ". $classNameNew);
+                    DB::alteration_message('Found namespaced Class: ' . $classNameNew);
                 } else {
-                    DB::alteration_message("Could not find string 'class $className'. Please check casing and whitespace.", 'error');
+                    DB::alteration_message(
+                        "Could not find string 'class $className'. Please check casing and whitespace.",
+                        'error'
+                    );
                 }
             }
         }
 
         return $fileContent;
     }
-
-    /**
-     * @return boolean
-     */
-    public static function isEnabled()
-    {
-        return (bool)static::config()->get('enabled');
-    }
-
-    /**
-     * @param boolean $enabled
-     */
-    public static function setEnabled($enabled)
-    {
-        static::config()->enabled = $enabled;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getEnabledModules()
-    {
-        return (array)static::config()->get('enabled_modules');
-    }
-
-    /**
-     * @param array $enabled_modules
-     */
-    public static function setEnabledModules($enabled_modules)
-    {
-        static::config()->enabled_modules = $enabled_modules;
-    }
-
 }

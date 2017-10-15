@@ -1,23 +1,26 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator\Tests;
 
-class DataObjectAnnotatorTest_SubTeam extends DataObjectAnnotatorTest_Team implements TestOnly
+use SilverStripe\Dev\TestOnly;
+
+class SubTeam extends Team implements TestOnly
 {
-    private static $db = array(
+    private static $db = [
         'SubclassDatabaseField' => 'Varchar'
-    );
+    ];
 
-    private static $has_one = array(
-        "ParentTeam" => 'DataObjectAnnotatorTest_Team',
-    );
+    private static $has_one = [
+        "ParentTeam" => Team::class,
+    ];
 
-    private static $many_many = array(
-        'FormerPlayers' => 'DataObjectAnnotatorTest_Player'
-    );
+    private static $many_many = [
+        'FormerPlayers' => Player::class
+    ];
 
-    private static $many_many_extraFields = array(
-        'FormerPlayers' => array(
+    private static $many_many_extraFields = [
+        'FormerPlayers' => [
             'Position' => 'Varchar(100)'
-        )
-    );
+        ]
+    ];
 }

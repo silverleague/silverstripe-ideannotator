@@ -1,21 +1,26 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator\Tests;
+
+use SilverStripe\Security\Member;
+use SilverStripe\Dev\TestOnly;
+
 /**
- * Class DataObjectAnnotatorTest_Player
+ * Class Player
  */
-class DataObjectAnnotatorTest_Player extends Member implements TestOnly
+class Player extends Member implements TestOnly
 {
-    private static $db = array(
+    private static $db = [
         'IsRetired'   => 'Boolean',
         'ShirtNumber' => 'Varchar',
-    );
+    ];
 
-    private static $has_one = array(
-        'FavouriteTeam' => 'DataObjectAnnotatorTest_Team',
-    );
+    private static $has_one = [
+        'FavouriteTeam' => Team::class,
+    ];
 
-    private static $belongs_many_many = array(
-        'TeamPlayer'  => 'DataObjectAnnotatorTest_Team.Team',
-        'TeamReserve' => 'DataObjectAnnotatorTest_Team.Reserve'
-    );
+    private static $belongs_many_many = [
+        'TeamPlayer'  => 'SilverLeague\IDEAnnotator\Tests\Team.Team',
+        'TeamReserve' => 'SilverLeague\IDEAnnotator\Tests\Team.Reserve'
+    ];
 }

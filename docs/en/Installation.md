@@ -1,7 +1,7 @@
 ##Installation
-Either run ```composer require axyr/silverstripe-ideannotator --dev```
+Either run ```composer require silverleague/silverstripe-ideannotator --dev```
 
-Or add ```axyr/silverstripe-ideannotator: "dev-master"``` to `require-dev` in your composer.json file
+Or add ```silverleague/silverstripe-ideannotator: "*"``` to `require-dev` in your composer.json file
 
 Or download and add it to your root directory.
 
@@ -13,7 +13,7 @@ You can do this, by using something like this in your mysite/_config.php :
 
 ```php
 if($_SERVER['HTTP_HOST'] == 'mysite.local.dev') {
-    Config::inst()->update('DataObjectAnnotator', 'enabled', true);
+    Config::modify()->set('SilverLeague\IDEAnnotator\DataObjectAnnotator', 'enabled', true);
 }
 ```
 
@@ -24,7 +24,7 @@ When enabled IdeAnnotator generates the docblocks on dev/build for mysite only.
 You can add extra module folders with the following config setting :
 
 ```php
-Config::inst()->update('DataObjectAnnotator', 'enabled_modules', array('mysite', 'otherfolderinsiteroot'));
+Config::modify()->set('SilverLeague\IDEAnnotator\DataObjectAnnotator', 'enabled_modules', array('mysite', 'otherfolderinsiteroot'));
 ```
 or
 ```
@@ -33,7 +33,7 @@ yml
 Only:
     environment: 'dev'
 ---
-DataObjectAnnotator:
+SilverLeague\IDEAnnotator\DataObjectAnnotator:
     enabled_modules:
       - mysite
       - otherfolderinsiteroot

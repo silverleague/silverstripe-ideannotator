@@ -1,42 +1,48 @@
 {
-    "name": "silverleague/ideannotator",
-    "description": "Generate PHP DocBlock annotations for DataObject and DataExtension database fields and relation methods",
-    "type": "silverstripe-module",
-    "keywords": [
-        "silverstripe",
-        "database",
-        "orm",
-        "docblock",
-        "ide",
-        "annotations"
-    ],
-    "replace": {
-        "axyr/silverstripe-ideannotator": "*"
+  "name": "silverleague/silverstripe-ideannotator",
+  "description": "Generate PHP DocBlock annotations for DataObject and DataExtension databasefields and relation methods",
+  "type": "silverstripe-vendormodule",
+  "keywords": [
+    "silverstripe",
+    "database",
+    "orm",
+    "docblock",
+    "ide",
+    "annotations"
+  ],
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Martijn van Nieuwenhoven",
+      "email": "info@axyrmedia.nl"
     },
-    "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Martijn van Nieuwenhoven",
-            "email": "info@axyrmedia.nl"
-        },
-        {
-            "name": "Simon 'Firesphere' Erkelens",
-            "email": "simonerkelens@silverstripe.com"
-        }
-    ],
-    "require": {
-        "silverstripe/framework": "^3.1",
-        "phpdocumentor/reflection-docblock": "^2.0.4"
+    {
+      "name": "Simon 'Firesphere' Erkelens",
+      "email": "simonerkelens@silverstripe.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0",
+    "silverstripe/recipe-plugin": ">=0.1@dev <1.0",
+    "silverstripe/recipe-cms": "1.0.x-dev",
+    "phpdocumentor/reflection-docblock": "^2.0@dev"
+  },
+  "require-dev": {
+    "scriptfusion/phpunit-immediate-exception-printer": "^1",
+    "phpunit/phpunit": "^5.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Axyr\\IDEAnnotator\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "3.x-dev": "3.0.x-dev",
+      "dev-master": "3.x-dev"
     },
-    "require-dev": {
-        "silverstripe/cms": "^3.1",
-        "phpunit/PHPUnit": "~3.7@stable"
-    },
-    "extra": {
-        "installer-name": "ideannotator",
-        "branch-alias": {
-            "dev-master": "3.0.x-dev"
-        }
-    },
-    "target-dir": "ideannotator"
+    "installer-name": "ideannotator"
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev"
 }

@@ -1,12 +1,14 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator;
+
+use ReflectionClass;
+use ReflectionException;
+use SilverStripe\Core\Manifest\ModuleLoader;
+
 /**
  * Class AnnotateClassInfo
  * We will need this for phpDocumentor as well.
- *
- * @todo namespace this...
- *
- * @package IDEAnnotator/Helpers
  */
 class AnnotateClassInfo
 {
@@ -24,6 +26,7 @@ class AnnotateClassInfo
      * AnnotateClassInfo constructor.
      *
      * @param $className
+     * @throws ReflectionException
      */
     public function __construct($className)
     {
@@ -39,7 +42,7 @@ class AnnotateClassInfo
      */
     public function getModuleName()
     {
-        $relativePath     = str_replace(BASE_PATH . DIRECTORY_SEPARATOR, '', $this->reflector->getFileName());
+        $relativePath = str_replace(BASE_PATH . DIRECTORY_SEPARATOR, '', $this->reflector->getFileName());
         list($moduleName) = explode(DIRECTORY_SEPARATOR, $relativePath);
 
         return (string)$moduleName;

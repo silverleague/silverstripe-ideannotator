@@ -1,5 +1,12 @@
 <?php
 
+namespace SilverLeague\IDEAnnotator\Tests;
+
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Extensible;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Dev\TestOnly;
+
 /**
  *
  */
@@ -7,36 +14,37 @@
 /* comment */
 
 // Another comment
-class DataObjectAnnotatorTest_Team extends DataObject implements TestOnly
+class Team extends DataObject implements TestOnly
 {
 
-    private static $db = array(
+    private static $extensions = [
+        Team_Extension::class
+    ];
+
+    private static $db = [
         'Title'      => 'Varchar',
         'VisitCount' => 'Int',
         'Price'      => 'Currency'
-    );
+    ];
 
-    private static $has_one = array(
-        "Captain"            => 'DataObjectAnnotatorTest_Player',
-        'HasOneRelationship' => 'DataObjectAnnotatorTest_Player',
-    );
+    private static $has_one = [
+        'Captain'            => Player::class,
+        'HasOneRelationship' => Player::class,
+    ];
 
-    private static $has_many = array(
-        'SubTeams' => 'DataObjectAnnotatorTest_SubTeam',
-        'Comments' => 'DataObjectAnnotatorTest_TeamComment'
-    );
+    private static $has_many = [
+        'SubTeams' => SubTeam::class,
+        'Comments' => TeamComment::class
+    ];
 
-    private static $many_many = array(
-        'Players'           => 'DataObjectAnnotatorTest_Player.Players',
-        'Reserves'          => 'DataObjectAnnotatorTest_Player.Reserves',
-        'SecondarySubTeams' => 'DataObjectAnnotatorTest_SubTeam',
-    );
+    private static $many_many = [
+        'Players'           => 'SilverLeague\IDEAnnotator\Tests\Player.Players',
+        'Reserves'          => 'SilverLeague\IDEAnnotator\Tests\Player.Reserves',
+        'SecondarySubTeams' => SubTeam::class,
+    ];
 
     public function SecondarySubTeams()
     {
 
     }
-
 }
-
-Config::inst()->update('DataObjectAnnotatorTest_Team', 'extensions', array('DataObjectAnnotatorTest_Team_Extension'));

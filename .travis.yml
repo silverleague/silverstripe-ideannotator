@@ -1,33 +1,35 @@
+sudo: false
+
 language: php
 
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
 
 env:
-  - DB=MYSQL CORE_RELEASE=3.4
+  global:
+    - DB=MYSQL COMPOSER_ROOT_VERSION="4.0.x-dev"
 
 matrix:
   include:
+    - php: 5.6
+      env: DB=MYSQL PHPUNIT_TEST=1
     - php: 7.1
-      env: DB=MYSQL CORE_RELEASE=3.6 COVERAGE="--coverage-clover=coverage.xml"
-    - php: 7.1
-      env: DB=PGSQL CORE_RELEASE=3
+      env: DB=MYSQL PHPCS_TEST=1 PHPUNIT_TEST=1 PHPUNIT_COVERAGE_TEST=1
 
 before_script:
-  - git clone git://github.com/silverstripe/silverstripe-travis-support.git ~/travis-support
-  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
-  - cd ~/builds/ss
+  - phpenv rehash
+  - phpenv config-rm xdebug.ini
+
+  - cd ..;mv silverstripe-ideannotator ideannotator
+  - cp ideannotator/phpunit.xml.dist .;cp ideannotator/composer.json .
+  - composer install --prefer-dist
+  - composer require --prefer-dist --no-update silverstripe/recipe-core:1.0.x-dev
+  - composer require --prefer-dist --no-update squizlabs/php_codesniffer:*
+  - composer update
 
 script:
-  - vendor/bin/phpunit "$COVERAGE" ideannotator/tests
+  - if [[ $PHPUNIT_TEST ]]; then vendor/bin/phpunit ideannotator/tests/; fi
+  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-clover=coverage.xml; fi
+  - if [[ $PHPCS_TEST ]]; then vendor/bin/phpcs --standard=vendor/silverstripe/framework/phpcs.xml.dist ideannotator/src/ ; fi
 
-# Share coverage results with codecov.io
 after_success:
-  - >
-    test "$COVERAGE" != ""
-    && mv coverage.xml ~/build/$TRAVIS_REPO_SLUG
-    && cd ~/build/$TRAVIS_REPO_SLUG
-    && bash <(curl -s https://codecov.io/bash)
+  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then bash <(curl -s https://codecov.io/bash) -f coverage.xml; fi
+
