@@ -12,6 +12,18 @@ This module generates @property, @method and @mixin tags for DataObjects, PageCo
 
 The docblocks can be generated/updated with each dev/build and with a DataObjectAnnotatorTask per module or classname.
 
+## Requirements
+
+SilverStripe Framework and possible custom code.
+
+By default, `mysite` is an enabled "module".
+
+### Version ^2:
+SilverStripe 3.x framework
+
+### Version ^3:
+SilverStripe 4.x
+
 ## Installation
 
 Until the repository is fully transferred to SilverLeage, you can install it using the following in your `composer.json`
@@ -80,3 +92,5 @@ For further documentation information, see the [docs](docs/en/Index.md)
 ## A word of caution
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...
 I tried to add complete UnitTests, but I can't garantuee every situation is covered.
+
+This module should **never** be installed on a production environment.
