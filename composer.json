@@ -1,7 +1,7 @@
 {
   "name": "silverleague/silverstripe-ideannotator",
   "description": "Generate PHP DocBlock annotations for DataObject and DataExtension databasefields and relation methods",
-  "type": "silverstripe-module",
+  "type": "silverstripe-vendormodule",
   "keywords": [
     "silverstripe",
     "database",

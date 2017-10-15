@@ -2,6 +2,9 @@
 
 namespace SilverLeague\IDEAnnotator;
 
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionClass;
+use ReflectionException;
 use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Core\ClassInfo;
 
@@ -10,6 +13,7 @@ class ControllerTagGenerator extends AbstractTagGenerator
 
     /**
      * @return void
+     * @throws NotFoundExceptionInterface
      */
     protected function generateTags()
     {
@@ -35,11 +39,11 @@ class ControllerTagGenerator extends AbstractTagGenerator
     /**
      * @param string $className
      * @return bool
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     protected function isContentController($className)
     {
-        $reflector = new \ReflectionClass($className);
+        $reflector = new ReflectionClass($className);
 
         return ClassInfo::exists(ContentController::class)
             && $reflector->isSubclassOf(ContentController::class);

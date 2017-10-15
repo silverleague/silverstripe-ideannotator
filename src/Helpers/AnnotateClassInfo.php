@@ -2,11 +2,13 @@
 
 namespace SilverLeague\IDEAnnotator;
 
+use ReflectionClass;
+use ReflectionException;
+use SilverStripe\Core\Manifest\ModuleLoader;
+
 /**
  * Class AnnotateClassInfo
  * We will need this for phpDocumentor as well.
- *
- * @package IDEAnnotator/Helpers
  */
 class AnnotateClassInfo
 {
@@ -16,7 +18,7 @@ class AnnotateClassInfo
     protected $className = '';
 
     /**
-     * @var \ReflectionClass
+     * @var ReflectionClass
      */
     protected $reflector;
 
@@ -24,13 +26,13 @@ class AnnotateClassInfo
      * AnnotateClassInfo constructor.
      *
      * @param $className
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct($className)
     {
         $this->className = $className;
 
-        $this->reflector = new \ReflectionClass($className);
+        $this->reflector = new ReflectionClass($className);
     }
 
     /**

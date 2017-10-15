@@ -2,6 +2,7 @@
 
 namespace SilverLeague\IDEAnnotator;
 
+use Psr\Container\NotFoundExceptionInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
@@ -14,8 +15,7 @@ use SilverStripe\Core\Injector\Injector;
  * Start annotation, if skipannotation is not set and the annotator is enabled.
  *
  * @package IDEAnnotator/Extensions
- *
- * @property \SilverStripe\Dev\DevBuildController $owner
+ * @property \SilverStripe\Dev\DevBuildController|\SilverLeague\IDEAnnotator\Annotatable $owner
  */
 class Annotatable extends Extension
 {
@@ -38,7 +38,7 @@ class Annotatable extends Extension
 
     /**
      * Annotated Controllers and Extensions
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function afterCallActionHandler()
     {
@@ -61,8 +61,8 @@ class Annotatable extends Extension
 
     /**
      * Annotatable setup.
-     * This is theoratically a constructor, but to save memory we're using setup called from {@see requireDefaultRecords}
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * This is theoretically a constructor, but to save memory we're using setup called from {@see requireDefaultRecords}
+     * @throws NotFoundExceptionInterface
      */
     public function setUp()
     {

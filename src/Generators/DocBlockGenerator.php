@@ -2,9 +2,13 @@
 
 namespace SilverLeague\IDEAnnotator;
 
+use InvalidArgumentException;
+use LogicException;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Serializer;
 use phpDocumentor\Reflection\DocBlock\Tag;
+use ReflectionClass;
+use ReflectionException;
 use SilverStripe\Control\Controller;
 
 /**
@@ -21,7 +25,7 @@ class DocBlockGenerator
     protected $className = '';
 
     /**
-     * @var \ReflectionClass
+     * @var ReflectionClass
      */
     protected $reflector;
 
@@ -34,12 +38,13 @@ class DocBlockGenerator
      * DocBlockGenerator constructor.
      *
      * @param $className
-     * @throws \ReflectionException
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
      */
     public function __construct($className)
     {
         $this->className = $className;
-        $this->reflector = new \ReflectionClass($className);
+        $this->reflector = new ReflectionClass($className);
 
         $generatorClass = $this->reflector->isSubclassOf(Controller::class)
             ? ControllerTagGenerator::class : OrmTagGenerator::class;
@@ -49,6 +54,7 @@ class DocBlockGenerator
 
     /**
      * @return Tag[]
+     * @throws InvalidArgumentException
      */
     public function getExistingTags()
     {
@@ -73,6 +79,8 @@ class DocBlockGenerator
 
     /**
      * @return DocBlock|string
+     * @throws LogicException
+     * @throws InvalidArgumentException
      */
     public function getGeneratedDocBlock()
     {
@@ -84,8 +92,8 @@ class DocBlockGenerator
     /**
      * @param string $existingDocBlock
      * @return string
-     * @throws \LogicException
-     * @throws \InvalidArgumentException
+     * @throws LogicException
+     * @throws InvalidArgumentException
      */
     protected function mergeGeneratedTagsIntoDocBlock($existingDocBlock)
     {

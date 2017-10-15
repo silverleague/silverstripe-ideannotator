@@ -2,6 +2,9 @@
 
 namespace SilverLeague\IDEAnnotator;
 
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
 
@@ -28,9 +31,10 @@ class DataObjectAnnotatorTask extends BuildTask
     }
 
     /**
-     * @param \SilverStripe\Control\HTTPRequest $request
+     * @param HTTPRequest $request
      * @return bool
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ReflectionException
+     * @throws NotFoundExceptionInterface
      */
     public function run($request)
     {
