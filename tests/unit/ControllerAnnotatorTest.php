@@ -32,7 +32,7 @@ class ControllerAnnotatorTest extends SapphireTest
     /**
      * Setup Defaults
      */
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);

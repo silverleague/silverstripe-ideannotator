@@ -7,7 +7,7 @@
     </testsuite>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/</directory>
+            <directory suffix=".php">ideannotator/src/</directory>
         </whitelist>
     </filter>
     <groups>
