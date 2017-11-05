@@ -2,10 +2,14 @@
 
 namespace SilverLeague\IDEAnnotator;
 
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleManifest;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 
@@ -68,22 +72,19 @@ class AnnotatePermissionChecker
      * @param $className
      *
      * @return bool
-     * @throws \ReflectionException
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     public function classNameIsAllowed($className)
     {
         if ($this->classNameIsSupported($className)) {
             $classInfo = new AnnotateClassInfo($className);
             $filePath = $classInfo->getClassFilePath();
+            $module = Injector::inst()->createWithArgs(ModuleManifest::class, [Director::baseFolder()])->getModuleByPath($filePath);
 
             $allowedModules = (array)Config::inst()->get(DataObjectAnnotator::class, 'enabled_modules');
 
-            foreach ($allowedModules as $moduleName) {
-                $modulePath = BASE_PATH . DIRECTORY_SEPARATOR . $moduleName;
-                if (false !== strpos($filePath, $modulePath)) {
-                    return true;
-                }
-            }
+            return in_array($module->getName(), $allowedModules, true);
         }
 
         return false;

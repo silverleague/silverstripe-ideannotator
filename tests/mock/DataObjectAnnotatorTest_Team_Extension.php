@@ -7,7 +7,6 @@ use SilverStripe\Dev\TestOnly;
 
 class Team_Extension extends DataExtension implements TestOnly
 {
-
     private static $db = array(
         'ExtendedVarcharField' => 'Varchar',
         'ExtendedIntField'     => 'Int'

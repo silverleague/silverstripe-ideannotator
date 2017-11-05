@@ -14,7 +14,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\DataObject;
-
+use SilverStripe\Dev\Debug;
 /**
  * Class DataObjectAnnotatorTest
  *
@@ -42,7 +42,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     {
         parent::setUp();
         Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator']);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['silverleague/ideannotator']);
 
         $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
         $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
@@ -76,7 +76,7 @@ class DataObjectAnnotatorTest extends SapphireTest
             AnnotatorPageTest::class                => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
             AnnotatorPageTestController::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
         ];
-        $classes = $this->annotator->getClassesForModule('ideannotator');
+        $classes = $this->annotator->getClassesForModule('silverleague/ideannotator');
 
         $this->assertEquals($expectedClasses, $classes);
     }

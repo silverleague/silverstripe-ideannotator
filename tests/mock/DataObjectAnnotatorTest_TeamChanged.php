@@ -27,7 +27,6 @@ use SilverStripe\Dev\TestOnly;
  */
 class TeamChanged extends DataObject implements TestOnly
 {
-
     private static $db = [
         'Title' => 'Varchar',
         'Price' => 'Currency'
@@ -50,6 +49,5 @@ class TeamChanged extends DataObject implements TestOnly
 
     public function SecondarySubTeams()
     {
-
     }
 }

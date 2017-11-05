@@ -16,7 +16,6 @@ use SilverStripe\Dev\TestOnly;
 // Another comment
 class Team extends DataObject implements TestOnly
 {
-
     private static $extensions = [
         Team_Extension::class
     ];
@@ -45,6 +44,5 @@ class Team extends DataObject implements TestOnly
 
     public function SecondarySubTeams()
     {
-
     }
 }
