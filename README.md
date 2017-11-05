@@ -3,9 +3,9 @@
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/silverleague/silverstripe-ideannotator.svg)](https://scrutinizer-ci.com/g/silverleague/silverstripe-ideannotator/)
 [![Travis](https://img.shields.io/travis/silverleague/silverstripe-ideannotator.svg)](https://travis-ci.org/silverleague/silverstripe-ideannotator)
 [![codecov](https://codecov.io/gh/silverleague/silverstripe-ideannotator/branch/master/graph/badge.svg)](https://codecov.io/gh/silverleague/silverstripe-ideannotator)
-[![Packagist](https://img.shields.io/packagist/dt/silverleague/silverstripe-ideannotator.svg)](https://packagist.org/packages/silverleague/silverstripe-ideannotator)
-[![Packagist](https://img.shields.io/packagist/v/silverleague/silverstripe-ideannotator.svg)](https://packagist.org/packages/silverleague/silverstripe-ideannotator)
-[![Packagist](https://img.shields.io/badge/unstable-dev--master-orange.svg)](https://packagist.org/packages/silverleague/silverstripe-ideannotator)
+[![Packagist](https://img.shields.io/packagist/dt/silverleague/ideannotator.svg)](https://packagist.org/packages/silverleague/ideannotator)
+[![Packagist](https://img.shields.io/packagist/v/silverleague/ideannotator.svg)](https://packagist.org/packages/silverleague/ideannotator)
+[![Packagist Pre Release](https://img.shields.io/packagist/vpre/silverleague/ideannotator.svg)](https://packagist.org/packages/silverleague/ideannotator)
 
 
 This module generates @property, @method and @mixin tags for DataObjects, PageControllers and (Data)Extensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
