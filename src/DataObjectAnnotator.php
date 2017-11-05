@@ -171,7 +171,7 @@ class DataObjectAnnotator
                 file_put_contents($filePath, $generated);
                 DB::alteration_message($className . ' Annotated', 'created');
             } elseif ($generated === $original && $className) {
-                DB::alteration_message($className);
+                DB::alteration_message($className, 'repaired');
             }
         }
     }
@@ -207,7 +207,6 @@ class DataObjectAnnotator
                     $replace = "{$generated}\nclass {$classNameNew}";
                     $pos = strpos($fileContent, $needle);
                     $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
-                    DB::alteration_message('Found namespaced Class: ' . $classNameNew);
                 } else {
                     DB::alteration_message(
                         "Could not find string 'class $className'. Please check casing and whitespace.",

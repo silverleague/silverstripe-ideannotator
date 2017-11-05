@@ -17,7 +17,7 @@ matrix:
 before_script:
   - phpenv rehash
   - phpenv config-rm xdebug.ini
-
+  
   - cd ..;mv silverstripe-ideannotator ideannotator
   - cp ideannotator/phpunit.xml.dist .;cp ideannotator/composer.json .
   - composer install --prefer-dist

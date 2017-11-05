@@ -32,7 +32,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     /**
      * Setup Defaults
      */
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         Config::modify()->set(Director::class, 'environment_type', 'dev');

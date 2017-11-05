@@ -2,13 +2,18 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
+use PageController;
 use PHPUnit_Framework_TestCase;
+use RootTeam;
+use SilverLeague\IDEAnnotator\Annotatable;
+use SilverLeague\IDEAnnotator\AnnotateClassInfo;
 use SilverLeague\IDEAnnotator\AnnotatePermissionChecker;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
-use SilverLeague\IDEAnnotator\AnnotateClassInfo;
-use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\ORM\DataObject;
 
 /**
  * Class DataObjectAnnotatorTest
@@ -33,7 +38,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     /**
      * Setup Defaults
      */
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
@@ -41,6 +46,67 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
         $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
+    }
+
+    public function testIsEnabled()
+    {
+        $this->assertTrue(DataObjectAnnotator::isEnabled());
+    }
+
+    /**
+     * Test the expected classes show up in the Classes for Module
+     */
+    public function testGetClassesForModule()
+    {
+        $expectedClasses = [
+            Team::class                             => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team.php',
+            TeamChanged::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamChanged.php',
+            TeamComment::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamComment.php',
+            DocBlockMockWithDocBlock::class         => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
+            OtherDocBlockMockWithDocBlock::class    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
+            DataObjectWithOldStyleTagMarkers::class => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
+            DoubleDataObjectInOneFile1::class       => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
+            DoubleDataObjectInOneFile2::class       => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
+            SubTeam::class                          => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_SubTeam.php',
+            Player::class                           => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Player.php',
+            Team_Extension::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team_Extension.php',
+            Annotatable::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Extensions' . DIRECTORY_SEPARATOR . 'Annotatable.php',
+            AnnotatorPageTest_Extension::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
+            RootTeam::class                         => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'RootTeam.php',
+            AnnotatorPageTest::class                => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
+            AnnotatorPageTestController::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
+        ];
+        $classes = $this->annotator->getClassesForModule('ideannotator');
+
+        $this->assertEquals($expectedClasses, $classes);
+    }
+
+
+    /**
+     * As below, as we don't want to actively change the mocks, so enable mysite
+     */
+    public function testAnnotateObject()
+    {
+        $this->assertFalse($this->annotator->annotateObject(DataObject::class));
+
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator', 'mysite']);
+        $this->assertTrue($this->annotator->annotateObject(PageController::class));
+    }
+
+    /**
+     * Not testing existing modules, as it wil actively alter the mock files, so enable mysite
+     */
+    public function testAnnotateModule()
+    {
+        $noModule = $this->annotator->annotateModule('');
+        $this->assertFalse($noModule);
+        $noModule = $this->annotator->annotateModule('mysite');
+        $this->assertFalse($noModule);
+        // Enable 'mysite' for testing
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator', 'mysite']);
+
+        $module = $this->annotator->annotateModule('mysite');
+        $this->assertTrue($module);
     }
 
     /**
@@ -131,6 +197,17 @@ class DataObjectAnnotatorTest extends SapphireTest
         $firstRun = $this->annotator->getGeneratedFileContent($original, Team::class);
         $secondRun = $this->annotator->getGeneratedFileContent($firstRun, Team::class);
         $this->assertEquals($firstRun, $secondRun);
+    }
+
+    /**
+     * Test that root (non-namespaced) classes get annotated
+     */
+    public function testRootAnnotations()
+    {
+        $classInfo = new AnnotateClassInfo(RootTeam::class);
+        $filePath = $classInfo->getClassFilePath();
+        $run = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), RootTeam::class);
+        $this->assertContains('@property string $Title', $run);
     }
 
     /**

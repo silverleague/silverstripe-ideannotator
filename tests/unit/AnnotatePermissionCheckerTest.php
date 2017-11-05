@@ -20,7 +20,7 @@ class AnnotatePermissionCheckerTest extends SapphireTest
 {
 
     /**
-     * @var \SilverLeague\IDEAnnotator\AnnotatePermissionChecker $permissionChecker
+     * @var AnnotatePermissionChecker $permissionChecker
      */
     private $permissionChecker = null;
 
@@ -29,13 +29,39 @@ class AnnotatePermissionCheckerTest extends SapphireTest
      */
     private $annotator;
 
+
+    /**
+     * Setup Defaults
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        Config::modify()->set(Director::class, 'environment_type', 'dev');
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator', 'mysite']);
+
+        Config::modify()->merge(Team::class, 'extensions', [Team_Extension::class]);
+
+        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
+        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
+    }
+
     public function testIsEnabled()
     {
         $this->assertTrue($this->permissionChecker->isEnabled());
 
-        Config::inst()->remove(DataObjectAnnotator::class, 'enabled');
         Config::modify()->set(DataObjectAnnotator::class, 'enabled', false);
         $this->assertFalse($this->permissionChecker->isEnabled());
+        // Set everything back to normal
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+    }
+
+    public function testAnnotatePermissionChecker()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', false);
+        $this->assertFalse($this->permissionChecker->environmentIsAllowed());
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+        $this->assertTrue($this->permissionChecker->environmentIsAllowed());
     }
 
     /**
@@ -66,25 +92,8 @@ class AnnotatePermissionCheckerTest extends SapphireTest
 
         $this->assertFalse($this->permissionChecker->classNameIsAllowed(Team::class));
     }
-
     public function tearDown()
     {
         parent::tearDown();
-    }
-
-    /**
-     * Setup Defaults
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        Config::modify()->set(Director::class, 'environment_type', 'dev');
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator', 'mysite']);
-
-        Config::modify()->merge(Team::class, 'extensions', [Team_Extension::class]);
-
-        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
-        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
     }
 }

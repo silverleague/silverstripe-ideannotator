@@ -42,12 +42,14 @@ class Annotatable extends Extension
      */
     public function afterCallActionHandler()
     {
-        $this->setUp();
-
-        $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
         $envIsAllowed = Director::isDev() && Config::inst()->get(DataObjectAnnotator::class, 'enabled');
-
+        $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
+        
+        // Only instatiate things when we want to run it, this is for when the module is accidentally installed
+        // on non-dev environments for example
         if ($skipAnnotation === null && $envIsAllowed) {
+            $this->setUp();
+
             $this->displayMessage("<div class='build'><p><b>Generating class docblocks</b></p><ul>\n\n");
 
             $modules = $this->permissionChecker->enabledModules();
@@ -61,7 +63,7 @@ class Annotatable extends Extension
 
     /**
      * Annotatable setup.
-     * This is theoretically a constructor, but to save memory we're using setup called from {@see requireDefaultRecords}
+     * This is theoretically a constructor, but to save memory we're using setup called from {@see afterCallActionHandler}
      * @throws NotFoundExceptionInterface
      */
     public function setUp()
@@ -76,5 +78,21 @@ class Annotatable extends Extension
     public function displayMessage($message)
     {
         echo Director::is_cli() ? "\n" . $message . "\n\n" : "<p><b>$message</b></p>";
+    }
+
+    /**
+     * @return DataObjectAnnotator
+     */
+    public function getAnnotator()
+    {
+        return $this->annotator;
+    }
+
+    /**
+     * @return AnnotatePermissionChecker
+     */
+    public function getPermissionChecker()
+    {
+        return $this->permissionChecker;
     }
 }
