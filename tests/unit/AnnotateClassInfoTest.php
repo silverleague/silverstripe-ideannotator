@@ -16,12 +16,11 @@ class AnnotateClassInfoTest extends SapphireTest
     public function testItGetsTheCorrectModuleName()
     {
         $classInfo = new AnnotateClassInfo(AnnotatorPageTest::class);
-        $this->assertEquals('ideannotator', $classInfo->getModuleName());
+        $this->assertEquals('silverleague/ideannotator', $classInfo->getModuleName());
     }
 
     public function tearDown()
     {
         parent::tearDown();
     }
-
 }

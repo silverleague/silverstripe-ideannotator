@@ -25,4 +25,3 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
         return parent::getGeneratedFileContent($fileContent, $className);
     }
 }
-

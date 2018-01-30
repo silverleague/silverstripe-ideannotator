@@ -4,7 +4,9 @@ namespace SilverLeague\IDEAnnotator;
 
 use ReflectionClass;
 use ReflectionException;
-use SilverStripe\Core\Manifest\ModuleLoader;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleManifest;
 
 /**
  * Class AnnotateClassInfo
@@ -42,10 +44,11 @@ class AnnotateClassInfo
      */
     public function getModuleName()
     {
-        $relativePath = str_replace(BASE_PATH . DIRECTORY_SEPARATOR, '', $this->reflector->getFileName());
-        list($moduleName) = explode(DIRECTORY_SEPARATOR, $relativePath);
+        /** @var ModuleManifest $moduleManifest */
+        $moduleManifest = Injector::inst()->createWithArgs(ModuleManifest::class, [Director::baseFolder()]);
+        $module = $moduleManifest->getModuleByPath($this->reflector->getFileName());
 
-        return (string)$moduleName;
+        return $module->getName();
     }
 
     /**

@@ -15,5 +15,4 @@ class TeamComment extends DataObject implements TestOnly
     private static $has_one = [
         'Team' => Team::class
     ];
-
 }

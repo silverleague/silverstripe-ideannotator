@@ -26,18 +26,11 @@ SilverStripe 4.x
 
 ## Installation
 
-Until the repository is fully transferred to SilverLeage, you can install it using the following in your `composer.json`
 ```json
 {
   "require-dev": {
     "silverleague/ideannotator": "3.x-dev"
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git://github.com/silverleague/silverstripe-ideannotator"
-    }
-  ]
+  }
 }
 ```
 Please note, this example omitted any possible modules you require yourself!
