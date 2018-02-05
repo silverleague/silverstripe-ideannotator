@@ -2,6 +2,8 @@
 
 namespace SilverLeague\IDEAnnotator;
 
+use InvalidArgumentException;
+use LogicException;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
 use SilverStripe\Control\Director;
@@ -98,6 +100,8 @@ class DataObjectAnnotator
      *
      * @param string $moduleName
      * @return bool
+     * @throws ReflectionException
+     * @throws NotFoundExceptionInterface
      */
     public function annotateModule($moduleName)
     {
@@ -139,6 +143,7 @@ class DataObjectAnnotator
      * @param string $className
      * @return bool
      * @throws ReflectionException
+     * @throws NotFoundExceptionInterface
      */
     public function annotateObject($className)
     {
@@ -153,6 +158,8 @@ class DataObjectAnnotator
 
     /**
      * @param string $className
+     * @throws LogicException
+     * @throws InvalidArgumentException
      * @throws ReflectionException
      */
     protected function writeFileContent($className)
@@ -168,6 +175,8 @@ class DataObjectAnnotator
 
             // we have a change, so write the new file
             if ($generated && $generated !== $original && $className) {
+                // Trim unneeded whitespaces at the end of lines
+                $generated = preg_replace('/\s+$/m', '', $generated);
                 file_put_contents($filePath, $generated);
                 DB::alteration_message($className . ' Annotated', 'created');
             } elseif ($generated === $original && $className) {
@@ -182,6 +191,8 @@ class DataObjectAnnotator
      * @param string $fileContent
      * @param string $className
      * @return mixed
+     * @throws LogicException
+     * @throws InvalidArgumentException
      * @throws ReflectionException
      */
     protected function getGeneratedFileContent($fileContent, $className)

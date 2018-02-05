@@ -145,6 +145,10 @@ class OrmTagGenerator extends AbstractTagGenerator
     {
         if (!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
+                // A many_many with a relation through another DataObject
+                if (is_array($dataObjectName)) {
+                    $dataObjectName = $dataObjectName['through'];
+                }
                 $dataObjectName = $this->resolveDotNotation($dataObjectName);
                 $this->pushMethodTag($fieldName, "\\{$listType}|\\{$dataObjectName}[] {$fieldName}()");
             }

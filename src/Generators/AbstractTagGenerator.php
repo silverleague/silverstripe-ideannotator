@@ -193,7 +193,7 @@ abstract class AbstractTagGenerator
     {
         $className = $this->className;
         if (Injector::inst()->get($this->className) instanceof Extension) {
-            $owners = (array)array_filter($this->extensionClasses, function ($class) use ($className) {
+            $owners = array_filter($this->extensionClasses, function ($class) use ($className) {
                 $config = Config::inst()->get($class, 'extensions');
 
                 return ($config !== null && in_array($className, $config, null));

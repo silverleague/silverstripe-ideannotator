@@ -1,2 +1,13 @@
 docs/en/apidocs
+.idea
+.env
+.htaccess
 !docs/en/*.md
+/mysite
+/*.php
+composer.lock
+vendor
+web.config
+install-frameworkmissing.html
+/assets
+/resources

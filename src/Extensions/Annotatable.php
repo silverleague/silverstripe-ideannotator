@@ -3,6 +3,7 @@
 namespace SilverLeague\IDEAnnotator;
 
 use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
@@ -39,6 +40,7 @@ class Annotatable extends Extension
     /**
      * Annotated Controllers and Extensions
      * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     public function afterCallActionHandler()
     {
