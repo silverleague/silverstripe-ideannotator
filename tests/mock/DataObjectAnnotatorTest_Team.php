@@ -2,10 +2,8 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Extensible;
-use SilverStripe\ORM\DataObject;
 use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataObject;
 
 /**
  *
@@ -32,8 +30,14 @@ class Team extends DataObject implements TestOnly
     ];
 
     private static $has_many = [
-        'SubTeams' => SubTeam::class,
-        'Comments' => TeamComment::class
+        'SubTeams'   => SubTeam::class,
+        'Comments'   => TeamComment::class,
+        'Supporters' => [
+            'through' => TeamSupporter::class,
+            'from'    => 'Team',
+            'to'      => 'Supporter',
+
+        ]
     ];
 
     private static $many_many = [

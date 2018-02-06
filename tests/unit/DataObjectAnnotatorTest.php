@@ -14,7 +14,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Dev\Debug;
+
 /**
  * Class DataObjectAnnotatorTest
  *
@@ -75,9 +75,12 @@ class DataObjectAnnotatorTest extends SapphireTest
             RootTeam::class                         => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'RootTeam.php',
             AnnotatorPageTest::class                => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
             AnnotatorPageTestController::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
+            TeamSupporter::class                    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamSupporter.php',
         ];
         $classes = $this->annotator->getClassesForModule('silverleague/ideannotator');
-
+        // Sort the array, so we don't get accidental errors due to manual ordering
+        ksort($expectedClasses);
+        ksort($classes);
         $this->assertEquals($expectedClasses, $classes);
     }
 
@@ -145,6 +148,10 @@ class DataObjectAnnotatorTest extends SapphireTest
         );
         $this->assertContains(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Player[] Reserves()',
+            $content
+        );
+        $this->assertContains(
+            '@method \SilverStripe\ORM\DataList|\SilverLeague\IDEAnnotator\Tests\TeamSupporter[] Supporters()',
             $content
         );
 
