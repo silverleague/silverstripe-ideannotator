@@ -2,8 +2,8 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use SilverStripe\ORM\DataExtension;
 use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataExtension;
 
 class Team_Extension extends DataExtension implements TestOnly
 {

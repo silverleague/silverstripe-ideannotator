@@ -1,6 +1,6 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator\Generators;
 
 use InvalidArgumentException;
 use LogicException;
@@ -70,7 +70,7 @@ class DocBlockGenerator
      *
      * If we file old style generated docblocks we remove them
      *
-     * @return string
+     * @return bool|string
      */
     public function getExistingDocBlock()
     {
@@ -139,13 +139,5 @@ class DocBlockGenerator
     public function getGeneratedTags()
     {
         return $this->tagGenerator->getTags();
-    }
-
-    /**
-     * @return array
-     */
-    public function getExistingTagComments()
-    {
-        return $this->tagGenerator->getExistingTagComments();
     }
 }

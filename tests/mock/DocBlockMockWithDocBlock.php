@@ -2,7 +2,6 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use \Page;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\ORM\DataObject;
 
@@ -30,33 +29,5 @@ class OtherDocBlockMockWithDocBlock extends DataObject implements TestOnly
      */
     private static $db = [
         'Name' => 'Varchar(255)'
-    ];
-}
-
-/**
- * StartGeneratedWithDataObjectAnnotator
- *
- * @property string $Street
- * @property int $Nr
- * @property int $PageID
- * @method Page Page()
- *
- * EndGeneratedWithDataObjectAnnotator
- */
-class DataObjectWithOldStyleTagMarkers extends DataObject implements TestOnly
-{
-    /**
-     * @var array
-     */
-    private static $db = [
-        'Street' => 'Varchar(255)',
-        'Nr'     => 'Int'
-    ];
-
-    /**
-     * @var array
-     */
-    private static $has_one = [
-        'Page' => Page::class
     ];
 }

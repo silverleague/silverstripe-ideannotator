@@ -1,11 +1,12 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator\Extensions;
 
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
+use SilverLeague\IDEAnnotator\DataObjectAnnotator;
+use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
 
@@ -39,33 +40,39 @@ class Annotatable extends Extension
 
     /**
      * Annotated Controllers and Extensions
+     * @return bool // Return a boolean for test-purposes
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
     public function afterCallActionHandler()
     {
-        $envIsAllowed = Director::isDev() && Config::inst()->get(DataObjectAnnotator::class, 'enabled');
+        $envIsAllowed = Director::isDev() && DataObjectAnnotator::config()->get('enabled');
         $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
-        
+
         // Only instatiate things when we want to run it, this is for when the module is accidentally installed
         // on non-dev environments for example
         if ($skipAnnotation === null && $envIsAllowed) {
             $this->setUp();
 
-            $this->displayMessage("<div class='build'><p><b>Generating class docblocks</b></p><ul>\n\n");
+            $this->displayMessage('Generating class docblocks', true, false);
 
             $modules = $this->permissionChecker->enabledModules();
             foreach ($modules as $module) {
                 $this->annotator->annotateModule($module);
             }
 
-            $this->displayMessage("</ul>\n<p><b>Docblock generation finished!</b></p></div>");
+            $this->displayMessage('Docblock generation finished!', true, true);
+
+            return true;
         }
+
+        return false;
     }
 
     /**
      * Annotatable setup.
-     * This is theoretically a constructor, but to save memory we're using setup called from {@see afterCallActionHandler}
+     * This is theoretically a constructor, but to save memory we're using setup
+     * called from {@see afterCallActionHandler}
      * @throws NotFoundExceptionInterface
      */
     public function setUp()
@@ -75,11 +82,23 @@ class Annotatable extends Extension
     }
 
     /**
-     * @param $message
+     * @param string $message
+     * @param bool $heading
+     * @param bool $end
      */
-    public function displayMessage($message)
+    public function displayMessage($message, $heading = false, $end = false)
     {
-        echo Director::is_cli() ? "\n" . $message . "\n\n" : "<p><b>$message</b></p>";
+        if ($heading) {
+            if (!$end) {
+                echo Director::is_cli() ?
+                    strtoupper("\n$message\n\n") :
+                    "<div class='build'><p><b>$message</b><ul>";
+            } else {
+                echo Director::is_cli() ? strtoupper("\n" . $message) : "</ul><p><b>$message</b></b></div>";
+            }
+        } else {
+            echo Director::is_cli() ? "\n$message\n\n" : "<li>$message</li>";
+        }
     }
 
     /**

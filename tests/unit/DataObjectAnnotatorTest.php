@@ -2,13 +2,14 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
+use Page;
 use PageController;
 use PHPUnit_Framework_TestCase;
 use RootTeam;
-use SilverLeague\IDEAnnotator\Annotatable;
-use SilverLeague\IDEAnnotator\AnnotateClassInfo;
-use SilverLeague\IDEAnnotator\AnnotatePermissionChecker;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
+use SilverLeague\IDEAnnotator\Extensions\Annotatable;
+use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
+use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
@@ -36,18 +37,8 @@ class DataObjectAnnotatorTest extends SapphireTest
     private $permissionChecker;
 
     /**
-     * Setup Defaults
+     * Are we enabled?
      */
-    protected function setUp()
-    {
-        parent::setUp();
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['silverleague/ideannotator']);
-
-        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
-        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
-    }
-
     public function testIsEnabled()
     {
         $this->assertTrue(DataObjectAnnotator::isEnabled());
@@ -59,23 +50,22 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testGetClassesForModule()
     {
         $expectedClasses = [
-            Team::class                             => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team.php',
-            TeamChanged::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamChanged.php',
-            TeamComment::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamComment.php',
-            DocBlockMockWithDocBlock::class         => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
-            OtherDocBlockMockWithDocBlock::class    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
-            DataObjectWithOldStyleTagMarkers::class => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
-            DoubleDataObjectInOneFile1::class       => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
-            DoubleDataObjectInOneFile2::class       => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
-            SubTeam::class                          => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_SubTeam.php',
-            Player::class                           => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Player.php',
-            Team_Extension::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team_Extension.php',
-            Annotatable::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Extensions' . DIRECTORY_SEPARATOR . 'Annotatable.php',
-            AnnotatorPageTest_Extension::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
-            RootTeam::class                         => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'RootTeam.php',
-            AnnotatorPageTest::class                => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
-            AnnotatorPageTestController::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
-            TeamSupporter::class                    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamSupporter.php',
+            Team::class                          => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team.php',
+            TeamChanged::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamChanged.php',
+            TeamComment::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamComment.php',
+            DocBlockMockWithDocBlock::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
+            OtherDocBlockMockWithDocBlock::class => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
+            DoubleDataObjectInOneFile1::class    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
+            DoubleDataObjectInOneFile2::class    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
+            SubTeam::class                       => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_SubTeam.php',
+            Player::class                        => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Player.php',
+            Team_Extension::class                => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team_Extension.php',
+            Annotatable::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Extensions' . DIRECTORY_SEPARATOR . 'Annotatable.php',
+            AnnotatorPageTest_Extension::class   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
+            RootTeam::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'RootTeam.php',
+            AnnotatorPageTest::class             => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
+            AnnotatorPageTestController::class   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
+            TeamSupporter::class                 => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamSupporter.php',
         ];
         $classes = $this->annotator->getClassesForModule('silverleague/ideannotator');
         // Sort the array, so we don't get accidental errors due to manual ordering
@@ -83,7 +73,6 @@ class DataObjectAnnotatorTest extends SapphireTest
         ksort($classes);
         $this->assertEquals($expectedClasses, $classes);
     }
-
 
     /**
      * As below, as we don't want to actively change the mocks, so enable mysite
@@ -131,6 +120,8 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertContains('@property string $Title', $content);
         $this->assertContains('@property int $VisitCount', $content);
         $this->assertContains('@property float $Price', $content);
+        $this->assertContains('@property string $Dude', $content);
+        $this->assertContains('@property string $Dudette', $content);
 
         // has_one ID
         $this->assertContains('@property int $CaptainID', $content);
@@ -159,6 +150,52 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\Team_Extension', $content);
     }
 
+    /**
+     * Test if the correct annotations are generated
+     * for all database fields, relations and extensions
+     * and that the start and end tags are present
+     */
+    public function testShortFileContentWithAnnotations()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
+
+        $classInfo = new AnnotateClassInfo(Team::class);
+        $filePath = $classInfo->getClassFilePath();
+
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
+
+        // database fields
+        $this->assertContains('@property string $Title', $content);
+        $this->assertContains('@property int $VisitCount', $content);
+        $this->assertContains('@property float $Price', $content);
+
+        // has_one ID
+        $this->assertContains('@property int $CaptainID', $content);
+        // has_one relation
+        $this->assertContains('@method Player Captain()', $content);
+        // has_many relation
+        $this->assertContains(
+            '@method DataList|SubTeam[] SubTeams()',
+            $content
+        );
+        // many_many relation
+        $this->assertContains(
+            '@method ManyManyList|Player[] Players()',
+            $content
+        );
+        $this->assertContains(
+            '@method ManyManyList|Player[] Reserves()',
+            $content
+        );
+        $this->assertContains(
+            '@method DataList|TeamSupporter[] Supporters()',
+            $content
+        );
+
+        // DataExtension
+        $this->assertContains('@mixin Team_Extension', $content);
+    }
+
     public function testInversePlayerRelationOfTeam()
     {
         $classInfo = new AnnotateClassInfo(Player::class);
@@ -168,7 +205,9 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $this->assertContains('@property boolean $IsRetired', $content);
         $this->assertContains('@property string $ShirtNumber', $content);
+        $this->assertContains('@property string $Shirt', $content);
         $this->assertContains('@property int $FavouriteTeamID', $content);
+        $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\Team CaptainTeam()', $content);
         $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\Team FavouriteTeam()', $content);
 
         $this->assertContains(
@@ -181,6 +220,78 @@ class DataObjectAnnotatorTest extends SapphireTest
         );
     }
 
+    public function testDefaults()
+    {
+        $count = 0;
+        DataObjectAnnotator::pushExtensionClass(Page::class);
+        foreach (DataObjectAnnotator::getExtensionClasses() as $class) {
+            if ($class === 'Page') {
+                $count++;
+            }
+        }
+        $this->assertEquals(1, $count);
+    }
+
+    public function testSetExtensionClasses()
+    {
+        $classes = DataObjectAnnotator::getExtensionClasses();
+        $expected = [
+            'SilverLeague\IDEAnnotator\Tests\AnnotatorPageTestController',
+            'SilverLeague\IDEAnnotator\Tests\Team',
+            'SilverStripe\Admin\LeftAndMain',
+            'SilverStripe\Admin\ModalController',
+            'SilverStripe\Assets\File',
+            'SilverStripe\AssetAdmin\Forms\FileFormFactory',
+            'SilverStripe\Assets\Shortcodes\FileShortcodeProvider',
+            'SilverStripe\CMS\Controllers\ContentController',
+            'SilverStripe\CMS\Controllers\ModelAsController',
+            'SilverStripe\CMS\Model\SiteTree',
+            'SilverStripe\Control\Controller',
+            'SilverStripe\Dev\DevBuildController',
+            'SilverStripe\Forms\Form',
+            'SilverStripe\ORM\DataObject',
+            'SilverStripe\Security\Group',
+            'SilverStripe\Security\Member',
+            'SilverStripe\Forms\GridField\GridFieldConfig_Base',
+            'SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor',
+            'SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor',
+            'SilverStripe\Forms\GridField\GridFieldDetailForm',
+            'SilverStripe\Forms\GridField\GridFieldPrintButton',
+            'SilverStripe\ORM\FieldType\DBField',
+            'SilverStripe\GraphQL\Scaffolding\Scaffolders\DataObjectScaffolder',
+            'SilverStripe\GraphQL\Scaffolding\Scaffolders\SchemaScaffolder',
+            'SilverStripe\GraphQL\Scaffolding\Scaffolders\CRUD\Read',
+            'SilverStripe\GraphQL\Scaffolding\Scaffolders\CRUD\ReadOne',
+        ];
+        DataObjectAnnotator::setExtensionClasses($classes);
+
+        $this->assertEquals($expected, DataObjectAnnotator::getExtensionClasses());
+    }
+
+    public function testShortInversePlayerRelationOfTeam()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
+
+        $classInfo = new AnnotateClassInfo(Player::class);
+        $filePath = $classInfo->getClassFilePath();
+
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Player::class);
+
+        $this->assertContains('@property boolean $IsRetired', $content);
+        $this->assertContains('@property string $ShirtNumber', $content);
+        $this->assertContains('@property int $FavouriteTeamID', $content);
+        $this->assertContains('@method Team FavouriteTeam()', $content);
+
+        $this->assertContains(
+            '@method ManyManyList|Team[] TeamPlayer()',
+            $content
+        );
+        $this->assertContains(
+            '@method ManyManyList|Team[] TeamReserve()',
+            $content
+        );
+    }
+
     public function testExistingMethodsWillNotBeTagged()
     {
         $classInfo = new AnnotateClassInfo(Team::class);
@@ -189,6 +300,20 @@ class DataObjectAnnotatorTest extends SapphireTest
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
         $this->assertNotContains(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\SubTeam[] SecondarySubTeams()',
+            $content
+        );
+    }
+
+    public function testShortExistingMethodsWillNotBeTagged()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
+
+        $classInfo = new AnnotateClassInfo(Team::class);
+        $filePath = $classInfo->getClassFilePath();
+
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
+        $this->assertNotContains(
+            '@method ManyManyList|SubTeam[] SecondarySubTeams()',
             $content
         );
     }
@@ -241,6 +366,31 @@ class DataObjectAnnotatorTest extends SapphireTest
     }
 
     /**
+     * Test the generation of annotations for a DataExtension
+     */
+    public function testShortAnnotateDataExtension()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
+
+        $classInfo = new AnnotateClassInfo(Team_Extension::class);
+        $filePath = $classInfo->getClassFilePath();
+        $original = file_get_contents($filePath);
+        $annotated = $this->annotator->getGeneratedFileContent($original, Team_Extension::class);
+
+        $this->assertContains(
+            '@property Team|Team_Extension $owner',
+            $annotated
+        );
+        $this->assertContains('@property string $ExtendedVarcharField', $annotated);
+        $this->assertContains('@property int $ExtendedIntField', $annotated);
+        $this->assertContains('@property int $ExtendedHasOneRelationshipID', $annotated);
+        $this->assertContains(
+            '@method Player ExtendedHasOneRelationship()',
+            $annotated
+        );
+    }
+
+    /**
      *
      */
     public function testTwoClassesInOneFile()
@@ -260,5 +410,20 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function tearDown()
     {
         parent::tearDown();
+    }
+
+    /**
+     * Setup Defaults
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', false);
+
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['silverleague/ideannotator']);
+
+        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
+        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
     }
 }

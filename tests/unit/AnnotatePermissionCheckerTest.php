@@ -2,14 +2,14 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\SapphireTest;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
+use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Assets\File;
-use SilverStripe\ORM\DataObject;
-use SilverLeague\IDEAnnotator\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\SapphireTest;
+use SilverStripe\ORM\DataObject;
 
 /**
  * Class DataObjectAnnotatorTest
@@ -30,21 +30,8 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     private $annotator;
 
     /**
-     * Setup Defaults
+     * Check if we're enabled
      */
-    protected function setUp()
-    {
-        parent::setUp();
-        Config::modify()->set(Director::class, 'environment_type', 'dev');
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['silverleague/ideannotator', 'mysite']);
-
-        Config::modify()->merge(Team::class, 'extensions', [Team_Extension::class]);
-
-        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
-        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
-    }
-
     public function testIsEnabled()
     {
         $this->assertTrue($this->permissionChecker->isEnabled());
@@ -86,7 +73,7 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->assertFalse($this->permissionChecker->classNameIsAllowed(DataObject::class));
         $this->assertFalse($this->permissionChecker->classNameIsAllowed(File::class));
 
-        Config::inst()->remove(DataObjectAnnotator::class, 'enabled_modules');
+        Config::modify()->remove(DataObjectAnnotator::class, 'enabled_modules');
         Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['mysite']);
 
         $this->assertFalse($this->permissionChecker->classNameIsAllowed(Team::class));
@@ -95,5 +82,21 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     public function tearDown()
     {
         parent::tearDown();
+    }
+
+    /**
+     * Setup Defaults
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        Config::modify()->set(Director::class, 'environment_type', 'dev');
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['silverleague/ideannotator', 'mysite']);
+
+        Config::modify()->merge(Team::class, 'extensions', [Team_Extension::class]);
+
+        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
+        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
     }
 }

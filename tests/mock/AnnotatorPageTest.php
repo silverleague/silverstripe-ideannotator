@@ -3,9 +3,12 @@
 namespace SilverLeague\IDEAnnotator\Tests;
 
 // Why is this required?
-// @todo get it to work properly
-require_once(BASE_PATH . '/mysite/code/Page.php');
-require_once(BASE_PATH . '/mysite/code/PageController.php');
+// @todo get it to work properly. Seems something is wrong with the installation of the CMS
+// We do need the CMS and the pages for proper testing
+if (!class_exists('\\Page')) {
+    require_once(BASE_PATH . '/mysite/code/Page.php');
+    require_once(BASE_PATH . '/mysite/code/PageController.php');
+}
 
 use Page;
 use PageController;

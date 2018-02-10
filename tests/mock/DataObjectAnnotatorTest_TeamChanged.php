@@ -2,9 +2,8 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\ORM\DataObject;
 use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataObject;
 
 /**
  * Class DataObjectAnnotatorTest_Team

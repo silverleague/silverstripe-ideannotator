@@ -6,18 +6,24 @@ use InvalidArgumentException;
 use LogicException;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
+use SilverLeague\IDEAnnotator\Generators\DocBlockGenerator;
+use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
+use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DB;
+use stdClass;
 
 /**
  * Class DataObjectAnnotator
  * Generates phpdoc annotations for database fields and orm relations
- * so IDE's with autocompletion and property inspection will recognize properties and relation methods.
+ * so IDE's with autocompletion and property inspection will recognize properties
+ * and relation methods.
  *
  * The annotations can be generated with dev/build with @see Annotatable
  * and from the @see DataObjectAnnotatorTask
@@ -35,15 +41,25 @@ class DataObjectAnnotator
     use Extensible;
 
     /**
+     * All classes that subclass Object
+     *
+     * @var array
+     */
+    protected static $extension_classes = [];
+
+    /**
      * @config
      * Enable generation from @see Annotatable and @see DataObjectAnnotatorTask
+     *
      * @var bool
      */
     private static $enabled = false;
 
     /**
      * @config
-     * Enable modules that are allowed to have generated docblocks for DataObjects and DataExtensions
+     * Enable modules that are allowed to have generated docblocks for
+     * DataObjects and DataExtensions
+     *
      * @var array
      */
     private static $enabled_modules = ['mysite'];
@@ -60,21 +76,67 @@ class DataObjectAnnotator
 
     /**
      * DataObjectAnnotator constructor.
+     *
      * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     public function __construct()
     {
         // Don't instantiate anything if annotations are not enabled.
         if (static::config()->get('enabled') === true && Director::isDev()) {
+            $this->extend('beforeDataObjectAnnotator');
+
+            $this->setupExtensionClasses();
+
             $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
+
             foreach ($this->permissionChecker->getSupportedParentClasses() as $supportedParentClass) {
                 $this->setEnabledClasses($supportedParentClass);
             }
+
+            $this->extend('afterDataObjectAnnotator');
         }
     }
 
     /**
+     * Named `setup` to not clash with the actual setter
+     *
+     * Loop all extendable classes and see if they actually have extensions
+     * If they do, add it to the array
+     * Clean up the array of duplicates
+     * Then save the setup of the classes in a static array, this is to save memory
+     *
+     * @throws ReflectionException
+     */
+    protected function setupExtensionClasses()
+    {
+        $extension_classes = [];
+
+        $extendableClasses = Config::inst()->getAll();
+        // We need to check all config to see if the class is extensible
+        // @todo change this to a proper php array_walk or something method?
+        foreach ($extendableClasses as $key => $configClass) {
+            // If the class doesn't already exist in the extension classes
+            // And the 'extensions' key is set in the config class
+            // And the 'extensions' key actually contains values
+            // Add it.
+            if (!in_array(self::$extension_classes, $configClass, true) &&
+                isset($configClass['extensions']) &&
+                count($configClass['extensions']) > 0
+            ) {
+                $extension_classes[] = ClassInfo::class_name($key);
+            }
+        }
+
+        $extension_classes = array_unique($extension_classes);
+
+        static::$extension_classes = $extension_classes;
+    }
+
+    /**
      * Get all annotatable classes from enabled modules
+     * @param string|StdClass $supportedParentClass
+     * @throws ReflectionException
      */
     protected function setEnabledClasses($supportedParentClass)
     {
@@ -83,6 +145,36 @@ class DataObjectAnnotator
             if ($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
                 $this->annotatableClasses[$class] = $classInfo->getClassFilePath();
             }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getExtensionClasses()
+    {
+        return self::$extension_classes;
+    }
+
+    /**
+     * @param array $extension_classes
+     */
+    public static function setExtensionClasses($extension_classes)
+    {
+        self::$extension_classes = $extension_classes;
+    }
+
+    /**
+     * Add another extension class
+     * False checking, because what we get might be uppercase and then lowercase
+     * Allowing for duplicates here, to clean up later
+     *
+     * @param string $extension_class
+     */
+    public static function pushExtensionClass($extension_class)
+    {
+        if (!in_array($extension_class, self::$extension_classes)) {
+            self::$extension_classes[] = $extension_class;
         }
     }
 
@@ -168,6 +260,7 @@ class DataObjectAnnotator
         $filePath = $classInfo->getClassFilePath();
 
         if (!is_writable($filePath)) {
+            // Unsure how to test this properly
             DB::alteration_message($className . ' is not writable by ' . get_current_user(), 'error');
         } else {
             $original = file_get_contents($filePath);
@@ -175,11 +268,10 @@ class DataObjectAnnotator
 
             // we have a change, so write the new file
             if ($generated && $generated !== $original && $className) {
-                // Trim unneeded whitespaces at the end of lines
-                $generated = preg_replace('/\s+$/m', '', $generated);
                 file_put_contents($filePath, $generated);
                 DB::alteration_message($className . ' Annotated', 'created');
             } elseif ($generated === $original && $className) {
+                // Unsure how to test this properly
                 DB::alteration_message($className, 'repaired');
             }
         }
@@ -202,28 +294,25 @@ class DataObjectAnnotator
         $existing = $generator->getExistingDocBlock();
         $generated = $generator->getGeneratedDocBlock();
 
-        if ($existing) {
+        // Trim unneeded whitespaces at the end of lines for PSR-2
+        $generated = preg_replace('/\s+$/m', '', $generated);
+
+        // $existing could be a boolean that in theory is `true`
+        // It never is though (according to the generator's doc)
+        if ((bool)$existing !== false) {
             $fileContent = str_replace($existing, $generated, $fileContent);
         } else {
-            $needle = "class {$className}";
-            $replace = "{$generated}\nclass {$className}";
-            $pos = strpos($fileContent, $needle);
-            if ($pos !== false) {
+            if (class_exists($className)) {
+                $exploded = ClassInfo::shortName($className);
+                $needle = "class {$exploded}";
+                $replace = "{$generated}\nclass {$exploded}";
+                $pos = strpos($fileContent, $needle);
                 $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
             } else {
-                if (strrpos($className, "\\") !== false && class_exists($className)) {
-                    $exploded = explode("\\", $className);
-                    $classNameNew = end($exploded);
-                    $needle = "class {$classNameNew}";
-                    $replace = "{$generated}\nclass {$classNameNew}";
-                    $pos = strpos($fileContent, $needle);
-                    $fileContent = substr_replace($fileContent, $replace, $pos, strlen($needle));
-                } else {
-                    DB::alteration_message(
-                        "Could not find string 'class $className'. Please check casing and whitespace.",
-                        'error'
-                    );
-                }
+                DB::alteration_message(
+                    "Could not find string 'class $className'. Please check casing and whitespace.",
+                    'error'
+                );
             }
         }
 

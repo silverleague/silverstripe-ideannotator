@@ -3,13 +3,13 @@
 namespace SilverLeague\IDEAnnotator\Tests;
 
 use PHPUnit_Framework_TestCase;
-use SilverLeague\IDEAnnotator\AnnotateClassInfo;
-use SilverLeague\IDEAnnotator\AnnotatePermissionChecker;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\SapphireTest;
+use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
+use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\SapphireTest;
 
 /**
  * This test should fail, if a DB property is removed from
@@ -28,20 +28,6 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
      * @var AnnotatePermissionChecker
      */
     protected $permissionChecker;
-
-    /**
-     * Setup Defaults
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        Config::modify()->set(Director::class, 'environment_type', 'dev');
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator']);
-        Config::modify()->merge(TeamChanged::class, 'extensions', [Team_Extension::class]);
-
-        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
-    }
 
     public function testChangedDBSpecifications()
     {
@@ -75,5 +61,19 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
     public function tearDown()
     {
         parent::tearDown();
+    }
+
+    /**
+     * Setup Defaults
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        Config::modify()->set(Director::class, 'environment_type', 'dev');
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator']);
+        Config::modify()->merge(TeamChanged::class, 'extensions', [Team_Extension::class]);
+
+        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
     }
 }
