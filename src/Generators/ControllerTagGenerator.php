@@ -2,7 +2,6 @@
 
 namespace SilverLeague\IDEAnnotator\Generators;
 
-use Psr\Container\NotFoundExceptionInterface;
 use ReflectionClass;
 use ReflectionException;
 use SilverStripe\CMS\Controllers\ContentController;
@@ -13,7 +12,7 @@ class ControllerTagGenerator extends AbstractTagGenerator
 
     /**
      * @return void
-     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     protected function generateTags()
     {

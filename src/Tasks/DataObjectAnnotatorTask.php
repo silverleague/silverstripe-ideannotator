@@ -28,10 +28,11 @@ class DataObjectAnnotatorTask extends BuildTask
     {
         parent::__construct();
         $this->title = 'DataObject annotations for specific DataObjects, Extensions or Controllers';
-        $this->description = "DataObject Annotator annotates your DO's if possible," .
-            " helping you write better code." .
-            "<br />Usage: add the module or DataObject as parameter to the URL," .
-            " e.g. ?module=mysite .";
+
+        $this->description = 'DataObject Annotator annotates your DO\'s if possible,' .
+            ' helping you write better code.' .
+            '<br />Usage: add the module or DataObject as parameter to the URL,' .
+            ' e.g. ?module=mysite';
     }
 
     /**

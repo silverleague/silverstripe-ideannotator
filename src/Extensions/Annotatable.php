@@ -9,6 +9,7 @@ use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\DevBuildController;
 
 /**
  * Class Annotatable
@@ -17,7 +18,7 @@ use SilverStripe\Core\Injector\Injector;
  * Start annotation, if skipannotation is not set and the annotator is enabled.
  *
  * @package IDEAnnotator/Extensions
- * @property \SilverStripe\Dev\DevBuildController|\SilverLeague\IDEAnnotator\Annotatable $owner
+ * @property DevBuildController|Annotatable $owner
  */
 class Annotatable extends Extension
 {

@@ -19,7 +19,7 @@ class DataObjectAnnotatorTaskTest extends SapphireTest
         );
         $this->assertEquals(
             "DataObject Annotator annotates your DO's if possible, helping you write better code.<br />"
-            . 'Usage: add the module or DataObject as parameter to the URL, e.g. ?module=mysite .',
+            . 'Usage: add the module or DataObject as parameter to the URL, e.g. ?module=mysite',
             $task->getDescription()
         );
     }
