@@ -1,6 +1,6 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator\Generators;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
@@ -100,7 +100,10 @@ class OrmTagGenerator extends AbstractTagGenerator
         if ($fields = (array)$this->getClassConfig('belongs_to')) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $dataObjectName = $this->resolveDotNotation($dataObjectName);
-                $this->pushMethodTag($fieldName, "\\{$dataObjectName} {$fieldName}()");
+                $dataObjectName = $this->getAnnotationClassName($dataObjectName);
+                $tagString = "{$dataObjectName} {$fieldName}()";
+
+                $this->pushMethodTag($fieldName, $tagString);
             }
         }
     }
@@ -124,7 +127,10 @@ class OrmTagGenerator extends AbstractTagGenerator
         if ($fields = (array)$this->getClassConfig('has_one')) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->pushPropertyTag("int \${$fieldName}ID");
-                $this->pushMethodTag($fieldName, "\\{$dataObjectName} {$fieldName}()");
+                $dataObjectName = $this->getAnnotationClassName($dataObjectName);
+                $tagString = "{$dataObjectName} {$fieldName}()";
+
+                $this->pushMethodTag($fieldName, $tagString);
             }
         }
     }
@@ -145,12 +151,17 @@ class OrmTagGenerator extends AbstractTagGenerator
     {
         if (!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
+                $fieldName = trim($fieldName);
                 // A many_many with a relation through another DataObject
                 if (is_array($dataObjectName)) {
                     $dataObjectName = $dataObjectName['through'];
                 }
                 $dataObjectName = $this->resolveDotNotation($dataObjectName);
-                $this->pushMethodTag($fieldName, "\\{$listType}|\\{$dataObjectName}[] {$fieldName}()");
+                $listName = $this->getAnnotationClassName($listType);
+                $dataObjectName = $this->getAnnotationClassName($dataObjectName);
+
+                $tagString = "{$listName}|{$dataObjectName}[] {$fieldName}()";
+                $this->pushMethodTag($fieldName, $tagString);
             }
         }
     }

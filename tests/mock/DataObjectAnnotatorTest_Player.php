@@ -2,8 +2,8 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use SilverStripe\Security\Member;
 use SilverStripe\Dev\TestOnly;
+use SilverStripe\Security\Member;
 
 /**
  * Class Player
@@ -13,6 +13,11 @@ class Player extends Member implements TestOnly
     private static $db = [
         'IsRetired'   => 'Boolean',
         'ShirtNumber' => 'Varchar',
+        'Shirt'       => 'Varchar(10)'
+    ];
+
+    private static $belongs_to = [
+        'CaptainTeam' => Team::class
     ];
 
     private static $has_one = [

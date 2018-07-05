@@ -53,3 +53,24 @@ SilverLeague\IDEAnnotator\DataObjectAnnotator:
       - mysite
       - SilverLeague/IDEAnnotator
 ```
+
+If you don't want to use fully qualified classnames, you can configure that like so:
+
+```yaml
+
+---
+Only:
+    environment: 'dev'
+---
+SilverLeague\IDEAnnotator\DataObjectAnnotator:
+    enabled: true
+    use_short_name: true
+    enabled_modules:
+      - mysite
+```
+
+**NOTE**
+
+- Using short names, will also shorten core names like `ManyManyList`, you'll have to adjust your use statements to work.
+
+- If you change the usage of short names halfway in your project, you may need to clear out all your docblocks before regenerating

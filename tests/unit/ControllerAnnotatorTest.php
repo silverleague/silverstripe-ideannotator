@@ -3,11 +3,11 @@
 namespace SilverLeague\IDEAnnotator\Tests;
 
 use PHPUnit_Framework_TestCase;
-use SilverLeague\IDEAnnotator\AnnotateClassInfo;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Config\Config;
-use SilverLeague\IDEAnnotator\AnnotatePermissionChecker;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
+use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
+use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 
 /**
@@ -30,18 +30,8 @@ class ControllerAnnotatorTest extends SapphireTest
     private $permissionChecker;
 
     /**
-     * Setup Defaults
+     * Check if Page is annotated correctly
      */
-    protected function setUp()
-    {
-        parent::setUp();
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator']);
-
-        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
-        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
-    }
-
     public function testPageGetsAnnotated()
     {
         $classInfo = new AnnotateClassInfo(AnnotatorPageTest::class);
@@ -87,8 +77,68 @@ class ControllerAnnotatorTest extends SapphireTest
         );
     }
 
+    public function testShortPageGetsAnnotated()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
+        $classInfo = new AnnotateClassInfo(AnnotatorPageTest::class);
+        $filePath = $classInfo->getClassFilePath();
+
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), AnnotatorPageTest::class);
+
+        $this->assertContains('@property string $SubTitle', $content);
+    }
+
+    public function testShortPageControllerGetsAnnotator()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
+        $classInfo = new AnnotateClassInfo(AnnotatorPageTestController::class);
+        $filePath = $classInfo->getClassFilePath();
+
+        $content = $this->annotator->getGeneratedFileContent(
+            file_get_contents($filePath),
+            AnnotatorPageTestController::class
+        );
+
+        $this->assertContains('@property AnnotatorPageTest dataRecord', $content);
+        $this->assertContains('@method AnnotatorPageTest data()', $content);
+        $this->assertContains('@mixin AnnotatorPageTest', $content);
+        $this->assertContains('@mixin AnnotatorPageTest_Extension', $content);
+    }
+
+    /**
+     * Test the generation of annotations for an Extension
+     */
+    public function testShortAnnotateControllerExtension()
+    {
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
+        $classInfo = new AnnotateClassInfo(AnnotatorPageTest_Extension::class);
+        $filePath = $classInfo->getClassFilePath();
+        $original = file_get_contents($filePath);
+        $annotated = $this->annotator->getGeneratedFileContent($original, AnnotatorPageTest_Extension::class);
+
+        $this->assertContains(
+            '@property AnnotatorPageTestController|AnnotatorPageTest_Extension $owner',
+            $annotated
+        );
+    }
+
     public function tearDown()
     {
         parent::tearDown();
+    }
+
+    /**
+     * Setup Defaults
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', false);
+
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator']);
+
+        $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
+        $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
     }
 }

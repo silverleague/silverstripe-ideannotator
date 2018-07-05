@@ -33,3 +33,12 @@
 
 # 3.0 beta-1
 * Support for SilverStripe 4
+
+# 3.0 rc-1
+* Updated support for SilverStripe 4
+* Added support for the `through` method
+
+# 3.0 rc-2
+* Fixed bug trimming too much whitespace in rc-1
+* Support for short classnames instead of FQN
+* ~~require_once in tests no longer needed~~ Nope, still needed

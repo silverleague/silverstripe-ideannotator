@@ -1,8 +1,7 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator\Generators;
 
-use Psr\Container\NotFoundExceptionInterface;
 use ReflectionClass;
 use ReflectionException;
 use SilverStripe\CMS\Controllers\ContentController;
@@ -13,7 +12,7 @@ class ControllerTagGenerator extends AbstractTagGenerator
 
     /**
      * @return void
-     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     protected function generateTags()
     {
@@ -22,16 +21,23 @@ class ControllerTagGenerator extends AbstractTagGenerator
         $this->generateOwnerTags();
     }
 
+    /**
+     * Generate the controller tags, these differ slightly from the standard ORM tags
+     *
+     * @throws ReflectionException
+     */
     protected function generateControllerObjectTags()
     {
         $pageClassname = str_replace(['_Controller', 'Controller'], '', $this->className);
         if (class_exists($pageClassname) && $this->isContentController($this->className)) {
-            $this->pushPropertyTag("\\$pageClassname" . ' dataRecord');
-            $this->pushMethodTag($pageClassname, "\\$pageClassname" . ' data()');
+            $pageClassname = $this->getAnnotationClassName($pageClassname);
+
+            $this->pushPropertyTag($pageClassname . ' dataRecord');
+            $this->pushMethodTag('data()', $pageClassname . ' data()');
 
             // don't mixin Page, since this is a ContentController method
             if ($pageClassname !== 'Page') {
-                $this->pushMixinTag("\\$pageClassname");
+                $this->pushMixinTag($pageClassname);
             }
         }
     }

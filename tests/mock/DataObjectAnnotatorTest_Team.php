@@ -21,7 +21,9 @@ class Team extends DataObject implements TestOnly
     private static $db = [
         'Title'      => 'Varchar',
         'VisitCount' => 'Int',
-        'Price'      => 'Currency'
+        'Price'      => 'Currency',
+        'Dudette'    => 'Varchar',
+        'Dude'       => 'Varchar',
     ];
 
     private static $has_one = [

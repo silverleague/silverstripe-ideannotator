@@ -3,7 +3,7 @@
 namespace SilverLeague\IDEAnnotator\Tests;
 
 use PHPUnit_Framework_TestCase;
-use SilverLeague\IDEAnnotator\AnnotateClassInfo;
+use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
 use SilverStripe\Dev\SapphireTest;
 
 /**

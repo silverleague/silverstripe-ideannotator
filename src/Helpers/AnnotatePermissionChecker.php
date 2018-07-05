@@ -1,12 +1,12 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator\Helpers;
 
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
+use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ModuleManifest;
@@ -53,7 +53,7 @@ class AnnotatePermissionChecker
      */
     public function isEnabled()
     {
-        return (bool)Config::inst()->get(DataObjectAnnotator::class, 'enabled');
+        return (bool)DataObjectAnnotator::config()->get('enabled');
     }
 
     /**
@@ -80,9 +80,12 @@ class AnnotatePermissionChecker
         if ($this->classNameIsSupported($className)) {
             $classInfo = new AnnotateClassInfo($className);
             $filePath = $classInfo->getClassFilePath();
-            $module = Injector::inst()->createWithArgs(ModuleManifest::class, [Director::baseFolder()])->getModuleByPath($filePath);
+            $module = Injector::inst()->createWithArgs(
+                ModuleManifest::class,
+                [Director::baseFolder()]
+            )->getModuleByPath($filePath);
 
-            $allowedModules = (array)Config::inst()->get(DataObjectAnnotator::class, 'enabled_modules');
+            $allowedModules = (array)DataObjectAnnotator::config()->get('enabled_modules');
 
             return in_array($module->getName(), $allowedModules, true);
         }
@@ -125,7 +128,7 @@ class AnnotatePermissionChecker
      */
     public function enabledModules()
     {
-        $enabled = (array)Config::inst()->get(DataObjectAnnotator::class, 'enabled_modules');
+        $enabled = (array)DataObjectAnnotator::config()->get('enabled_modules');
 
         // modules might be enabled more then once.
         return array_combine($enabled, $enabled);

@@ -2,8 +2,8 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use SilverStripe\ORM\DataObject;
 use SilverStripe\Dev\TestOnly;
+use SilverStripe\ORM\DataObject;
 
 class TeamComment extends DataObject implements TestOnly
 {

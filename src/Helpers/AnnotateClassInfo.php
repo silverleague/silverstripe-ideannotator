@@ -1,6 +1,6 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator\Helpers;
 
 use ReflectionClass;
 use ReflectionException;
@@ -57,13 +57,5 @@ class AnnotateClassInfo
     public function getClassFilePath()
     {
         return $this->reflector->getFileName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getDocComment()
-    {
-        return $this->reflector->getDocComment();
     }
 }

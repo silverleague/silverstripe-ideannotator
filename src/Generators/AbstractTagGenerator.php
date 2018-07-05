@@ -1,9 +1,10 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator;
+namespace SilverLeague\IDEAnnotator\Generators;
 
 use phpDocumentor\Reflection\DocBlock\Tag;
 use Psr\Container\NotFoundExceptionInterface;
+use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
@@ -41,12 +42,6 @@ abstract class AbstractTagGenerator
     protected $tags = [];
 
     /**
-     * All classes that subclass Object
-     * @var array
-     */
-    protected $extensionClasses;
-
-    /**
      * DocBlockTagGenerator constructor.
      *
      * @param string $className
@@ -58,15 +53,6 @@ abstract class AbstractTagGenerator
         $this->className = $className;
         $this->existingTags = (array)$existingTags;
         $this->reflector = new \ReflectionClass($className);
-        $extendableClasses = Config::inst()->getAll();
-        $this->extensionClasses = [];
-        // We need to check all config to see if the class is extensible
-        // @todo find a cleaner method
-        foreach ($extendableClasses as $key => $configClass) {
-            if (isset($configClass['extensions']) && count($configClass['extensions']) > 0) {
-                $this->extensionClasses[] = ClassInfo::class_name($key);
-            }
-        }
         $this->tags = $this->getSupportedTagTypes();
 
         $this->generateTags();
@@ -104,29 +90,14 @@ abstract class AbstractTagGenerator
     }
 
     /**
-     * Returns the generated Tag objects as a string
-     * with asterix and newline \n
-     * @return string
-     */
-    public function getTagsAsString()
-    {
-        $tagString = '';
-
-        foreach ($this->tags as $tag) {
-            $tagString .= ' * ' . $tag . "\n";
-        }
-
-        return $tagString;
-    }
-
-    /**
      * Generate the mixins for DataExtensions.
      */
     protected function generateExtensionsTags()
     {
         if ($fields = (array)$this->getClassConfig('extensions')) {
             foreach ($fields as $fieldName) {
-                $this->pushMixinTag("\\$fieldName");
+                $mixinName = $this->getAnnotationClassName($fieldName);
+                $this->pushMixinTag($mixinName);
             }
         }
     }
@@ -138,6 +109,21 @@ abstract class AbstractTagGenerator
     protected function getClassConfig($key)
     {
         return Config::inst()->get($this->className, $key, CONFIG::UNINHERITED);
+    }
+
+    /**
+     * Check if we need to use the short name for a class
+     *
+     * @param string $class
+     * @return string
+     */
+    protected function getAnnotationClassName($class)
+    {
+        if (DataObjectAnnotator::config()->get('use_short_name')) {
+            return ClassInfo::shortName($class);
+        }
+
+        return "\\$class";
     }
 
     /**
@@ -168,7 +154,10 @@ abstract class AbstractTagGenerator
     {
         foreach ($this->getExistingTags() as $tag) {
             $content = $tag->getContent();
-            if (strpos($content, $tagString) !== false) {
+            // A tag should be followed by a space before it's description
+            // This is to prevent `TestThing` and `Test` to be seen as the same, when the shorter
+            // is after the longer name
+            if (strpos($content, $tagString . ' ') !== false) {
                 return str_replace($tagString, '', $content);
             }
         }
@@ -193,15 +182,20 @@ abstract class AbstractTagGenerator
     {
         $className = $this->className;
         if (Injector::inst()->get($this->className) instanceof Extension) {
-            $owners = array_filter($this->extensionClasses, function ($class) use ($className) {
+            $owners = array_filter(DataObjectAnnotator::getExtensionClasses(), function ($class) use ($className) {
                 $config = Config::inst()->get($class, 'extensions');
 
                 return ($config !== null && in_array($className, $config, null));
             });
             $owners[] = $this->className;
-            if (!empty($owners)) {
-                $this->pushPropertyTag('\\' . implode("|\\", array_values($owners)) . ' $owner');
+            $tagString = '\\' . implode("|\\", array_values($owners)) . ' $owner';
+            if (DataObjectAnnotator::config()->get('use_short_name')) {
+                foreach ($owners as $key => $owner) {
+                    $owners[$key] = $this->getAnnotationClassName($owner);
+                }
+                $tagString = implode("|", array_values($owners)) . ' $owner';
             }
+            $this->pushPropertyTag($tagString);
         }
     }
 
@@ -219,7 +213,8 @@ abstract class AbstractTagGenerator
      */
     protected function pushMethodTag($methodName, $tagString)
     {
-        if (!$this->reflector->hasMethod($methodName)) {
+        // Exception for `data()` method is needed
+        if (!$this->reflector->hasMethod($methodName) || $methodName === 'data()') {
             $this->tags['methods'][$tagString] = $this->pushTagWithExistingComment('method', $tagString);
         }
     }
