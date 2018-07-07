@@ -181,6 +181,11 @@ abstract class AbstractTagGenerator
     protected function generateOwnerTags()
     {
         $className = $this->className;
+        // If className is abstract, Injector will fail to instantiate it
+        $reflection = new \ReflectionClass($className);
+        if ($reflection->isAbstract()) {
+            return;
+        }
         if (Injector::inst()->get($this->className) instanceof Extension) {
             $owners = array_filter(DataObjectAnnotator::getExtensionClasses(), function ($class) use ($className) {
                 $config = Config::inst()->get($class, 'extensions');
