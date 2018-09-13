@@ -34,30 +34,30 @@ class ControllerAnnotatorTest extends SapphireTest
      */
     public function testPageGetsAnnotated()
     {
-        $classInfo = new AnnotateClassInfo(AnnotatorPageTest::class);
+        $classInfo = new AnnotateClassInfo(TestAnnotatorPage::class);
         $filePath = $classInfo->getClassFilePath();
 
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), AnnotatorPageTest::class);
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TestAnnotatorPage::class);
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTest', $content);
+        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
         $this->assertContains('@property string $SubTitle', $content);
     }
 
     public function testPageControllerGetsAnnotator()
     {
-        $classInfo = new AnnotateClassInfo(AnnotatorPageTestController::class);
+        $classInfo = new AnnotateClassInfo(TestAnnotatorPageController::class);
         $filePath = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(
             file_get_contents($filePath),
-            AnnotatorPageTestController::class
+            TestAnnotatorPageController::class
         );
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTestController', $content);
-        $this->assertContains('@property \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTest dataRecord', $content);
-        $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTest data()', $content);
-        $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTest', $content);
-        $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTest_Extension', $content);
+        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController', $content);
+        $this->assertContains('@property \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage dataRecord', $content);
+        $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage data()', $content);
+        $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
+        $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension', $content);
     }
 
     /**
@@ -65,14 +65,14 @@ class ControllerAnnotatorTest extends SapphireTest
      */
     public function testAnnotateControllerExtension()
     {
-        $classInfo = new AnnotateClassInfo(AnnotatorPageTest_Extension::class);
+        $classInfo = new AnnotateClassInfo(TestAnnotatorPage_Extension::class);
         $filePath = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->getGeneratedFileContent($original, AnnotatorPageTest_Extension::class);
+        $annotated = $this->annotator->getGeneratedFileContent($original, TestAnnotatorPage_Extension::class);
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTest_Extension', $annotated);
+        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension', $annotated);
         $this->assertContains(
-            '@property \SilverLeague\IDEAnnotator\Tests\AnnotatorPageTestController|\SilverLeague\IDEAnnotator\Tests\AnnotatorPageTest_Extension $owner',
+            '@property \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController|\SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension $owner',
             $annotated
         );
     }
@@ -80,10 +80,10 @@ class ControllerAnnotatorTest extends SapphireTest
     public function testShortPageGetsAnnotated()
     {
         Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
-        $classInfo = new AnnotateClassInfo(AnnotatorPageTest::class);
+        $classInfo = new AnnotateClassInfo(TestAnnotatorPage::class);
         $filePath = $classInfo->getClassFilePath();
 
-        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), AnnotatorPageTest::class);
+        $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TestAnnotatorPage::class);
 
         $this->assertContains('@property string $SubTitle', $content);
     }
@@ -91,18 +91,18 @@ class ControllerAnnotatorTest extends SapphireTest
     public function testShortPageControllerGetsAnnotator()
     {
         Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
-        $classInfo = new AnnotateClassInfo(AnnotatorPageTestController::class);
+        $classInfo = new AnnotateClassInfo(TestAnnotatorPageController::class);
         $filePath = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(
             file_get_contents($filePath),
-            AnnotatorPageTestController::class
+            TestAnnotatorPageController::class
         );
 
-        $this->assertContains('@property AnnotatorPageTest dataRecord', $content);
-        $this->assertContains('@method AnnotatorPageTest data()', $content);
-        $this->assertContains('@mixin AnnotatorPageTest', $content);
-        $this->assertContains('@mixin AnnotatorPageTest_Extension', $content);
+        $this->assertContains('@property TestAnnotatorPage dataRecord', $content);
+        $this->assertContains('@method TestAnnotatorPage data()', $content);
+        $this->assertContains('@mixin TestAnnotatorPage', $content);
+        $this->assertContains('@mixin TestAnnotatorPage_Extension', $content);
     }
 
     /**
@@ -111,13 +111,13 @@ class ControllerAnnotatorTest extends SapphireTest
     public function testShortAnnotateControllerExtension()
     {
         Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
-        $classInfo = new AnnotateClassInfo(AnnotatorPageTest_Extension::class);
+        $classInfo = new AnnotateClassInfo(TestAnnotatorPage_Extension::class);
         $filePath = $classInfo->getClassFilePath();
         $original = file_get_contents($filePath);
-        $annotated = $this->annotator->getGeneratedFileContent($original, AnnotatorPageTest_Extension::class);
+        $annotated = $this->annotator->getGeneratedFileContent($original, TestAnnotatorPage_Extension::class);
 
         $this->assertContains(
-            '@property AnnotatorPageTestController|AnnotatorPageTest_Extension $owner',
+            '@property TestAnnotatorPageController|TestAnnotatorPage_Extension $owner',
             $annotated
         );
     }

@@ -61,10 +61,10 @@ class DataObjectAnnotatorTest extends SapphireTest
             Player::class                        => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_Player.php'),
             Team_Extension::class                => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_Team_Extension.php'),
             Annotatable::class                   => realpath(__DIR__ . '/../../src/Extensions/Annotatable.php'),
-            AnnotatorPageTest_Extension::class   => realpath(__DIR__ . '/../mock/AnnotatorPageTest.php'),
+            TestAnnotatorPage_Extension::class   => realpath(__DIR__ . '/../mock/TestAnnotatorPage.php'),
             RootTeam::class                      => realpath(__DIR__ . '/../mock/RootTeam.php'),
-            AnnotatorPageTest::class             => realpath(__DIR__ . '/../mock/AnnotatorPageTest.php'),
-            AnnotatorPageTestController::class   => realpath(__DIR__ . '/../mock/AnnotatorPageTest.php'),
+            TestAnnotatorPage::class             => realpath(__DIR__ . '/../mock/TestAnnotatorPage.php'),
+            TestAnnotatorPageController::class   => realpath(__DIR__ . '/../mock/TestAnnotatorPage.php'),
             TeamSupporter::class                 => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_TeamSupporter.php'),
         ];
         $classes = $this->annotator->getClassesForModule('silverleague/ideannotator');
@@ -236,7 +236,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     {
         $classes = DataObjectAnnotator::getExtensionClasses();
         $expected = [
-            'SilverLeague\IDEAnnotator\Tests\AnnotatorPageTestController',
+            'SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController',
             'SilverLeague\IDEAnnotator\Tests\Team',
             'SilverStripe\Admin\LeftAndMain',
             'SilverStripe\Admin\ModalController',
