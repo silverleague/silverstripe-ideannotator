@@ -13,6 +13,7 @@ use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleManifest;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\DataObject;
 
@@ -81,7 +82,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     {
         $this->assertFalse($this->annotator->annotateObject(DataObject::class));
 
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator', 'mysite']);
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator', 'mysite', 'app']);
         $this->assertTrue($this->annotator->annotateObject(PageController::class));
     }
 
@@ -92,12 +93,13 @@ class DataObjectAnnotatorTest extends SapphireTest
     {
         $noModule = $this->annotator->annotateModule('');
         $this->assertFalse($noModule);
-        $noModule = $this->annotator->annotateModule('mysite');
+        $projectName = ModuleManifest::config()->get('project');
+        $noModule = $this->annotator->annotateModule($projectName);
         $this->assertFalse($noModule);
-        // Enable 'mysite' for testing
-        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', ['ideannotator', 'mysite']);
+        // Enable 'mysite' (or 'app') for testing
+        Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', [$projectName]);
 
-        $module = $this->annotator->annotateModule('mysite');
+        $module = $this->annotator->annotateModule($projectName);
         $this->assertTrue($module);
     }
 
@@ -234,7 +236,6 @@ class DataObjectAnnotatorTest extends SapphireTest
 
     public function testSetExtensionClasses()
     {
-        $classes = DataObjectAnnotator::getExtensionClasses();
         $expected = [
             'SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController',
             'SilverLeague\IDEAnnotator\Tests\Team',
@@ -252,19 +253,13 @@ class DataObjectAnnotatorTest extends SapphireTest
             'SilverStripe\ORM\DataObject',
             'SilverStripe\Security\Group',
             'SilverStripe\Security\Member',
-            'SilverStripe\Forms\GridField\GridFieldConfig_Base',
-            'SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor',
-            'SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor',
             'SilverStripe\Forms\GridField\GridFieldDetailForm',
             'SilverStripe\Forms\GridField\GridFieldPrintButton',
             'SilverStripe\ORM\FieldType\DBField',
-            'SilverStripe\GraphQL\Scaffolding\Scaffolders\DataObjectScaffolder',
-            'SilverStripe\GraphQL\Scaffolding\Scaffolders\SchemaScaffolder',
-            'SilverStripe\GraphQL\Scaffolding\Scaffolders\CRUD\Read',
-            'SilverStripe\GraphQL\Scaffolding\Scaffolders\CRUD\ReadOne',
         ];
-        DataObjectAnnotator::setExtensionClasses($classes);
 
+        // Instantiate - triggers extension class list generation
+        new DataObjectAnnotator();
         $result = DataObjectAnnotator::getExtensionClasses();
         foreach ($expected as $expectedClass) {
             $this->assertContains($expectedClass, $result);

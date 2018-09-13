@@ -16,6 +16,7 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
 use stdClass;
 
@@ -62,7 +63,7 @@ class DataObjectAnnotator
      *
      * @var array
      */
-    private static $enabled_modules = ['mysite'];
+    private static $enabled_modules = ['mysite', 'app'];
 
     /**
      * @var AnnotatePermissionChecker
@@ -117,15 +118,18 @@ class DataObjectAnnotator
         // @todo change this to a proper php array_walk or something method?
         foreach ($extendableClasses as $key => $configClass) {
             // If the class doesn't already exist in the extension classes
-            // And the 'extensions' key is set in the config class
-            // And the 'extensions' key actually contains values
-            // Add it.
-            if (!in_array(self::$extension_classes, $configClass, true) &&
-                isset($configClass['extensions']) &&
-                count($configClass['extensions']) > 0
-            ) {
-                $extension_classes[] = ClassInfo::class_name($key);
+            if (in_array(self::$extension_classes, $configClass, true)) {
+                continue;
             }
+
+            // And the class has extensions,
+            $extensions = DataObject::get_extensions($key);
+            if (!count($extensions)) {
+                continue;
+            }
+
+            // Add it.
+            $extension_classes[] = ClassInfo::class_name($key);
         }
 
         $extension_classes = array_unique($extension_classes);

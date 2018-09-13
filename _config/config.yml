@@ -7,3 +7,4 @@ SilverStripe\Dev\DevBuildController:
 SilverLeague\IDEAnnotator\DataObjectAnnotator:
     enabled_modules:
       - mysite
+      - app
