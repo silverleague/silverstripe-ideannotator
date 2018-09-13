@@ -38,7 +38,11 @@
             "SilverLeague\\IDEAnnotator\\Tests\\": "tests/"
         }
     },
-    "extra": [],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.1.x-dev"
+        }
+    },
     "prefer-stable": true,
     "minimum-stability": "dev"
 }
