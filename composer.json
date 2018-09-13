@@ -1,53 +1,44 @@
 {
-  "name": "silverleague/ideannotator",
-  "description": "Generate PHP DocBlock annotations for DataObject and DataExtension databasefields and relation methods",
-  "type": "silverstripe-vendormodule",
-  "keywords": [
-    "silverstripe",
-    "database",
-    "orm",
-    "docblock",
-    "ide",
-    "annotations"
-  ],
-  "license": "BSD-3-Clause",
-  "authors": [
-    {
-      "name": "Martijn van Nieuwenhoven",
-      "email": "info@axyrmedia.nl"
+    "name": "silverleague/ideannotator",
+    "description": "Generate PHP DocBlock annotations for DataObject and DataExtension databasefields and relation methods",
+    "type": "silverstripe-vendormodule",
+    "keywords": [
+        "silverstripe",
+        "database",
+        "orm",
+        "docblock",
+        "ide",
+        "annotations"
+    ],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Martijn van Nieuwenhoven",
+            "email": "info@axyrmedia.nl"
+        },
+        {
+            "name": "Simon 'Firesphere' Erkelens",
+            "email": "simonerkelens@silverstripe.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0",
+        "silverstripe/cms": "^4",
+        "phpdocumentor/reflection-docblock": "^2.0@dev"
     },
-    {
-      "name": "Simon 'Firesphere' Erkelens",
-      "email": "simonerkelens@silverstripe.com"
-    }
-  ],
-  "require": {
-    "php": ">=5.6.0",
-    "silverstripe/cms": "^4",
-    "phpdocumentor/reflection-docblock": "^2.0@dev"
-  },
-  "require-dev": {
-    "scriptfusion/phpunit-immediate-exception-printer": "^1",
-    "phpunit/phpunit": "^5.7",
-    "silverstripe/recipe-cms": "~1",
-    "squizlabs/php_codesniffer": "3.*"
-  },
-  "autoload": {
-    "psr-4": {
-      "Axyr\\IDEAnnotator\\": "src/"
-    }
-  },
-  "extra": {
-    "branch-alias": {
-      "3.x-dev": "3.0.x-dev",
-      "dev-master": "3.x-dev"
+    "require-dev": {
+        "scriptfusion/phpunit-immediate-exception-printer": "^1",
+        "phpunit/phpunit": "^5.7",
+        "silverstripe/recipe-cms": "~1",
+        "squizlabs/php_codesniffer": "3.*"
     },
-    "autoload-dev": {
-      "psr-4": {
-        "SilverLeague\\IDEAnnotator\\": "src/"
-      }
-    }
-  },
-  "prefer-stable": true,
-  "minimum-stability": "dev"
+    "autoload": {
+        "psr-4": {
+            "SilverLeague\\IDEAnnotator\\": "src/",
+            "SilverLeague\\IDEAnnotator\\Tests\\": "tests/"
+        }
+    },
+    "extra": [],
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }
