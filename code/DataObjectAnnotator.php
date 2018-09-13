@@ -14,7 +14,7 @@
  *
  * @package IDEAnnotator/Core
  */
-class DataObjectAnnotator extends Object
+class DataObjectAnnotator extends SS_Object
 {
     /**
      * This string marks the beginning of a generated annotations block
