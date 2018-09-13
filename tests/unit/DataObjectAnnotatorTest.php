@@ -50,22 +50,22 @@ class DataObjectAnnotatorTest extends SapphireTest
     public function testGetClassesForModule()
     {
         $expectedClasses = [
-            Team::class                          => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team.php',
-            TeamChanged::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamChanged.php',
-            TeamComment::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamComment.php',
-            DocBlockMockWithDocBlock::class      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
-            OtherDocBlockMockWithDocBlock::class => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DocBlockMockWithDocBlock.php',
-            DoubleDataObjectInOneFile1::class    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
-            DoubleDataObjectInOneFile2::class    => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DoubleDataObjectInOneFile.php',
-            SubTeam::class                       => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_SubTeam.php',
-            Player::class                        => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Player.php',
-            Team_Extension::class                => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_Team_Extension.php',
-            Annotatable::class                   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Extensions' . DIRECTORY_SEPARATOR . 'Annotatable.php',
-            AnnotatorPageTest_Extension::class   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
-            RootTeam::class                      => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'RootTeam.php',
-            AnnotatorPageTest::class             => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
-            AnnotatorPageTestController::class   => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'AnnotatorPageTest.php',
-            TeamSupporter::class                 => Director::baseFolder() . DIRECTORY_SEPARATOR . 'ideannotator' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'mock' . DIRECTORY_SEPARATOR . 'DataObjectAnnotatorTest_TeamSupporter.php',
+            Team::class                          => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_Team.php'),
+            TeamChanged::class                   => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_TeamChanged.php'),
+            TeamComment::class                   => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_TeamComment.php'),
+            DocBlockMockWithDocBlock::class      => realpath(__DIR__ . '/../mock/DocBlockMockWithDocBlock.php'),
+            OtherDocBlockMockWithDocBlock::class => realpath(__DIR__ . '/../mock/DocBlockMockWithDocBlock.php'),
+            DoubleDataObjectInOneFile1::class    => realpath(__DIR__ . '/../mock/DoubleDataObjectInOneFile.php'),
+            DoubleDataObjectInOneFile2::class    => realpath(__DIR__ . '/../mock/DoubleDataObjectInOneFile.php'),
+            SubTeam::class                       => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_SubTeam.php'),
+            Player::class                        => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_Player.php'),
+            Team_Extension::class                => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_Team_Extension.php'),
+            Annotatable::class                   => realpath(__DIR__ . '/../../src/Extensions/Annotatable.php'),
+            AnnotatorPageTest_Extension::class   => realpath(__DIR__ . '/../mock/AnnotatorPageTest.php'),
+            RootTeam::class                      => realpath(__DIR__ . '/../mock/RootTeam.php'),
+            AnnotatorPageTest::class             => realpath(__DIR__ . '/../mock/AnnotatorPageTest.php'),
+            AnnotatorPageTestController::class   => realpath(__DIR__ . '/../mock/AnnotatorPageTest.php'),
+            TeamSupporter::class                 => realpath(__DIR__ . '/../mock/DataObjectAnnotatorTest_TeamSupporter.php'),
         ];
         $classes = $this->annotator->getClassesForModule('silverleague/ideannotator');
         // Sort the array, so we don't get accidental errors due to manual ordering
@@ -405,11 +405,6 @@ class DataObjectAnnotatorTest extends SapphireTest
         $annotated = $this->annotator->getGeneratedFileContent($annotated, DoubleDataObjectInOneFile2::class);
 
         $this->assertContains('@property string $Name', $annotated);
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
     }
 
     /**
