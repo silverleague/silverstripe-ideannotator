@@ -1,4 +1,4 @@
-##Installation
+## Installation
 Either run `composer require silverleague/silverstripe-ideannotator --dev`
 
 Or add `silverleague/silverstripe-ideannotator: "*"` to `require-dev` in your composer.json file
@@ -6,7 +6,7 @@ Or add `silverleague/silverstripe-ideannotator: "*"` to `require-dev` in your co
 Or download and add it to your root directory.
 
 
-##Config
+## Config
 This module is disabled by default and I recommend to only enable this module in your local development environment, since this module changes the file content of the Dataobject and DataExtension classes.
 
 You can do this, by using something like this in your mysite/_config.php (not recommended!):
