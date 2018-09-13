@@ -265,7 +265,10 @@ class DataObjectAnnotatorTest extends SapphireTest
         ];
         DataObjectAnnotator::setExtensionClasses($classes);
 
-        $this->assertEquals($expected, DataObjectAnnotator::getExtensionClasses());
+        $result = DataObjectAnnotator::getExtensionClasses();
+        foreach ($expected as $expectedClass) {
+            $this->assertContains($expectedClass, $result);
+        }
     }
 
     public function testShortInversePlayerRelationOfTeam()
