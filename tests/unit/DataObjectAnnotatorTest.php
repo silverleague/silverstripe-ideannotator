@@ -10,7 +10,6 @@ use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverLeague\IDEAnnotator\Extensions\Annotatable;
 use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
 use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
-use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ModuleManifest;
@@ -144,7 +143,7 @@ class DataObjectAnnotatorTest extends SapphireTest
             $content
         );
         $this->assertContains(
-            '@method \SilverStripe\ORM\DataList|\SilverLeague\IDEAnnotator\Tests\TeamSupporter[] Supporters()',
+            '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\TeamSupporter[] Supporters()',
             $content
         );
 
@@ -190,7 +189,7 @@ class DataObjectAnnotatorTest extends SapphireTest
             $content
         );
         $this->assertContains(
-            '@method DataList|TeamSupporter[] Supporters()',
+            '@method ManyManyList|TeamSupporter[] Supporters()',
             $content
         );
 
