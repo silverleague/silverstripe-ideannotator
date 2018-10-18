@@ -71,7 +71,7 @@ class AnnotatableTest extends SapphireTest
         $request = new HTTPRequest('GET', '/dev/build');
         $this->extension->getOwner()->setRequest($request);
         DataObjectAnnotator::config()->set('enabled', true);
-        DataObjectAnnotator::config()->set('enabled_modules', ['mysite']);
+        DataObjectAnnotator::config()->set('enabled_modules', ['mysite', 'app']);
         $this->assertTrue($this->extension->afterCallActionHandler());
     }
 
@@ -80,7 +80,7 @@ class AnnotatableTest extends SapphireTest
         $request = new HTTPRequest('GET', '/dev/build');
         $this->extension->getOwner()->setRequest($request);
         DataObjectAnnotator::config()->set('enabled', true);
-        DataObjectAnnotator::config()->set('enabled_modules', ['mysite']);
+        DataObjectAnnotator::config()->set('enabled_modules', ['mysite', 'app']);
 
         $this->extension->afterCallActionHandler();
 

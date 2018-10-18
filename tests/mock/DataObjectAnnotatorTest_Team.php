@@ -34,18 +34,17 @@ class Team extends DataObject implements TestOnly
     private static $has_many = [
         'SubTeams'   => SubTeam::class,
         'Comments'   => TeamComment::class,
-        'Supporters' => [
-            'through' => TeamSupporter::class,
-            'from'    => 'Team',
-            'to'      => 'Supporter',
-
-        ]
     ];
 
     private static $many_many = [
         'Players'           => 'SilverLeague\IDEAnnotator\Tests\Player.Players',
         'Reserves'          => 'SilverLeague\IDEAnnotator\Tests\Player.Reserves',
         'SecondarySubTeams' => SubTeam::class,
+        'Supporters' => [
+            'through' => TeamSupporter::class,
+            'from'    => 'Team',
+            'to'      => 'Supporter',
+        ],
     ];
 
     public function SecondarySubTeams()
