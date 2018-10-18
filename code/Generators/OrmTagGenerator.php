@@ -70,11 +70,11 @@ class OrmTagGenerator extends AbstractTagGenerator
     public function getTagNameForDBField($dbFieldType)
     {
         // some fields in 3rd-party modules require a name...
-        $fieldObj = Object::create_from_string($dbFieldType, 'DummyName');
+        $fieldObj = SS_Object::create_from_string($dbFieldType, 'DummyName');
 
         foreach (self::$dbfield_tagnames as $dbClass => $tagName) {
             if (class_exists($dbClass)) {
-                $obj = Object::create_from_string($dbClass);
+                $obj = SS_Object::create_from_string($dbClass);
                 if ($fieldObj instanceof $obj) {
                     return $tagName;
                 }

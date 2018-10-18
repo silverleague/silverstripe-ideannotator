@@ -34,7 +34,7 @@ abstract class AbstractTagGenerator
     protected $tags = array();
 
     /**
-     * All classes that subclass Object
+     * All classes that subclass SS_Object
      * @var array
      */
     protected $extensionClasses;
@@ -49,7 +49,11 @@ abstract class AbstractTagGenerator
         $this->className        = $className;
         $this->existingTags     = (array)$existingTags;
         $this->reflector        = new ReflectionClass($className);
-        $this->extensionClasses = (array)ClassInfo::subclassesFor('Object');
+        $this->extensionClasses = array_unique(array_merge(
+            (array)ClassInfo::subclassesFor('Object'),
+            // PHP 7.2 & SilverStripe 3.7 compatibility:
+            (array)ClassInfo::subclassesFor('SS_Object')
+        ));
         $this->tags             = $this->getSupportedTagTypes();
 
         $this->generateTags();
