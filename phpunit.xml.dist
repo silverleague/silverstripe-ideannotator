@@ -3,16 +3,11 @@
          colors="true">
 
     <testsuite name="Default">
-        <directory>ideannotator/tests</directory>
+        <directory>tests/</directory>
     </testsuite>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">ideannotator/src/</directory>
+            <directory suffix=".php">src/</directory>
         </whitelist>
     </filter>
-    <groups>
-        <exclude>
-            <group>sanitychecks</group>
-        </exclude>
-    </groups>
 </phpunit>

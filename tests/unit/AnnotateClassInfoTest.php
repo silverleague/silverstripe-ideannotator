@@ -15,7 +15,7 @@ class AnnotateClassInfoTest extends SapphireTest
 {
     public function testItGetsTheCorrectModuleName()
     {
-        $classInfo = new AnnotateClassInfo(AnnotatorPageTest::class);
+        $classInfo = new AnnotateClassInfo(TestAnnotatorPage::class);
         $this->assertEquals('silverleague/ideannotator', $classInfo->getModuleName());
     }
 
