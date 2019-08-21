@@ -112,24 +112,24 @@ class DataObjectAnnotator
     protected function setupExtensionClasses()
     {
         $extension_classes = [];
-
+        
         $extendableClasses = Config::inst()->getAll();
+        
         // We need to check all config to see if the class is extensible
-        // @todo change this to a proper php array_walk or something method?
-        foreach ($extendableClasses as $key => $configClass) {
+        foreach ($extendableClasses as $className => $classConfig) {
             // If the class doesn't already exist in the extension classes
-            if (in_array(self::$extension_classes, $configClass, true)) {
+            if (in_array($className, self::$extension_classes)) {
                 continue;
             }
 
             // And the class has extensions,
-            $extensions = DataObject::get_extensions($key);
+            $extensions = DataObject::get_extensions($className);
             if (!count($extensions)) {
                 continue;
             }
 
             // Add it.
-            $extension_classes[] = ClassInfo::class_name($key);
+            $extension_classes[] = ClassInfo::class_name($className);
         }
 
         $extension_classes = array_unique($extension_classes);
