@@ -99,10 +99,6 @@ class DocBlockGenerator
     {
         $docBlock = new DocBlock($this->removeExistingSupportedTags($existingDocBlock));
 
-        if (!$docBlock->getText()) {
-            $docBlock->setText('Class \\' . $this->className);
-        }
-
         foreach ($this->getGeneratedTags() as $tag) {
             $docBlock->appendTag($tag);
         }

@@ -114,9 +114,6 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
 
-        // ClassName title
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\Team', $content);
-
         // database fields
         $this->assertContains('@property string $Title', $content);
         $this->assertContains('@property int $VisitCount', $content);

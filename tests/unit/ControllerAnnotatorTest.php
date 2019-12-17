@@ -39,7 +39,6 @@ class ControllerAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TestAnnotatorPage::class);
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
         $this->assertContains('@property string $SubTitle', $content);
     }
 
@@ -53,7 +52,6 @@ class ControllerAnnotatorTest extends SapphireTest
             TestAnnotatorPageController::class
         );
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController', $content);
         $this->assertContains('@property \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage dataRecord', $content);
         $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage data()', $content);
         $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
@@ -70,7 +68,6 @@ class ControllerAnnotatorTest extends SapphireTest
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, TestAnnotatorPage_Extension::class);
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension', $annotated);
         $this->assertContains(
             '@property \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController|\SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension $owner',
             $annotated
