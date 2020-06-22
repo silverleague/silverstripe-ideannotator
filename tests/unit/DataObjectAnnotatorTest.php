@@ -210,6 +210,9 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertContains('@property int $FavouriteTeamID', $content);
         $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\Team CaptainTeam()', $content);
         $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\Team FavouriteTeam()', $content);
+        $this->assertContains('@property string $OtherObjectClass', $content);
+        $this->assertContains('@property int $OtherObjectID', $content);
+        $this->assertContains('@method \SilverStripe\ORM\DataObject OtherObject()', $content);
 
         $this->assertContains(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Team[] TeamPlayer()',
@@ -278,6 +281,9 @@ class DataObjectAnnotatorTest extends SapphireTest
         $this->assertContains('@property string $ShirtNumber', $content);
         $this->assertContains('@property int $FavouriteTeamID', $content);
         $this->assertContains('@method Team FavouriteTeam()', $content);
+        $this->assertContains('@property string $OtherObjectClass', $content);
+        $this->assertContains('@property int $OtherObjectID', $content);
+        $this->assertContains('@method DataObject OtherObject()', $content);
 
         $this->assertContains(
             '@method ManyManyList|Team[] TeamPlayer()',
