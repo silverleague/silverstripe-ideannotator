@@ -4,6 +4,7 @@ namespace SilverLeague\IDEAnnotator\Tests;
 
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\Security\Member;
+use SilverStripe\ORM\DataObject;
 
 /**
  * Class Player
@@ -22,6 +23,7 @@ class Player extends Member implements TestOnly
 
     private static $has_one = [
         'FavouriteTeam' => Team::class,
+        'OtherObject'   => DataObject::class,
     ];
 
     private static $belongs_many_many = [
