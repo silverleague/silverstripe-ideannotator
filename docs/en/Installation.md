@@ -1,7 +1,7 @@
 ## Installation
-Either run `composer require silverleague/silverstripe-ideannotator --dev`
+Either run `composer require silverleague/ideannotator --dev`
 
-Or add `silverleague/silverstripe-ideannotator: "*"` to `require-dev` in your composer.json file
+Or add `silverleague/ideannotator: "*"` to `require-dev` in your composer.json file
 
 Or download and add it to your root directory.
 
