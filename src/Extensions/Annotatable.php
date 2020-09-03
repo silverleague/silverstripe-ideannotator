@@ -41,11 +41,22 @@ class Annotatable extends Extension
 
     /**
      * Annotated Controllers and Extensions
-     * @return bool // Return a boolean for test-purposes
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
     public function afterCallActionHandler()
+    {
+        $this->annotateModules();
+    }
+
+    /**
+     * Conditionally annotate this project's modules if enabled and not skipped
+     *
+     * @return bool Return true if annotation was successful
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
+     */
+    public function annotateModules(): bool
     {
         $envIsAllowed = Director::isDev() && DataObjectAnnotator::config()->get('enabled');
         $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
@@ -84,8 +95,8 @@ class Annotatable extends Extension
 
     /**
      * @param string $message
-     * @param bool $heading
-     * @param bool $end
+     * @param bool   $heading
+     * @param bool   $end
      */
     public function displayMessage($message, $heading = false, $end = false)
     {
