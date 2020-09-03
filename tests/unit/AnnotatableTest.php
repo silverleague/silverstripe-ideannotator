@@ -49,21 +49,21 @@ class AnnotatableTest extends SapphireTest
         $request = new HTTPRequest('GET', '/dev/build', ['skipannotation' => true]);
         $this->extension->getOwner()->setRequest($request);
 
-        $this->assertFalse($this->extension->afterCallActionHandler());
+        $this->assertFalse($this->extension->annotateModules());
     }
 
     public function testAfterCallActionHandlerConfigBlock()
     {
         DataObjectAnnotator::config()->set('enabled', false);
 
-        $this->assertFalse($this->extension->afterCallActionHandler());
+        $this->assertFalse($this->extension->annotateModules());
     }
 
     public function testAfterCallActionHandlerDevBlock()
     {
         Environment::setEnv('SS_ENVIRONMENT_TYPE', 'Live');
 
-        $this->assertFalse($this->extension->afterCallActionHandler());
+        $this->assertFalse($this->extension->annotateModules());
     }
 
     public function testAfterCallActionHandler()
@@ -72,7 +72,7 @@ class AnnotatableTest extends SapphireTest
         $this->extension->getOwner()->setRequest($request);
         DataObjectAnnotator::config()->set('enabled', true);
         DataObjectAnnotator::config()->set('enabled_modules', ['mysite', 'app']);
-        $this->assertTrue($this->extension->afterCallActionHandler());
+        $this->assertTrue($this->extension->annotateModules());
     }
 
     public function testAfterCallActionHandlerRun()
