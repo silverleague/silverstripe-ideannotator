@@ -3,12 +3,14 @@
 namespace SilverLeague\IDEAnnotator\Generators;
 
 use phpDocumentor\Reflection\DocBlock\Tag;
-use Psr\Container\NotFoundExceptionInterface;
+use ReflectionClass;
+use ReflectionException;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataObject;
 
 /**
  * AbstractTagGenerator
@@ -30,7 +32,7 @@ abstract class AbstractTagGenerator
     protected $existingTags = [];
 
     /**
-     * @var \ReflectionClass
+     * @var ReflectionClass
      */
     protected $reflector;
 
@@ -45,14 +47,14 @@ abstract class AbstractTagGenerator
      * DocBlockTagGenerator constructor.
      *
      * @param string $className
-     * @param $existingTags
-     * @throws \ReflectionException
+     * @param        $existingTags
+     * @throws ReflectionException
      */
     public function __construct($className, $existingTags)
     {
         $this->className = $className;
         $this->existingTags = (array)$existingTags;
-        $this->reflector = new \ReflectionClass($className);
+        $this->reflector = new ReflectionClass($className);
         $this->tags = $this->getSupportedTagTypes();
 
         $this->generateTags();
@@ -176,21 +178,32 @@ abstract class AbstractTagGenerator
     /**
      * Generate the Owner-properties for extensions.
      *
-     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     protected function generateOwnerTags()
     {
         $className = $this->className;
         // If className is abstract, Injector will fail to instantiate it
-        $reflection = new \ReflectionClass($className);
+        $reflection = new ReflectionClass($className);
         if ($reflection->isAbstract()) {
             return;
         }
         if (Injector::inst()->get($this->className) instanceof Extension) {
             $owners = array_filter(DataObjectAnnotator::getExtensionClasses(), function ($class) use ($className) {
-                $config = Config::inst()->get($class, 'extensions');
-
-                return ($config !== null && in_array($className, $config, null));
+                $config = Config::inst()->get(
+                    $class,
+                    'extensions',
+                    Config::UNINHERITED | Config::EXCLUDE_EXTRA_SOURCES
+                );
+                if (!$config) {
+                    return false;
+                }
+                foreach ($config as $candidateClass) {
+                    if (Extension::get_classname_without_arguments($candidateClass) === $className) {
+                        return true;
+                    }
+                }
+                return false;
             });
             $owners[] = $this->className;
             $tagString = '\\' . implode("|\\", array_values($owners)) . ' $owner';
