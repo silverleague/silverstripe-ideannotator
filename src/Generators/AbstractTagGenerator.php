@@ -208,7 +208,7 @@ abstract class AbstractTagGenerator
      * @param string $extensionClass Class name of the extension
      * @return string[]|Generator List of all direct owners of this extension
      */
-    protected function getOwnerClasses(string $extensionClass)
+    protected function getOwnerClasses($extensionClass)
     {
         foreach (DataObjectAnnotator::getExtensionClasses() as $objectClass) {
             $config = Config::inst()->get(

@@ -56,7 +56,7 @@ class Annotatable extends Extension
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function annotateModules(): bool
+    public function annotateModules()
     {
         $envIsAllowed = Director::isDev() && DataObjectAnnotator::config()->get('enabled');
         $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
