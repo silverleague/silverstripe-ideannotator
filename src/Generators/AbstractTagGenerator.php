@@ -2,6 +2,7 @@
 
 namespace SilverLeague\IDEAnnotator\Generators;
 
+use Generator;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionException;
@@ -10,7 +11,6 @@ use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DataObject;
 
 /**
  * AbstractTagGenerator
@@ -189,22 +189,7 @@ abstract class AbstractTagGenerator
             return;
         }
         if (Injector::inst()->get($this->className) instanceof Extension) {
-            $owners = array_filter(DataObjectAnnotator::getExtensionClasses(), function ($class) use ($className) {
-                $config = Config::inst()->get(
-                    $class,
-                    'extensions',
-                    Config::UNINHERITED | Config::EXCLUDE_EXTRA_SOURCES
-                );
-                if (!$config) {
-                    return false;
-                }
-                foreach ($config as $candidateClass) {
-                    if (Extension::get_classname_without_arguments($candidateClass) === $className) {
-                        return true;
-                    }
-                }
-                return false;
-            });
+            $owners = iterator_to_array($this->getOwnerClasses($className));
             $owners[] = $this->className;
             $tagString = '\\' . implode("|\\", array_values($owners)) . ' $owner';
             if (DataObjectAnnotator::config()->get('use_short_name')) {
@@ -214,6 +199,29 @@ abstract class AbstractTagGenerator
                 $tagString = implode("|", array_values($owners)) . ' $owner';
             }
             $this->pushPropertyTag($tagString);
+        }
+    }
+
+    /**
+     * Get all owner classes of the given extension class
+     *
+     * @param string $extensionClass Class name of the extension
+     * @return string[]|Generator List of all direct owners of this extension
+     */
+    protected function getOwnerClasses(string $extensionClass)
+    {
+        foreach (DataObjectAnnotator::getExtensionClasses() as $objectClass) {
+            $config = Config::inst()->get(
+                $objectClass,
+                'extensions',
+                Config::UNINHERITED | Config::EXCLUDE_EXTRA_SOURCES
+            ) ?: [];
+            foreach ($config as $candidateClass) {
+                if (Extension::get_classname_without_arguments($candidateClass) === $extensionClass) {
+                    yield $objectClass;
+                    break;
+                }
+            }
         }
     }
 
