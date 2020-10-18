@@ -7,15 +7,15 @@ language: php
 matrix:
   include:
     - php: 5.6
-      env: DB=PGSQL RECIPE_VERSION="4.2.x-dev" PHPUNIT_TEST=1
+      env: DB=PGSQL RECIPE_VERSION="^4.2" PHPUNIT_TEST=1
     - php: 7.1
-      env: DB=PGSQL RECIPE_VERSION="4.2.x-dev" PHPUNIT_TEST=1
+      env: DB=PGSQL RECIPE_VERSION="^4.2" PHPUNIT_TEST=1
     - php: 7.2
-      env: DB=MYSQL RECIPE_VERSION="4.3.x-dev" PHPUNIT_TEST=1
+      env: DB=MYSQL RECIPE_VERSION="^4.3" PHPUNIT_TEST=1
     - php: 7.3
-      env: DB=MYSQL RECIPE_VERSION="4.4.x-dev" PHPUNIT_TEST=1 PHPCS_TEST=1
+      env: DB=MYSQL RECIPE_VERSION="^4.4" PHPUNIT_TEST=1 PHPCS_TEST=1
     - php: 7.3
-      env: DB=MYSQL RECIPE_VERSION="4.x-dev" PHPUNIT_TEST=1
+      env: DB=MYSQL RECIPE_VERSION="^4" PHPUNIT_TEST=1
 
 before_script:
   - phpenv rehash
@@ -24,7 +24,7 @@ before_script:
   - composer validate
   - if [[ $DB == PGSQL ]]; then composer require --prefer-dist --no-update silverstripe/postgresql 2.1.x-dev; fi
   - composer require --no-update silverstripe/recipe-cms "$RECIPE_VERSION"
-  - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
+  - composer install --prefer-source --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
 
 script:
   - if [[ $PHPUNIT_TEST ]]; then vendor/bin/phpunit; fi
