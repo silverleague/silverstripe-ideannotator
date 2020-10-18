@@ -2,8 +2,10 @@
 
 namespace SilverLeague\IDEAnnotator\Generators;
 
+use Generator;
 use phpDocumentor\Reflection\DocBlock\Tag;
-use Psr\Container\NotFoundExceptionInterface;
+use ReflectionClass;
+use ReflectionException;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
@@ -30,7 +32,7 @@ abstract class AbstractTagGenerator
     protected $existingTags = [];
 
     /**
-     * @var \ReflectionClass
+     * @var ReflectionClass
      */
     protected $reflector;
 
@@ -45,14 +47,14 @@ abstract class AbstractTagGenerator
      * DocBlockTagGenerator constructor.
      *
      * @param string $className
-     * @param $existingTags
-     * @throws \ReflectionException
+     * @param        $existingTags
+     * @throws ReflectionException
      */
     public function __construct($className, $existingTags)
     {
         $this->className = $className;
         $this->existingTags = (array)$existingTags;
-        $this->reflector = new \ReflectionClass($className);
+        $this->reflector = new ReflectionClass($className);
         $this->tags = $this->getSupportedTagTypes();
 
         $this->generateTags();
@@ -176,22 +178,18 @@ abstract class AbstractTagGenerator
     /**
      * Generate the Owner-properties for extensions.
      *
-     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     protected function generateOwnerTags()
     {
         $className = $this->className;
         // If className is abstract, Injector will fail to instantiate it
-        $reflection = new \ReflectionClass($className);
+        $reflection = new ReflectionClass($className);
         if ($reflection->isAbstract()) {
             return;
         }
         if (Injector::inst()->get($this->className) instanceof Extension) {
-            $owners = array_filter(DataObjectAnnotator::getExtensionClasses(), function ($class) use ($className) {
-                $config = Config::inst()->get($class, 'extensions');
-
-                return ($config !== null && in_array($className, $config, null));
-            });
+            $owners = iterator_to_array($this->getOwnerClasses($className));
             $owners[] = $this->className;
             $tagString = '\\' . implode("|\\", array_values($owners)) . ' $owner';
             if (DataObjectAnnotator::config()->get('use_short_name')) {
@@ -201,6 +199,29 @@ abstract class AbstractTagGenerator
                 $tagString = implode("|", array_values($owners)) . ' $owner';
             }
             $this->pushPropertyTag($tagString);
+        }
+    }
+
+    /**
+     * Get all owner classes of the given extension class
+     *
+     * @param string $extensionClass Class name of the extension
+     * @return string[]|Generator List of all direct owners of this extension
+     */
+    protected function getOwnerClasses($extensionClass)
+    {
+        foreach (DataObjectAnnotator::getExtensionClasses() as $objectClass) {
+            $config = Config::inst()->get(
+                $objectClass,
+                'extensions',
+                Config::UNINHERITED | Config::EXCLUDE_EXTRA_SOURCES
+            ) ?: [];
+            foreach ($config as $candidateClass) {
+                if (Extension::get_classname_without_arguments($candidateClass) === $extensionClass) {
+                    yield $objectClass;
+                    break;
+                }
+            }
         }
     }
 

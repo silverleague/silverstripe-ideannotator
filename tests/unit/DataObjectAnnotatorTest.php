@@ -356,7 +356,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $annotated = $this->annotator->getGeneratedFileContent($original, Team_Extension::class);
 
         $this->assertContains(
-            '@property \SilverLeague\IDEAnnotator\Tests\SubTeam|\SilverLeague\IDEAnnotator\Tests\Team|\SilverLeague\IDEAnnotator\Tests\Team_Extension $owner',
+            '@property \SilverLeague\IDEAnnotator\Tests\Team|\SilverLeague\IDEAnnotator\Tests\Team_Extension $owner',
             $annotated
         );
         $this->assertContains('@property string $ExtendedVarcharField', $annotated);
@@ -381,7 +381,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $annotated = $this->annotator->getGeneratedFileContent($original, Team_Extension::class);
 
         $this->assertContains(
-            '@property SubTeam|Team|Team_Extension $owner',
+            '@property Team|Team_Extension $owner',
             $annotated
         );
         $this->assertContains('@property string $ExtendedVarcharField', $annotated);
