@@ -112,11 +112,15 @@ class DataObjectAnnotator
     protected function setupExtensionClasses()
     {
         $extension_classes = [];
-        
+
         $extendableClasses = Config::inst()->getAll();
-        
+
         // We need to check all config to see if the class is extensible
         foreach ($extendableClasses as $className => $classConfig) {
+            if (!class_exists($className)) {
+                continue;
+            }
+
             // If the class doesn't already exist in the extension classes
             if (in_array($className, self::$extension_classes)) {
                 continue;
@@ -145,6 +149,9 @@ class DataObjectAnnotator
     protected function setEnabledClasses($supportedParentClass)
     {
         foreach ((array)ClassInfo::subclassesFor($supportedParentClass) as $class) {
+            if (!class_exists($class)) {
+                continue;
+            }
             $classInfo = new AnnotateClassInfo($class);
             if ($this->permissionChecker->moduleIsAllowed($classInfo->getModuleName())) {
                 $this->annotatableClasses[$class] = $classInfo->getClassFilePath();
