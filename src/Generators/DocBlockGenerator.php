@@ -2,14 +2,15 @@
 
 namespace SilverLeague\IDEAnnotator\Generators;
 
-use InvalidArgumentException;
-use LogicException;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Serializer;
 use phpDocumentor\Reflection\DocBlock\Tag;
+use phpDocumentor\Reflection\DocBlockFactory;
+use SilverStripe\Control\Controller;
+use InvalidArgumentException;
+use LogicException;
 use ReflectionClass;
 use ReflectionException;
-use SilverStripe\Control\Controller;
 
 /**
  * Class DocBlockGenerator
@@ -35,6 +36,11 @@ class DocBlockGenerator
     protected $tagGenerator;
 
     /**
+     * @var DocBlockFactory
+     */
+    protected $docBlockFactory;
+
+    /**
      * DocBlockGenerator constructor.
      *
      * @param $className
@@ -45,6 +51,7 @@ class DocBlockGenerator
     {
         $this->className = $className;
         $this->reflector = new ReflectionClass($className);
+        $this->docBlockFactory = DocBlockFactory::createInstance();
 
         $generatorClass = $this->reflector->isSubclassOf(Controller::class)
             ? ControllerTagGenerator::class : OrmTagGenerator::class;
@@ -59,7 +66,7 @@ class DocBlockGenerator
     public function getExistingTags()
     {
         $docBlock = $this->getExistingDocBlock();
-        $docBlock = new DocBlock($docBlock);
+        $docBlock = $this->docBlockFactory->create($docBlock);
 
         return $docBlock->getTags();
     }
@@ -97,15 +104,14 @@ class DocBlockGenerator
      */
     protected function mergeGeneratedTagsIntoDocBlock($existingDocBlock)
     {
-        $docBlock = new DocBlock($this->removeExistingSupportedTags($existingDocBlock));
+        $docBlock = $this->docBlockFactory->create($existingDocBlock);
 
-        if (!$docBlock->getText()) {
-            $docBlock->setText('Class \\' . $this->className);
+        $summary = $docBlock->getSummary();
+        if (!$summary) {
+            $summary = 'Class \\' . $this->className;
         }
 
-        foreach ($this->getGeneratedTags() as $tag) {
-            $docBlock->appendTag($tag);
-        }
+        $docBlock = new DocBlock($summary, $docBlock->getDescription(), $this->getGeneratedTags());
 
         $serializer = new Serializer();
         $docBlock = $serializer->getDocComment($docBlock);

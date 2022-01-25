@@ -2,15 +2,20 @@
 
 namespace SilverLeague\IDEAnnotator\Generators;
 
-use Generator;
+use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
+use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
-use ReflectionClass;
-use ReflectionException;
+use phpDocumentor\Reflection\DocBlockFactory;
+use phpDocumentor\Reflection\FqsenResolver;
+use phpDocumentor\Reflection\TypeResolver;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
+use Generator;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * AbstractTagGenerator
@@ -44,6 +49,11 @@ abstract class AbstractTagGenerator
     protected $tags = [];
 
     /**
+     * @var StandardTagFactory
+     */
+    protected $tagFactory;
+
+    /**
      * DocBlockTagGenerator constructor.
      *
      * @param string $className
@@ -56,6 +66,13 @@ abstract class AbstractTagGenerator
         $this->existingTags = (array)$existingTags;
         $this->reflector = new ReflectionClass($className);
         $this->tags = $this->getSupportedTagTypes();
+
+        //Init the tag factory
+        $fqsenResolver = new FqsenResolver();
+        $this->tagFactory = new StandardTagFactory($fqsenResolver);
+        $descriptionFactory = new DescriptionFactory($this->tagFactory);
+        $this->tagFactory->addService($descriptionFactory);
+        $this->tagFactory->addService(new TypeResolver($fqsenResolver));
 
         $this->generateTags();
     }
@@ -143,9 +160,10 @@ abstract class AbstractTagGenerator
      */
     protected function pushTagWithExistingComment($type, $tagString)
     {
+        $tagString = '@' . $type . ' ' . $tagString;
         $tagString .= $this->getExistingTagCommentByTagString($tagString);
 
-        return new Tag($type, $tagString);
+        return $this->tagFactory->create($tagString);
     }
 
     /**
@@ -155,7 +173,7 @@ abstract class AbstractTagGenerator
     public function getExistingTagCommentByTagString($tagString)
     {
         foreach ($this->getExistingTags() as $tag) {
-            $content = $tag->getContent();
+            $content = $tag->__toString();
             // A tag should be followed by a space before it's description
             // This is to prevent `TestThing` and `Test` to be seen as the same, when the shorter
             // is after the longer name
