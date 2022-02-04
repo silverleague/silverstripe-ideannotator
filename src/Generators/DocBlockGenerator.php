@@ -66,6 +66,10 @@ class DocBlockGenerator
     public function getExistingTags()
     {
         $docBlock = $this->getExistingDocBlock();
+        if (!$docBlock) {
+            return [];
+        }
+        
         $docBlock = $this->docBlockFactory->create($docBlock);
 
         return $docBlock->getTags();
@@ -104,7 +108,7 @@ class DocBlockGenerator
      */
     protected function mergeGeneratedTagsIntoDocBlock($existingDocBlock)
     {
-        $docBlock = $this->docBlockFactory->create($existingDocBlock);
+        $docBlock = $this->docBlockFactory->create(($existingDocBlock ?: "/**\n*/"));
 
         $summary = $docBlock->getSummary();
         if (!$summary) {
