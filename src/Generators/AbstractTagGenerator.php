@@ -53,6 +53,8 @@ abstract class AbstractTagGenerator
      */
     protected $tagFactory;
 
+    protected static $pageClassesCache = [];
+
     /**
      * DocBlockTagGenerator constructor.
      *
@@ -160,7 +162,7 @@ abstract class AbstractTagGenerator
      */
     protected function pushTagWithExistingComment($type, $tagString)
     {
-        $tagString = '@' . $type . ' ' . $tagString;
+        $tagString = sprintf('@%s %s', $type, $tagString);
         $tagString .= $this->getExistingTagCommentByTagString($tagString);
 
         return $this->tagFactory->create($tagString);
@@ -209,7 +211,7 @@ abstract class AbstractTagGenerator
         if (Injector::inst()->get($this->className) instanceof Extension) {
             $owners = iterator_to_array($this->getOwnerClasses($className));
             $owners[] = $this->className;
-            $tagString = '\\' . implode("|\\", array_values($owners)) . ' $owner';
+            $tagString = sprintf('\\%s $owner', implode("|\\", array_values($owners)));
             if (DataObjectAnnotator::config()->get('use_short_name')) {
                 foreach ($owners as $key => $owner) {
                     $owners[$key] = $this->getAnnotationClassName($owner);

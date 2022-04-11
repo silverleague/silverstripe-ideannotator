@@ -11,8 +11,6 @@ use SilverStripe\Core\Config\Config;
 
 class ControllerTagGenerator extends AbstractTagGenerator
 {
-    private static $pageClassesCache = [];
-
     /**
      * @return void
      * @throws ReflectionException
@@ -35,8 +33,8 @@ class ControllerTagGenerator extends AbstractTagGenerator
         if (class_exists($pageClassname) && $this->isContentController($this->className)) {
             $pageClassname = $this->getAnnotationClassName($pageClassname);
 
-            $this->pushPropertyTag($pageClassname . ' dataRecord');
-            $this->pushMethodTag('data()', $pageClassname . ' data()');
+            $this->pushPropertyTag(sprintf('%s dataRecord', $pageClassname));
+            $this->pushMethodTag('data()', sprintf('%s data()', $pageClassname));
 
             // don't mixin Page, since this is a ContentController method
             if ($pageClassname !== 'Page') {
@@ -51,8 +49,8 @@ class ControllerTagGenerator extends AbstractTagGenerator
                 if (Config::inst()->get($pageClassname, 'controller_name') == $this->className) {
                     $pageClassname = $this->getAnnotationClassName($pageClassname);
 
-                    $this->pushPropertyTag($pageClassname . ' dataRecord');
-                    $this->pushMethodTag('data()', $pageClassname . ' data()');
+                    $this->pushPropertyTag(sprintf('%s dataRecord', $pageClassname));
+                    $this->pushMethodTag('data()', sprintf('%s data()', $pageClassname));
 
                     // don't mixin Page, since this is a ContentController method
                     if ($pageClassname !== 'Page') {

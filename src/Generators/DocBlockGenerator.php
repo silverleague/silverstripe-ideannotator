@@ -69,7 +69,7 @@ class DocBlockGenerator
         if (!$docBlock) {
             return [];
         }
-        
+
         $docBlock = $this->docBlockFactory->create($docBlock);
 
         return $docBlock->getTags();
@@ -112,7 +112,7 @@ class DocBlockGenerator
 
         $summary = $docBlock->getSummary();
         if (!$summary) {
-            $summary = 'Class \\' . $this->className;
+            $summary = sprintf('Class \\%s', $this->className);
         }
 
         $docBlock = new DocBlock($summary, $docBlock->getDescription(), $this->getGeneratedTags());
