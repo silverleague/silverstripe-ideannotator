@@ -86,4 +86,6 @@ For further documentation information, see the [docs](docs/en/Index.md)
 This module changes the content of your files and currently there is no backup functionality. PHPStorm has a Local history for files and of course you have your code version controlled...
 I tried to add complete UnitTests, but I can't garantuee every situation is covered.
 
+Windows users should be aware that the PHP Docs are generated with PSR in mind and use \n for line endings rather than Window's \r\n, some editors may have a hard time with these line endings.
+
 This module should **never** be installed on a production environment.
