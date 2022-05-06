@@ -16,6 +16,7 @@ use SilverStripe\Core\Injector\Injector;
 use Generator;
 use ReflectionClass;
 use ReflectionException;
+use SilverLeague\IDEAnnotator\Reflection\ShortNameResolver;
 
 /**
  * AbstractTagGenerator
@@ -70,7 +71,12 @@ abstract class AbstractTagGenerator
         $this->tags = $this->getSupportedTagTypes();
 
         //Init the tag factory
-        $fqsenResolver = new FqsenResolver();
+        if (DataObjectAnnotator::config()->get('use_short_name')) {
+            $fqsenResolver = new ShortNameResolver();
+        } else {
+            $fqsenResolver = new FqsenResolver();
+        }
+
         $this->tagFactory = new StandardTagFactory($fqsenResolver);
         $descriptionFactory = new DescriptionFactory($this->tagFactory);
         $this->tagFactory->addService($descriptionFactory);
