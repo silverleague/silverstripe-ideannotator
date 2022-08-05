@@ -113,7 +113,7 @@ abstract class AbstractTagGenerator
      */
     public function getTags()
     {
-        return (array)call_user_func_array('array_merge', $this->tags);
+        return (array)call_user_func_array('array_merge', array_values($this->tags));
     }
 
     /**
