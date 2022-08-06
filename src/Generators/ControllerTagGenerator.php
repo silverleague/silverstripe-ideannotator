@@ -2,13 +2,27 @@
 
 namespace SilverLeague\IDEAnnotator\Generators;
 
-use ReflectionClass;
-use ReflectionException;
 use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Config;
+use Page;
+use ReflectionClass;
 
 class ControllerTagGenerator extends AbstractTagGenerator
 {
+    /**
+     * ControllerTagGenerator constructor.
+     *
+     * @param string $className
+     * @param        $existingTags
+     * @throws ReflectionException
+     */
+    public function __construct($className, $existingTags)
+    {
+        $this->mapPageTypesToControllerName();
+
+        parent::__construct($className, $existingTags);
+    }
 
     /**
      * @return void
@@ -32,8 +46,18 @@ class ControllerTagGenerator extends AbstractTagGenerator
         if (class_exists($pageClassname) && $this->isContentController($this->className)) {
             $pageClassname = $this->getAnnotationClassName($pageClassname);
 
-            $this->pushPropertyTag($pageClassname . ' dataRecord');
-            $this->pushMethodTag('data()', $pageClassname . ' data()');
+            $this->pushPropertyTag(sprintf('%s dataRecord', $pageClassname));
+            $this->pushMethodTag('data()', sprintf('%s data()', $pageClassname));
+
+            // don't mixin Page, since this is a ContentController method
+            if ($pageClassname !== 'Page') {
+                $this->pushMixinTag($pageClassname);
+            }
+        } elseif ($this->isContentController($this->className) && array_key_exists($this->className, self::$pageClassesCache)) {
+            $pageClassname = $this->getAnnotationClassName(self::$pageClassesCache[$this->className]);
+
+            $this->pushPropertyTag(sprintf('%s dataRecord', $pageClassname));
+            $this->pushMethodTag('data()', sprintf('%s data()', $pageClassname));
 
             // don't mixin Page, since this is a ContentController method
             if ($pageClassname !== 'Page') {
@@ -53,5 +77,21 @@ class ControllerTagGenerator extends AbstractTagGenerator
 
         return ClassInfo::exists(ContentController::class)
             && $reflector->isSubclassOf(ContentController::class);
+    }
+
+    /**
+     * Generates the cache of Page types to Controllers when the controller_name config is used
+     */
+    protected function mapPageTypesToControllerName()
+    {
+        if (empty(self::$pageClassesCache)) {
+            $pageClasses = ClassInfo::subclassesFor(Page::class);
+            foreach ($pageClasses as $pageClassname) {
+                $controllerName = Config::inst()->get($pageClassname, 'controller_name');
+                if (!empty($controllerName)) {
+                    self::$pageClassesCache[$controllerName] = $pageClassname;
+                }
+            }
+        }
     }
 }

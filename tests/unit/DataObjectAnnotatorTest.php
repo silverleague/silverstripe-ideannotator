@@ -204,7 +204,7 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Player::class);
 
-        $this->assertContains('@property boolean $IsRetired', $content);
+        $this->assertContains('@property bool $IsRetired', $content);
         $this->assertContains('@property string $ShirtNumber', $content);
         $this->assertContains('@property string $Shirt', $content);
         $this->assertContains('@property int $FavouriteTeamID', $content);
@@ -277,7 +277,7 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Player::class);
 
-        $this->assertContains('@property boolean $IsRetired', $content);
+        $this->assertContains('@property bool $IsRetired', $content);
         $this->assertContains('@property string $ShirtNumber', $content);
         $this->assertContains('@property int $FavouriteTeamID', $content);
         $this->assertContains('@method Team FavouriteTeam()', $content);

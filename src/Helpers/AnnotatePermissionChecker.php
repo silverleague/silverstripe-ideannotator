@@ -120,7 +120,7 @@ class AnnotatePermissionChecker
      */
     public function moduleIsAllowed($moduleName)
     {
-        return in_array($moduleName, $this->enabledModules(), null);
+        return in_array($moduleName, $this->enabledModules(), false);
     }
 
     /**

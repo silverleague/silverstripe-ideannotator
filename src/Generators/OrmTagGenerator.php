@@ -44,7 +44,7 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected static $dbfield_tagnames = [
         DBInt::class     => 'int',
-        DBBoolean::class => 'boolean',
+        DBBoolean::class => 'bool',
         DBFloat::class   => 'float',
         DBDecimal::class => 'float',
     ];
