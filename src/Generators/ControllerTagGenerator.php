@@ -46,7 +46,7 @@ class ControllerTagGenerator extends AbstractTagGenerator
         if (class_exists($pageClassname) && $this->isContentController($this->className)) {
             $pageClassname = $this->getAnnotationClassName($pageClassname);
 
-            $this->pushPropertyTag(sprintf('%s dataRecord', $pageClassname));
+            $this->pushPropertyTag(sprintf('%s $dataRecord', $pageClassname));
             $this->pushMethodTag('data()', sprintf('%s data()', $pageClassname));
 
             // don't mixin Page, since this is a ContentController method
@@ -56,7 +56,7 @@ class ControllerTagGenerator extends AbstractTagGenerator
         } elseif ($this->isContentController($this->className) && array_key_exists($this->className, self::$pageClassesCache)) {
             $pageClassname = $this->getAnnotationClassName(self::$pageClassesCache[$this->className]);
 
-            $this->pushPropertyTag(sprintf('%s dataRecord', $pageClassname));
+            $this->pushPropertyTag(sprintf('%s $dataRecord', $pageClassname));
             $this->pushMethodTag('data()', sprintf('%s data()', $pageClassname));
 
             // don't mixin Page, since this is a ContentController method
