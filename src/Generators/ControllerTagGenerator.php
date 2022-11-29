@@ -42,7 +42,12 @@ class ControllerTagGenerator extends AbstractTagGenerator
      */
     protected function generateControllerObjectTags()
     {
-        $pageClassname = str_replace(['_Controller', 'Controller'], '', $this->className);
+        $shortName = ClassInfo::shortName($this->className);
+        // Strip "Controller" or "_Controller" from the class short name
+        $shortSansController = str_replace(['_Controller', 'Controller'], '', $shortName);
+        // And push it back in :)
+        $pageClassname = str_replace($shortName, $shortSansController, $this->className);
+
         if (class_exists($pageClassname) && $this->isContentController($this->className)) {
             $pageClassname = $this->getAnnotationClassName($pageClassname);
 
