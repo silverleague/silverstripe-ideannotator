@@ -146,6 +146,7 @@ abstract class AbstractTagGenerator
      */
     protected function getAnnotationClassName($class)
     {
+        [$class] = explode('.', $class); // Remove dot-notated extension parts
         if (DataObjectAnnotator::config()->get('use_short_name')) {
             return ClassInfo::shortName($class);
         }
