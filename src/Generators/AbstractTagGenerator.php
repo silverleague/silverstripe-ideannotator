@@ -215,7 +215,7 @@ abstract class AbstractTagGenerator
         if ($reflection->isAbstract()) {
             return;
         }
-        if ($reflection instanceof Extension) {
+        if (Injector::inst()->get($this->className) instanceof Extension) {
             $owners = iterator_to_array($this->getOwnerClasses($className));
             $owners[] = $this->className;
             $tagString = sprintf('\\%s $owner', implode("|\\", array_values($owners)));
