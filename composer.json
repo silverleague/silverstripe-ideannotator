@@ -22,8 +22,8 @@
         }
     ],
     "require": {
-        "php": "^7.2 || ^8.0",
-        "silverstripe/framework": "^4",
+        "php": "^8.0",
+        "silverstripe/framework": "^4 || ^5",
         "phpdocumentor/reflection-docblock": "^5.2"
     },
     "require-dev": {
