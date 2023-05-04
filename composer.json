@@ -18,7 +18,7 @@
         },
         {
             "name": "Simon 'Firesphere' Erkelens",
-            "email": "simonerkelens@silverstripe.com"
+            "email": "simon@firesphere.dev"
         }
     ],
     "require": {
@@ -40,6 +40,13 @@
         "branch-alias": {
             "3.x-dev": "3.2.x-dev",
             "dev-master": "3.x-dev"
+        }
+    },
+    "config": {
+        "process-timeout": 600,
+        "allow-plugins": {
+            "composer/installers": true,
+            "php-http/discovery": true
         }
     },
     "prefer-stable": true,
