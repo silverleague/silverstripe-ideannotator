@@ -27,7 +27,6 @@
         "phpdocumentor/reflection-docblock": "^5"
     },
     "require-dev": {
-        "scriptfusion/phpunit-immediate-exception-printer": "^1",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "^3.0"
     },
