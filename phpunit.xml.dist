@@ -1,5 +1,4 @@
-<phpunit printerClass="ScriptFUSION\PHPUnitImmediateExceptionPrinter\ImmediateExceptionPrinter"
-         bootstrap="vendor/silverstripe/cms/tests/bootstrap.php"
+<phpunit bootstrap="vendor/silverstripe/cms/tests/bootstrap.php"
          colors="true">
 
     <testsuite name="Default">
