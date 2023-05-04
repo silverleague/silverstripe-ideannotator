@@ -45,6 +45,7 @@
     "config": {
         "process-timeout": 600,
         "allow-plugins": {
+            "silverstripe/vendor-plugin": true,
             "composer/installers": true,
             "php-http/discovery": true
         }
