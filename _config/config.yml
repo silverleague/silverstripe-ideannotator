@@ -8,3 +8,8 @@ SilverLeague\IDEAnnotator\DataObjectAnnotator:
     enabled_modules:
       - mysite
       - app
+    dbfield_tagnames:
+      SilverStripe\ORM\FieldType\DBInt: int
+      SilverStripe\ORM\FieldType\DBBoolean: bool
+      SilverStripe\ORM\FieldType\DBFloat: float
+      SilverStripe\ORM\FieldType\DBDecimal: float

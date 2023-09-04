@@ -18,6 +18,10 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
+use SilverStripe\ORM\FieldType\DBBoolean;
+use SilverStripe\ORM\FieldType\DBDecimal;
+use SilverStripe\ORM\FieldType\DBFloat;
+use SilverStripe\ORM\FieldType\DBInt;
 use stdClass;
 
 /**
@@ -74,6 +78,21 @@ class DataObjectAnnotator
      * @var array
      */
     private $annotatableClasses = [];
+
+    /**
+     * Default tagname will be @string .
+     * All exceptions for @see DBField types are listed here
+     *
+     * @see generateDBTags();
+     * @config Can be overridden via config
+     * @var array
+     */
+    protected static $dbfield_tagnames = [
+        DBInt::class     => 'int',
+        DBBoolean::class => 'bool',
+        DBFloat::class   => 'float',
+        DBDecimal::class => 'float',
+    ];
 
     /**
      * DataObjectAnnotator constructor.

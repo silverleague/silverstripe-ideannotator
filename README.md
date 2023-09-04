@@ -16,13 +16,13 @@ The docblocks can be generated/updated with each dev/build and with a DataObject
 
 SilverStripe Framework and possible custom code.
 
-By default, `mysite` is an enabled "module".
+By default, `mysite` and `app` are enabled "modules".
 
 ### Version ^2:
 SilverStripe 3.x framework
 
 ### Version ^3:
-SilverStripe 4.x
+SilverStripe 4.x+
 
 ## Installation
 

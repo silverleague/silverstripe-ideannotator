@@ -2,13 +2,10 @@
 
 namespace SilverLeague\IDEAnnotator\Generators;
 
+use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\FieldType\DBBoolean;
-use SilverStripe\ORM\FieldType\DBDecimal;
-use SilverStripe\ORM\FieldType\DBFloat;
-use SilverStripe\ORM\FieldType\DBInt;
 use SilverStripe\ORM\ManyManyList;
 
 /**
@@ -33,20 +30,6 @@ class OrmTagGenerator extends AbstractTagGenerator
         'ManyMany',
         'BelongsManyMany',
         'Extensions',
-    ];
-
-    /**
-     * Default tagname is will be @string .
-     * All exceptions for @see DBField types are listed here
-     *
-     * @see generateDBTags();
-     * @var array
-     */
-    protected static $dbfield_tagnames = [
-        DBInt::class     => 'int',
-        DBBoolean::class => 'bool',
-        DBFloat::class   => 'float',
-        DBDecimal::class => 'float',
     ];
 
     /**
@@ -81,7 +64,9 @@ class OrmTagGenerator extends AbstractTagGenerator
         // some fields in 3rd-party modules require a name...
         $fieldObj = Injector::inst()->create($dbFieldType, 'DummyName');
 
-        foreach (self::$dbfield_tagnames as $dbClass => $tagName) {
+        $fieldNames = DataObjectAnnotator::config()->get('dbfield_tagnames');
+
+        foreach ($fieldNames as $dbClass => $tagName) {
             if (class_exists($dbClass)) {
                 $obj = Injector::inst()->create($dbClass);
                 if ($fieldObj instanceof $obj) {
@@ -128,11 +113,11 @@ class OrmTagGenerator extends AbstractTagGenerator
         if ($fields = (array)$this->getClassConfig('has_one')) {
             foreach ($fields as $fieldName => $dataObjectName) {
                 $this->pushPropertyTag("int \${$fieldName}ID");
-                
+
                 if ($dataObjectName === DataObject::class) {
                     $this->pushPropertyTag("string \${$fieldName}Class");
                 }
-                
+
                 $dataObjectName = $this->getAnnotationClassName($dataObjectName);
                 $tagString = "{$dataObjectName} {$fieldName}()";
 
