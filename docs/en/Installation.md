@@ -69,6 +69,13 @@ SilverLeague\IDEAnnotator\DataObjectAnnotator:
       - mysite
 ```
 
+If you want to add extra field types that do not return one of the known values, you can add it as such:
+
+```yaml
+SilverLeague\IDEAnnotator\DataObjectAnnotator:
+  dbfield_tagnames:
+    Symbiote\MultiValueField\ORM\FieldType\MultiValueField: 'MultiValueField|string[]'
+```
 **NOTE**
 
 - Using short names, will also shorten core names like `ManyManyList`, you'll have to adjust your use statements to work.
