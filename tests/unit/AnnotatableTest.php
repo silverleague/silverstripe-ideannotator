@@ -90,7 +90,7 @@ class AnnotatableTest extends SapphireTest
         $this->assertContains("DOCBLOCK GENERATION FINISHED!", $output);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->extension = Injector::inst()->get(Annotatable::class);
