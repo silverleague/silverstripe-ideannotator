@@ -413,7 +413,7 @@ class DataObjectAnnotatorTest extends SapphireTest
     /**
      * Setup Defaults
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', false);

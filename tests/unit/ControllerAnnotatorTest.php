@@ -122,7 +122,7 @@ class ControllerAnnotatorTest extends SapphireTest
         );
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }
@@ -130,7 +130,7 @@ class ControllerAnnotatorTest extends SapphireTest
     /**
      * Setup Defaults
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', false);

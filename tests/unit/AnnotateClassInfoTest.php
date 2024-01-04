@@ -19,7 +19,7 @@ class AnnotateClassInfoTest extends SapphireTest
         $this->assertEquals('silverleague/ideannotator', $classInfo->getModuleName());
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

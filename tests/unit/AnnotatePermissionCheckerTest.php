@@ -80,7 +80,7 @@ class AnnotatePermissionCheckerTest extends SapphireTest
         $this->assertFalse($this->permissionChecker->classNameIsAllowed(Team::class));
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }
@@ -88,7 +88,7 @@ class AnnotatePermissionCheckerTest extends SapphireTest
     /**
      * Setup Defaults
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Config::modify()->set(Director::class, 'environment_type', 'dev');
