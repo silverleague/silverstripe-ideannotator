@@ -3,7 +3,6 @@
 namespace SilverLeague\IDEAnnotator\Generators;
 
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
-use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\FqsenResolver;
@@ -49,11 +48,6 @@ abstract class AbstractTagGenerator
      */
     protected $tags = [];
 
-    /**
-     * @var StandardTagFactory
-     */
-    protected $tagFactory;
-
     protected static $pageClassesCache = [];
 
     /**
@@ -76,11 +70,6 @@ abstract class AbstractTagGenerator
         } else {
             $fqsenResolver = new FqsenResolver();
         }
-
-        $this->tagFactory = new StandardTagFactory($fqsenResolver);
-        $descriptionFactory = new DescriptionFactory($this->tagFactory);
-        $this->tagFactory->addService($descriptionFactory);
-        $this->tagFactory->addService(new TypeResolver($fqsenResolver));
 
         $this->generateTags();
     }
@@ -172,7 +161,8 @@ abstract class AbstractTagGenerator
         $tagString = sprintf('@%s %s', $type, $tagString);
         $tagString .= $this->getExistingTagCommentByTagString($tagString);
 
-        return $this->tagFactory->create($tagString);
+        $tmpBlock = DocBlockFactory::createInstance()->create("/**\n* " . $tagString . "\n*/");
+        return $tmpBlock->getTagsByName($type)[0];
     }
 
     /**
