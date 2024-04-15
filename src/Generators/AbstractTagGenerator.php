@@ -3,19 +3,27 @@
 namespace SilverLeague\IDEAnnotator\Generators;
 
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
+use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\AbstractPHPStanFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\MethodFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\ParamFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyReadFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyWriteFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\ReturnFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\VarFactory;
 use phpDocumentor\Reflection\DocBlockFactory;
-use phpDocumentor\Reflection\FqsenResolver;
+use phpDocumentor\Reflection\DocBlockFactoryInterface;
 use phpDocumentor\Reflection\TypeResolver;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
+use SilverLeague\IDEAnnotator\Reflection\ShortNameResolver;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
-use SilverStripe\Core\Injector\Injector;
 use Generator;
 use ReflectionClass;
 use ReflectionException;
-use SilverLeague\IDEAnnotator\Reflection\ShortNameResolver;
 
 /**
  * AbstractTagGenerator
@@ -42,6 +50,11 @@ abstract class AbstractTagGenerator
     protected $reflector;
 
     /**
+     * @var DocBlockFactory
+     */
+    protected $docBlockFactory;
+
+    /**
      * List all the generated tags form the various generateSomeORMProperies methods
      * @see $this->getSupportedTagTypes();
      * @var Tag[]
@@ -66,9 +79,9 @@ abstract class AbstractTagGenerator
 
         //Init the tag factory
         if (DataObjectAnnotator::config()->get('use_short_name')) {
-            $fqsenResolver = new ShortNameResolver();
+            $this->docBlockFactory = $this->createShortNameFactory();
         } else {
-            $fqsenResolver = new FqsenResolver();
+            $this->docBlockFactory = DocBlockFactory::createInstance();
         }
 
         $this->generateTags();
@@ -161,7 +174,7 @@ abstract class AbstractTagGenerator
         $tagString = sprintf('@%s %s', $type, $tagString);
         $tagString .= $this->getExistingTagCommentByTagString($tagString);
 
-        $tmpBlock = DocBlockFactory::createInstance()->create("/**\n* " . $tagString . "\n*/");
+        $tmpBlock = $this->docBlockFactory->create("/**\n* " . $tagString . "\n*/");
         return $tmpBlock->getTagsByName($type)[0];
     }
 
@@ -260,5 +273,45 @@ abstract class AbstractTagGenerator
         if (!$this->reflector->hasMethod($methodName) || $methodName === 'data()') {
             $this->tags['methods'][$tagString] = $this->pushTagWithExistingComment('method', $tagString);
         }
+    }
+
+    /**
+     * Factory method for easy instantiation.
+     * @param array<string, class-string<Tag>|Factory> $additionalTags
+     * @return DocBlockFactoryInterface
+     */
+    protected function createShortNameFactory(array $additionalTags = []): DocBlockFactory
+    {
+        $fqsenResolver = new ShortNameResolver();
+        $tagFactory = new StandardTagFactory($fqsenResolver);
+        $descriptionFactory = new DescriptionFactory($tagFactory);
+        $typeResolver = new TypeResolver($fqsenResolver);
+
+        $phpstanTagFactory = new AbstractPHPStanFactory(
+            new ParamFactory($typeResolver, $descriptionFactory),
+            new VarFactory($typeResolver, $descriptionFactory),
+            new ReturnFactory($typeResolver, $descriptionFactory),
+            new PropertyFactory($typeResolver, $descriptionFactory),
+            new PropertyReadFactory($typeResolver, $descriptionFactory),
+            new PropertyWriteFactory($typeResolver, $descriptionFactory),
+            new MethodFactory($typeResolver, $descriptionFactory)
+        );
+
+        $tagFactory->addService($descriptionFactory);
+        $tagFactory->addService($typeResolver);
+        $tagFactory->registerTagHandler('param', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('var', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('return', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('property', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('property-read', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('property-write', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('method', $phpstanTagFactory);
+
+        $docBlockFactory = new DocBlockFactory($descriptionFactory, $tagFactory);
+        foreach ($additionalTags as $tagName => $tagHandler) {
+            $docBlockFactory->registerTagHandler($tagName, $tagHandler);
+        }
+
+        return $docBlockFactory;
     }
 }
