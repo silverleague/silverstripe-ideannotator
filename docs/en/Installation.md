@@ -81,3 +81,21 @@ SilverLeague\IDEAnnotator\DataObjectAnnotator:
 - Using short names, will also shorten core names like `ManyManyList`, you'll have to adjust your use statements to work.
 
 - If you change the usage of short names halfway in your project, you may need to clear out all your docblocks before regenerating
+
+
+
+
+If you don't want to use collections for DataLists and instead use type union statements, you can disable collections like so:
+
+```yaml
+
+---
+Only:
+    environment: 'dev'
+---
+SilverLeague\IDEAnnotator\DataObjectAnnotator:
+    enabled: true
+    use_collections_for_datalist: false
+    enabled_modules:
+      - mysite
+```

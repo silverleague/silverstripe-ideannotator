@@ -151,7 +151,12 @@ class OrmTagGenerator extends AbstractTagGenerator
                 $listName = $this->getAnnotationClassName($listType);
                 $dataObjectName = $this->getAnnotationClassName($dataObjectName);
 
-                $tagString = "{$listName}|{$dataObjectName}[] {$fieldName}()";
+                if (DataObjectAnnotator::config()->get('use_collections_for_datalist')) {
+                    $tagString = "{$listName}<{$dataObjectName}> {$fieldName}()";
+                } else {
+                    $tagString = "{$listName}|{$dataObjectName}[] {$fieldName}()";
+                }
+
                 $this->pushMethodTag($fieldName, $tagString);
             }
         }

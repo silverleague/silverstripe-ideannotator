@@ -70,6 +70,14 @@ class DataObjectAnnotator
     private static $enabled_modules = ['mysite', 'app'];
 
     /**
+     * @config
+     * Whether to use collection syntax for DataLists instead of type unions
+     *
+     * @var bool
+     */
+    private static $use_collections_for_datalist = true;
+
+    /**
      * @var AnnotatePermissionChecker
      */
     private $permissionChecker;

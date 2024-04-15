@@ -48,8 +48,8 @@ Please note, this example omitted any possible modules you require yourself!
  * @property int $Version
  * @property int $AuthorID
  * @method \SilverStripe\Security\Member Author()
- * @method \SilverStripe\ORM\DataList|Category[] Categories()
- * @method \SilverStripe\ORM\ManyManyList|Tag[] Tags()
+ * @method \SilverStripe\ORM\DataList<Category> Categories()
+ * @method \SilverStripe\ORM\ManyManyList<Tag> Tags()
  * @mixin Versioned
  */
 class NewsItem extends \SilverStripe\ORM\DataObject
