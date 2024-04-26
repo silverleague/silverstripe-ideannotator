@@ -75,7 +75,7 @@ class OrmTagGenerator extends AbstractTagGenerator
             }
         }
 
-        return 'string';
+        return '?string';
     }
 
     /**
