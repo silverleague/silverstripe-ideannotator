@@ -129,15 +129,24 @@ abstract class AbstractTagGenerator
                 $this->pushMixinTag($mixinName);
             }
         }
+        if (is_subclass_of($this->className, DataObject::class)) {
+            $baseFields = Config::inst()->get(DataObject::class, 'extensions', Config::UNINHERITED);
+            if ($baseFields) {
+                foreach ($baseFields as $fieldName) {
+                    $mixinName = $this->getAnnotationClassName($fieldName);
+                    $this->pushMixinTag($mixinName);
+                }
+            }
+        }
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return mixed
      */
     protected function getClassConfig($key)
     {
-        return Config::inst()->get($this->className, $key, CONFIG::UNINHERITED);
+        return Config::inst()->get($this->className, $key, Config::UNINHERITED);
     }
 
     /**
