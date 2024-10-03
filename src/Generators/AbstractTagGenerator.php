@@ -21,6 +21,7 @@ use SilverLeague\IDEAnnotator\Reflection\ShortNameResolver;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
+use SilverStripe\ORM\DataObject;
 use Generator;
 use ReflectionClass;
 use ReflectionException;
