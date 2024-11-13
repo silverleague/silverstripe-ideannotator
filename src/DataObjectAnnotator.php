@@ -63,7 +63,7 @@ class DataObjectAnnotator
     /**
      * @config
      * Enable modules that are allowed to have generated docblocks for
-     * DataObjects and DataExtensions
+     * DataObjects and Extensions
      *
      * @var array
      */

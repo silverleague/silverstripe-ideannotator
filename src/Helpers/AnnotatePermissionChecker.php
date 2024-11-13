@@ -10,7 +10,6 @@ use SilverStripe\Control\Director;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ModuleManifest;
-use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 
 /**
@@ -31,7 +30,7 @@ class AnnotatePermissionChecker
      */
     protected $supportedParentClasses = [
         DataObject::class,
-        DataExtension::class,
+        Extension::class,
         Controller::class,
         Extension::class
     ];
@@ -65,7 +64,7 @@ class AnnotatePermissionChecker
     }
 
     /**
-     * Check if a DataObject or DataExtension subclass is allowed by checking if the file
+     * Check if a DataObject or Extension subclass is allowed by checking if the file
      * is in the $allowed_modules array
      * The permission is checked by matching the filePath and modulePath
      *

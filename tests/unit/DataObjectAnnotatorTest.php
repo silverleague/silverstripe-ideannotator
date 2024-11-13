@@ -346,9 +346,9 @@ class DataObjectAnnotatorTest extends SapphireTest
     }
 
     /**
-     * Test the generation of annotations for a DataExtension
+     * Test the generation of annotations for a Extension
      */
-    public function testAnnotateDataExtension()
+    public function testAnnotateExtension()
     {
         $classInfo = new AnnotateClassInfo(Team_Extension::class);
         $filePath = $classInfo->getClassFilePath();
@@ -369,9 +369,9 @@ class DataObjectAnnotatorTest extends SapphireTest
     }
 
     /**
-     * Test the generation of annotations for a DataExtension
+     * Test the generation of annotations for a Extension
      */
-    public function testShortAnnotateDataExtension()
+    public function testShortAnnotateExtension()
     {
         Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', true);
 

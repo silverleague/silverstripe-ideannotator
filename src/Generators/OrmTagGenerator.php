@@ -10,8 +10,8 @@ use SilverStripe\ORM\ManyManyList;
 
 /**
  * OrmTagGenerator
- * This class generates DocBlock Tags for the ORM properties of a Dataobject of DataExtension
- * and adds $owner Tags for added DataExtensions
+ * This class generates DocBlock Tags for the ORM properties of a Dataobject of Extension
+ * and adds $owner Tags for added Extensions
  *
  * @package IDEAnnotator/Generators
  */

@@ -120,7 +120,7 @@ abstract class AbstractTagGenerator
     }
 
     /**
-     * Generate the mixins for DataExtensions.
+     * Generate the mixins for Extensions.
      */
     protected function generateExtensionsTags()
     {
