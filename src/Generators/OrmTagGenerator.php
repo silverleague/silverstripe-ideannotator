@@ -144,6 +144,8 @@ class OrmTagGenerator extends AbstractTagGenerator
      */
     protected function generateTagsForDataLists($fields, $listType = DataList::class)
     {
+        $useGenerics = DataObjectAnnotator::config()->get('use_generics');
+
         if (!empty($fields)) {
             foreach ((array)$fields as $fieldName => $dataObjectName) {
                 $fieldName = trim($fieldName);
@@ -155,7 +157,11 @@ class OrmTagGenerator extends AbstractTagGenerator
                 $listName = $this->getAnnotationClassName($listType);
                 $dataObjectName = $this->getAnnotationClassName($dataObjectName);
 
-                $tagString = "{$listName}|{$dataObjectName}[] {$fieldName}()";
+                if ($useGenerics) {
+                    $tagString = "{$listName}<$dataObjectName> {$fieldName}()";
+                } else {
+                    $tagString = "{$listName}|{$dataObjectName}[] {$fieldName}()";
+                }
                 $this->pushMethodTag($fieldName, $tagString);
             }
         }
