@@ -9,8 +9,12 @@ use phpDocumentor\Reflection\DocBlockFactory;
 use SilverStripe\Control\Controller;
 use InvalidArgumentException;
 use LogicException;
+use phpDocumentor\Reflection\DocBlock\Tags\BaseTag;
+use phpDocumentor\Reflection\DocBlock\Tags\Method;
+use phpDocumentor\Reflection\DocBlock\Tags\Property;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionObject;
 
 /**
  * Class DocBlockGenerator
@@ -115,7 +119,30 @@ class DocBlockGenerator
             $summary = sprintf('Class \\%s', $this->className);
         }
 
-        $docBlock = new DocBlock($summary, $docBlock->getDescription(), $this->getGeneratedTags());
+        $generatedTags = $this->getGeneratedTags();
+        $mergedTags = [];
+        foreach ($generatedTags as $generatedTag) {
+            $currentTag = $docBlock->getTagsByName($generatedTag->getName())[0] ?? null;
+
+            // If there is an existing tag with the same name, preserve its description
+            // There is no setDescription method so we use reflection
+            if ($currentTag && $currentTag instanceof BaseTag && $currentTag->getDescription()) {
+                $refObject = new ReflectionObject($generatedTag);
+                $refProperty = $refObject->getProperty('description');
+                $refProperty->setAccessible(true);
+                $refProperty->setValue($generatedTag, $currentTag->getDescription());
+            }
+            $mergedTags[] = $generatedTag;
+        }
+        foreach ($docBlock->getTags() as $existingTag) {
+            // Skip any property or method tag
+            if ($existingTag instanceof Property || $existingTag instanceof Method) {
+                continue;
+            }
+            $mergedTags[] = $existingTag;
+        }
+
+        $docBlock = new DocBlock($summary, $docBlock->getDescription(), $mergedTags);
 
         $serializer = new Serializer();
         $docBlock = $serializer->getDocComment($docBlock);
