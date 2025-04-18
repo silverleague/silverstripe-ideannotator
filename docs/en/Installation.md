@@ -81,3 +81,13 @@ SilverLeague\IDEAnnotator\DataObjectAnnotator:
 - Using short names, will also shorten core names like `ManyManyList`, you'll have to adjust your use statements to work.
 
 - If you change the usage of short names halfway in your project, you may need to clear out all your docblocks before regenerating
+
+### Generics
+
+If you want to enable true generics for DataLists, you can set the `use_generics` parameter to true:
+
+```yaml
+SilverLeague\IDEAnnotator\DataObjectAnnotator:
+  enabled: true
+  use_generics: true
+```
