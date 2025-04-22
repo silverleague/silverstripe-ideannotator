@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use LogicException;
 use phpDocumentor\Reflection\DocBlock\Tags\BaseTag;
 use phpDocumentor\Reflection\DocBlock\Tags\Method;
+use phpDocumentor\Reflection\DocBlock\Tags\Mixin;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
 use ReflectionClass;
 use ReflectionException;
@@ -135,8 +136,8 @@ class DocBlockGenerator
             $mergedTags[] = $generatedTag;
         }
         foreach ($docBlock->getTags() as $existingTag) {
-            // Skip any property or method tag
-            if ($existingTag instanceof Property || $existingTag instanceof Method) {
+            // Skip any property, method or mixin tag
+            if ($existingTag instanceof Property || $existingTag instanceof Method || $existingTag instanceof Mixin) {
                 continue;
             }
             $mergedTags[] = $existingTag;
