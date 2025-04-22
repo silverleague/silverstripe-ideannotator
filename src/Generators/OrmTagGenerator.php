@@ -75,6 +75,11 @@ class OrmTagGenerator extends AbstractTagGenerator
             }
         }
 
+        return self::defaultType();
+    }
+
+    public static function defaultType()
+    {
         $type = 'string';
         if (version_compare(PHP_VERSION, '8.0.0') >= 0) {
             $type = '?string';

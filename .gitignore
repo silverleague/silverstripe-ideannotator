@@ -11,3 +11,6 @@ web.config
 install-frameworkmissing.html
 /assets
 /resources
+.phpunit.result.cache
+/public
+/app

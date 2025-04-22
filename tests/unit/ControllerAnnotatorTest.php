@@ -4,6 +4,7 @@ namespace SilverLeague\IDEAnnotator\Tests;
 
 use PHPUnit_Framework_TestCase;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
+use SilverLeague\IDEAnnotator\Generators\OrmTagGenerator;
 use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
 use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Core\Config\Config;
@@ -39,8 +40,10 @@ class ControllerAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TestAnnotatorPage::class);
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
-        $this->assertContains('@property string $SubTitle', $content);
+        $type = OrmTagGenerator::defaultType();
+
+        $this->assertStringContainsString(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $SubTitle', $content);
     }
 
     public function testPageControllerGetsAnnotator()
@@ -53,11 +56,11 @@ class ControllerAnnotatorTest extends SapphireTest
             TestAnnotatorPageController::class
         );
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController', $content);
-        $this->assertContains('@property \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage dataRecord', $content);
-        $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage data()', $content);
-        $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
-        $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension', $content);
+        $this->assertStringContainsString(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController', $content);
+        $this->assertStringContainsString('@property \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage $dataRecord', $content);
+        $this->assertStringContainsString('@method \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage data()', $content);
+        $this->assertStringContainsString('@mixin \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage', $content);
+        $this->assertStringContainsString('@mixin \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension', $content);
     }
 
     /**
@@ -70,8 +73,8 @@ class ControllerAnnotatorTest extends SapphireTest
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, TestAnnotatorPage_Extension::class);
 
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension', $annotated);
-        $this->assertContains(
+        $this->assertStringContainsString(' * Class \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension', $annotated);
+        $this->assertStringContainsString(
             '@property \SilverLeague\IDEAnnotator\Tests\TestAnnotatorPageController|\SilverLeague\IDEAnnotator\Tests\TestAnnotatorPage_Extension $owner',
             $annotated
         );
@@ -85,7 +88,9 @@ class ControllerAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TestAnnotatorPage::class);
 
-        $this->assertContains('@property string $SubTitle', $content);
+        $type = OrmTagGenerator::defaultType();
+
+        $this->assertStringContainsString('@property ' . $type . ' $SubTitle', $content);
     }
 
     public function testShortPageControllerGetsAnnotator()
@@ -99,10 +104,10 @@ class ControllerAnnotatorTest extends SapphireTest
             TestAnnotatorPageController::class
         );
 
-        $this->assertContains('@property TestAnnotatorPage dataRecord', $content);
-        $this->assertContains('@method TestAnnotatorPage data()', $content);
-        $this->assertContains('@mixin TestAnnotatorPage', $content);
-        $this->assertContains('@mixin TestAnnotatorPage_Extension', $content);
+        $this->assertStringContainsString('@property TestAnnotatorPage $dataRecord', $content);
+        $this->assertStringContainsString('@method TestAnnotatorPage data()', $content);
+        $this->assertStringContainsString('@mixin TestAnnotatorPage', $content);
+        $this->assertStringContainsString('@mixin TestAnnotatorPage_Extension', $content);
     }
 
     /**
@@ -116,7 +121,7 @@ class ControllerAnnotatorTest extends SapphireTest
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, TestAnnotatorPage_Extension::class);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@property TestAnnotatorPageController|TestAnnotatorPage_Extension $owner',
             $annotated
         );

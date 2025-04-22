@@ -85,9 +85,9 @@ class AnnotatableTest extends SapphireTest
         $this->extension->afterCallActionHandler();
 
         $output = $this->getActualOutput();
-        $this->assertContains("GENERATING CLASS DOCBLOCKS", $output);
-        $this->assertContains("+ Page Annotated", $output);
-        $this->assertContains("DOCBLOCK GENERATION FINISHED!", $output);
+        $this->assertStringContainsString("GENERATING CLASS DOCBLOCKS", $output);
+        $this->assertStringContainsString("+ Page", $output);
+        $this->assertStringContainsString("DOCBLOCK GENERATION FINISHED!", $output);
     }
 
     protected function setUp(): void

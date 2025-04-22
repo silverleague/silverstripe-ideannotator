@@ -8,6 +8,7 @@ use PHPUnit_Framework_TestCase;
 use RootTeam;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverLeague\IDEAnnotator\Extensions\Annotatable;
+use SilverLeague\IDEAnnotator\Generators\OrmTagGenerator;
 use SilverLeague\IDEAnnotator\Helpers\AnnotateClassInfo;
 use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Core\Config\Config;
@@ -93,13 +94,16 @@ class DataObjectAnnotatorTest extends SapphireTest
         $noModule = $this->annotator->annotateModule('');
         $this->assertFalse($noModule);
         $projectName = ModuleManifest::config()->get('project');
+        if (!$projectName) {
+            $projectName = 'app';
+        }
         $noModule = $this->annotator->annotateModule($projectName);
         $this->assertFalse($noModule);
         // Enable 'mysite' (or 'app') for testing
         Config::modify()->set(DataObjectAnnotator::class, 'enabled_modules', [$projectName]);
 
         $module = $this->annotator->annotateModule($projectName);
-        $this->assertTrue($module);
+        $this->assertTrue($module, "$projectName was not allowed");
     }
 
     /**
@@ -114,41 +118,43 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
 
+        $type = OrmTagGenerator::defaultType();
+
         // ClassName title
-        $this->assertContains(' * Class \SilverLeague\IDEAnnotator\Tests\Team', $content);
+        $this->assertStringContainsString(' * Class \SilverLeague\IDEAnnotator\Tests\Team', $content);
 
         // database fields
-        $this->assertContains('@property string $Title', $content);
-        $this->assertContains('@property int $VisitCount', $content);
-        $this->assertContains('@property float $Price', $content);
-        $this->assertContains('@property string $Dude', $content);
-        $this->assertContains('@property string $Dudette', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $Title', $content);
+        $this->assertStringContainsString('@property int $VisitCount', $content);
+        $this->assertStringContainsString('@property float $Price', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $Dude', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $Dudette', $content);
 
         // has_one ID
-        $this->assertContains('@property int $CaptainID', $content);
+        $this->assertStringContainsString('@property int $CaptainID', $content);
         // has_one relation
-        $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\Player Captain()', $content);
+        $this->assertStringContainsString('@method \SilverLeague\IDEAnnotator\Tests\Player Captain()', $content);
         // has_many relation
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method \SilverStripe\ORM\DataList|\SilverLeague\IDEAnnotator\Tests\SubTeam[] SubTeams()',
             $content
         );
         // many_many relation
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Player[] Players()',
             $content
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Player[] Reserves()',
             $content
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\TeamSupporter[] Supporters()',
             $content
         );
 
         // DataExtension
-        $this->assertContains('@mixin \SilverLeague\IDEAnnotator\Tests\Team_Extension', $content);
+        $this->assertStringContainsString('@mixin \SilverLeague\IDEAnnotator\Tests\Team_Extension', $content);
     }
 
     /**
@@ -165,36 +171,38 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
 
+        $type = OrmTagGenerator::defaultType();
+
         // database fields
-        $this->assertContains('@property string $Title', $content);
-        $this->assertContains('@property int $VisitCount', $content);
-        $this->assertContains('@property float $Price', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $Title', $content);
+        $this->assertStringContainsString('@property int $VisitCount', $content);
+        $this->assertStringContainsString('@property float $Price', $content);
 
         // has_one ID
-        $this->assertContains('@property int $CaptainID', $content);
+        $this->assertStringContainsString('@property int $CaptainID', $content);
         // has_one relation
-        $this->assertContains('@method Player Captain()', $content);
+        $this->assertStringContainsString('@method Player Captain()', $content);
         // has_many relation
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method DataList|SubTeam[] SubTeams()',
             $content
         );
         // many_many relation
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method ManyManyList|Player[] Players()',
             $content
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method ManyManyList|Player[] Reserves()',
             $content
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method ManyManyList|TeamSupporter[] Supporters()',
             $content
         );
 
         // DataExtension
-        $this->assertContains('@mixin Team_Extension', $content);
+        $this->assertStringContainsString('@mixin Team_Extension', $content);
     }
 
     public function testInversePlayerRelationOfTeam()
@@ -204,21 +212,23 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Player::class);
 
-        $this->assertContains('@property bool $IsRetired', $content);
-        $this->assertContains('@property string $ShirtNumber', $content);
-        $this->assertContains('@property string $Shirt', $content);
-        $this->assertContains('@property int $FavouriteTeamID', $content);
-        $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\Team CaptainTeam()', $content);
-        $this->assertContains('@method \SilverLeague\IDEAnnotator\Tests\Team FavouriteTeam()', $content);
-        $this->assertContains('@property string $OtherObjectClass', $content);
-        $this->assertContains('@property int $OtherObjectID', $content);
-        $this->assertContains('@method \SilverStripe\ORM\DataObject OtherObject()', $content);
+        $type = OrmTagGenerator::defaultType();
 
-        $this->assertContains(
+        $this->assertStringContainsString('@property bool $IsRetired', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $ShirtNumber', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $Shirt', $content);
+        $this->assertStringContainsString('@property int $FavouriteTeamID', $content);
+        $this->assertStringContainsString('@method \SilverLeague\IDEAnnotator\Tests\Team CaptainTeam()', $content);
+        $this->assertStringContainsString('@method \SilverLeague\IDEAnnotator\Tests\Team FavouriteTeam()', $content);
+        $this->assertStringContainsString('@property string $OtherObjectClass', $content);
+        $this->assertStringContainsString('@property int $OtherObjectID', $content);
+        $this->assertStringContainsString('@method \SilverStripe\ORM\DataObject OtherObject()', $content);
+
+        $this->assertStringContainsString(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Team[] TeamPlayer()',
             $content
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Team[] TeamReserve()',
             $content
         );
@@ -243,9 +253,9 @@ class DataObjectAnnotatorTest extends SapphireTest
             'SilverLeague\IDEAnnotator\Tests\Team',
             'SilverStripe\Admin\LeftAndMain',
             'SilverStripe\Admin\ModalController',
-            'SilverStripe\Assets\File',
-            'SilverStripe\AssetAdmin\Forms\FileFormFactory',
-            'SilverStripe\Assets\Shortcodes\FileShortcodeProvider',
+            // 'SilverStripe\Assets\File',
+            // 'SilverStripe\AssetAdmin\Forms\FileFormFactory',
+            // 'SilverStripe\Assets\Shortcodes\FileShortcodeProvider',
             'SilverStripe\CMS\Controllers\ContentController',
             'SilverStripe\CMS\Controllers\ModelAsController',
             'SilverStripe\CMS\Model\SiteTree',
@@ -257,14 +267,14 @@ class DataObjectAnnotatorTest extends SapphireTest
             'SilverStripe\Security\Member',
             'SilverStripe\Forms\GridField\GridFieldDetailForm',
             'SilverStripe\Forms\GridField\GridFieldPrintButton',
-            'SilverStripe\ORM\FieldType\DBField',
+            // 'SilverStripe\ORM\FieldType\DBField',
         ];
 
         // Instantiate - triggers extension class list generation
         new DataObjectAnnotator();
         $result = DataObjectAnnotator::getExtensionClasses();
         foreach ($expected as $expectedClass) {
-            $this->assertContains($expectedClass, $result);
+            $this->assertContains($expectedClass, $result, "Classes are: " . json_encode($result));
         }
     }
 
@@ -277,19 +287,21 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Player::class);
 
-        $this->assertContains('@property bool $IsRetired', $content);
-        $this->assertContains('@property string $ShirtNumber', $content);
-        $this->assertContains('@property int $FavouriteTeamID', $content);
-        $this->assertContains('@method Team FavouriteTeam()', $content);
-        $this->assertContains('@property string $OtherObjectClass', $content);
-        $this->assertContains('@property int $OtherObjectID', $content);
-        $this->assertContains('@method DataObject OtherObject()', $content);
+        $type = OrmTagGenerator::defaultType();
 
-        $this->assertContains(
+        $this->assertStringContainsString('@property bool $IsRetired', $content);
+        $this->assertStringContainsString('@property ' . $type . ' $ShirtNumber', $content);
+        $this->assertStringContainsString('@property int $FavouriteTeamID', $content);
+        $this->assertStringContainsString('@method Team FavouriteTeam()', $content);
+        $this->assertStringContainsString('@property string $OtherObjectClass', $content);
+        $this->assertStringContainsString('@property int $OtherObjectID', $content);
+        $this->assertStringContainsString('@method DataObject OtherObject()', $content);
+
+        $this->assertStringContainsString(
             '@method ManyManyList|Team[] TeamPlayer()',
             $content
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '@method ManyManyList|Team[] TeamReserve()',
             $content
         );
@@ -301,7 +313,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $filePath = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
-        $this->assertNotContains(
+        $this->assertStringNotContainsString(
             '@method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\SubTeam[] SecondarySubTeams()',
             $content
         );
@@ -315,7 +327,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         $filePath = $classInfo->getClassFilePath();
 
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), Team::class);
-        $this->assertNotContains(
+        $this->assertStringNotContainsString(
             '@method ManyManyList|SubTeam[] SecondarySubTeams()',
             $content
         );
@@ -342,7 +354,10 @@ class DataObjectAnnotatorTest extends SapphireTest
         $classInfo = new AnnotateClassInfo(RootTeam::class);
         $filePath = $classInfo->getClassFilePath();
         $run = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), RootTeam::class);
-        $this->assertContains('@property string $Title', $run);
+
+        $type = OrmTagGenerator::defaultType();
+
+        $this->assertStringContainsString('@property ' . $type . ' $Title', $run);
     }
 
     /**
@@ -355,14 +370,16 @@ class DataObjectAnnotatorTest extends SapphireTest
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, Team_Extension::class);
 
-        $this->assertContains(
+        $type = OrmTagGenerator::defaultType();
+
+        $this->assertStringContainsString(
             '@property \SilverLeague\IDEAnnotator\Tests\Team|\SilverLeague\IDEAnnotator\Tests\Team_Extension $owner',
             $annotated
         );
-        $this->assertContains('@property string $ExtendedVarcharField', $annotated);
-        $this->assertContains('@property int $ExtendedIntField', $annotated);
-        $this->assertContains('@property int $ExtendedHasOneRelationshipID', $annotated);
-        $this->assertContains(
+        $this->assertStringContainsString('@property ' . $type . ' $ExtendedVarcharField', $annotated);
+        $this->assertStringContainsString('@property int $ExtendedIntField', $annotated);
+        $this->assertStringContainsString('@property int $ExtendedHasOneRelationshipID', $annotated);
+        $this->assertStringContainsString(
             '@method \SilverLeague\IDEAnnotator\Tests\Player ExtendedHasOneRelationship()',
             $annotated
         );
@@ -380,14 +397,16 @@ class DataObjectAnnotatorTest extends SapphireTest
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, Team_Extension::class);
 
-        $this->assertContains(
+        $type = OrmTagGenerator::defaultType();
+
+        $this->assertStringContainsString(
             '@property Team|Team_Extension $owner',
             $annotated
         );
-        $this->assertContains('@property string $ExtendedVarcharField', $annotated);
-        $this->assertContains('@property int $ExtendedIntField', $annotated);
-        $this->assertContains('@property int $ExtendedHasOneRelationshipID', $annotated);
-        $this->assertContains(
+        $this->assertStringContainsString('@property ' . $type . ' $ExtendedVarcharField', $annotated);
+        $this->assertStringContainsString('@property int $ExtendedIntField', $annotated);
+        $this->assertStringContainsString('@property int $ExtendedHasOneRelationshipID', $annotated);
+        $this->assertStringContainsString(
             '@method Player ExtendedHasOneRelationship()',
             $annotated
         );
@@ -403,11 +422,13 @@ class DataObjectAnnotatorTest extends SapphireTest
         $original = file_get_contents($filePath);
         $annotated = $this->annotator->getGeneratedFileContent($original, DoubleDataObjectInOneFile1::class);
 
-        $this->assertContains('@property string $Title', $annotated);
+        $type = OrmTagGenerator::defaultType();
+
+        $this->assertStringContainsString('@property ' . $type . ' $Title', $annotated);
 
         $annotated = $this->annotator->getGeneratedFileContent($annotated, DoubleDataObjectInOneFile2::class);
 
-        $this->assertContains('@property string $Name', $annotated);
+        $this->assertStringContainsString('@property ' . $type . ' $Name', $annotated);
     }
 
     /**

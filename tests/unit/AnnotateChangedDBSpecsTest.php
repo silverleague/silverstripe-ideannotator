@@ -34,7 +34,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $classInfo = new AnnotateClassInfo(TeamChanged::class);
         $filePath = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TeamChanged::class);
-        $this->assertNotContains('VisitCount', $content);
+        $this->assertStringNotContainsString('VisitCount', $content);
     }
 
     public function testNonSupportedTagsWillNotBeTouched()
@@ -42,7 +42,7 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $classInfo = new AnnotateClassInfo(TeamChanged::class);
         $filePath = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TeamChanged::class);
-        $this->assertContains('Simon', $content);
+        $this->assertStringContainsString('Simon', $content);
     }
 
     public function testManuallyCommentedTagsWillNotBeRemoved()
@@ -53,9 +53,9 @@ class AnnotateChangedDBSpecsTest extends SapphireTest
         $filePath = $classInfo->getClassFilePath();
         $content = $this->annotator->getGeneratedFileContent(file_get_contents($filePath), TeamChanged::class);
 
-        $this->assertContains('The Team Name', $content);
-        $this->assertContains('This adds extra methods', $content);
-        $this->assertContains('This is the Boss', $content);
+        $this->assertStringContainsString('The Team Name', $content);
+        $this->assertStringContainsString('This adds extra methods', $content);
+        $this->assertStringContainsString('This is the Boss', $content);
     }
 
     protected function tearDown(): void
