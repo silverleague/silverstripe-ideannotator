@@ -1,7 +1,7 @@
 # silverstripe-ideannotator
 
+![Build Status](https://github.com/silverleague/silverstripe-ideannotator/actions/workflows/ci.yml/badge.svg)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/silverleague/silverstripe-ideannotator.svg)](https://scrutinizer-ci.com/g/silverleague/silverstripe-ideannotator/)
-[![Travis](https://img.shields.io/travis/silverleague/silverstripe-ideannotator.svg)](https://travis-ci.org/silverleague/silverstripe-ideannotator)
 [![codecov](https://codecov.io/gh/silverleague/silverstripe-ideannotator/branch/master/graph/badge.svg)](https://codecov.io/gh/silverleague/silverstripe-ideannotator)
 [![Packagist](https://img.shields.io/packagist/dt/silverleague/ideannotator.svg)](https://packagist.org/packages/silverleague/ideannotator)
 [![Packagist](https://img.shields.io/packagist/v/silverleague/ideannotator.svg)](https://packagist.org/packages/silverleague/ideannotator)
