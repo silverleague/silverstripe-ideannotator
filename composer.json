@@ -50,6 +50,11 @@
             "php-http/discovery": true
         }
     },
+    "scripts": {
+        "lint": "phpcs -s src/",
+        "lint-clean": "phpcbf src/",
+        "test": "phpunit -v"
+    },
     "prefer-stable": true,
     "minimum-stability": "dev"
 }
