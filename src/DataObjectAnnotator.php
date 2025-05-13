@@ -264,7 +264,7 @@ class DataObjectAnnotator
      *
      * @param string $className
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ReflectionException
      * @throws NotFoundExceptionInterface
      */

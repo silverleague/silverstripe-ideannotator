@@ -2,13 +2,14 @@
 
 namespace SilverLeague\IDEAnnotator\Tasks;
 
-use Psr\Container\NotFoundExceptionInterface;
-use ReflectionException;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
+use SilverStripe\PolyExecution\PolyOutput;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class DataObjectAnnotatorTask
@@ -20,43 +21,37 @@ use SilverStripe\Dev\BuildTask;
 class DataObjectAnnotatorTask extends BuildTask
 {
 
-    /**
-     * DataObjectAnnotatorTask constructor.
-     * Setup default values. In this case title and description.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->title = 'DataObject annotations for specific DataObjects, Extensions or Controllers';
+    protected string $title = 'DataObject annotations for specific DataObjects, Extensions or Controllers';
 
-        $this->description = 'DataObject Annotator annotates your DO\'s if possible,' .
-            ' helping you write better code.' .
-            '<br />Usage: add the module or DataObject as parameter to the URL,' .
-            ' e.g. ?module=mysite';
-    }
+    protected static string $description = 'DataObject Annotator annotates your DO\'s if possible, helping you write better code.';
 
-    /**
-     * @param HTTPRequest $request
-     * @return bool
-     * @throws ReflectionException
-     * @throws NotFoundExceptionInterface
-     */
-    public function run($request)
+
+    protected function execute(InputInterface $input, PolyOutput $output): int
     {
         /* @var $permissionChecker AnnotatePermissionChecker */
         $permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
 
         if (!$permissionChecker->environmentIsAllowed()) {
-            return false;
+            return Command::FAILURE;
         }
 
         /* @var $annotator DataObjectAnnotator */
         $annotator = DataObjectAnnotator::create();
+        $module = $input->hasOption('module') ? $input->getOption('module') : null;
+        $object = $input->hasOption('object') ? $input->getOption('object') : null;
 
-        $annotator->annotateObject($request->getVar('object'));
+        $annotator->annotateObject($object);
 
-        $annotator->annotateModule($request->getVar('module'));
+        $annotator->annotateModule($module);
 
-        return true;
+        return Command::SUCCESS;
+    }
+
+    public function getOptions(): array
+    {
+        return [
+            new InputOption('module', 'm', InputOption::VALUE_OPTIONAL, 'annotate module'),
+            new InputOption('object', 'o', InputOption::VALUE_OPTIONAL, 'annotate a specific class'),
+        ];
     }
 }

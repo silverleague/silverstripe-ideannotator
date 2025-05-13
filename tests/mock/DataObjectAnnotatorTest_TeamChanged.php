@@ -2,6 +2,8 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
+use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\ManyManyList;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\ORM\DataObject;
 
@@ -16,13 +18,13 @@ use SilverStripe\ORM\DataObject;
  * @property int $CaptainID
  * @property int $HasOneRelationshipID
  * @property int $ExtendedHasOneRelationshipID
- * @method \SilverLeague\IDEAnnotator\Tests\Player Captain() This is the Boss
- * @method \SilverLeague\IDEAnnotator\Tests\Player HasOneRelationship()
- * @method \SilverLeague\IDEAnnotator\Tests\Player ExtendedHasOneRelationship()
- * @method \SilverStripe\ORM\DataList|\SilverLeague\IDEAnnotator\Tests\SubTeam[] SubTeams()
- * @method \SilverStripe\ORM\DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
- * @method \SilverStripe\ORM\ManyManyList|\SilverLeague\IDEAnnotator\Tests\Player[] Players()
- * @mixin \SilverLeague\IDEAnnotator\Tests\Team_Extension This adds extra methods
+ * @method Player Captain() This is the Boss
+ * @method Player HasOneRelationship()
+ * @method Player ExtendedHasOneRelationship()
+ * @method DataList|SubTeam[] SubTeams()
+ * @method DataList|DataObjectAnnotatorTest_TeamComment[] Comments()
+ * @method ManyManyList|Player[] Players()
+ * @mixin Team_Extension This adds extra methods
  */
 class TeamChanged extends DataObject implements TestOnly
 {

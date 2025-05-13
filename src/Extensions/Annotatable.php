@@ -69,7 +69,7 @@ class Annotatable extends Extension
     public function annotateModules()
     {
         $envIsAllowed = Director::isDev() && DataObjectAnnotator::config()->get('enabled');
-        $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
+        $skipAnnotation = $this->getOwner()->getRequest()->getVar('skipannotation');
 
         // Only instatiate things when we want to run it, this is for when the module is accidentally installed
         // on non-dev environments for example

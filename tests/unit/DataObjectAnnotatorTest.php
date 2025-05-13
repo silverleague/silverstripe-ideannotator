@@ -271,7 +271,7 @@ class DataObjectAnnotatorTest extends SapphireTest
         ];
 
         // Instantiate - triggers extension class list generation
-        new DataObjectAnnotator();
+        DataObjectAnnotator::create();
         $result = DataObjectAnnotator::getExtensionClasses();
         foreach ($expected as $expectedClass) {
             $this->assertContains($expectedClass, $result, "Classes are: " . json_encode($result));
