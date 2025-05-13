@@ -22,14 +22,17 @@ By default, `mysite` and `app` are enabled "modules".
 SilverStripe 3.x framework
 
 ### Version ^3:
-SilverStripe 4.x+
+Silverstripe 4.x, 5,x
+
+### Version ^4:
+Silverstripe 6.x+
 
 ## Installation
 
 ```json
 {
   "require-dev": {
-    "silverleague/ideannotator": "3.x-dev"
+    "silverleague/ideannotator": "^4"
   }
 }
 ```
