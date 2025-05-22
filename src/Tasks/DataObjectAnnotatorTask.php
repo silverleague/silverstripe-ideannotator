@@ -50,8 +50,8 @@ class DataObjectAnnotatorTask extends BuildTask
     public function getOptions(): array
     {
         return [
-            new InputOption('module', 'm', InputOption::VALUE_OPTIONAL, 'annotate module'),
-            new InputOption('object', 'o', InputOption::VALUE_OPTIONAL, 'annotate a specific class'),
+            new InputOption('module', 'm', InputOption::VALUE_REQUIRED, 'annotate module'),
+            new InputOption('object', 'o', InputOption::VALUE_REQUIRED, 'annotate a specific class'),
         ];
     }
 }
