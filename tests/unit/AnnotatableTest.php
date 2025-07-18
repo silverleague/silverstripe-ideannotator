@@ -81,6 +81,7 @@ class AnnotatableTest extends SapphireTest
         $this->extension->getOwner()->setRequest($request);
         DataObjectAnnotator::config()->set('enabled', true);
         DataObjectAnnotator::config()->set('enabled_modules', ['mysite', 'app']);
+        $this->extension->getOwner()->config()->set('annotate_on_build', true);
 
         $this->extension->afterCallActionHandler();
 
