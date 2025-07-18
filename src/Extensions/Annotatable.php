@@ -41,11 +41,11 @@ class Annotatable extends Extension
 
     /**
      * @config
-     * Enables generation of docblocks
+     * Enables generation of docblocks on build
      *
      * @var bool
      */
-    private static $enable_annotator = true;
+    private static $annotate_on_build = true;
 
     /**
      * Annotated Controllers and Extensions
@@ -54,7 +54,7 @@ class Annotatable extends Extension
      */
     public function afterCallActionHandler()
     {
-        if ($this->owner->config()->enable_annotator) {
+        if ($this->owner->config()->annotate_on_build) {
             $this->annotateModules();
         }
     }
