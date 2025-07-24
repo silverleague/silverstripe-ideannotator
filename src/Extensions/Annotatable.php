@@ -40,13 +40,23 @@ class Annotatable extends Extension
     protected $permissionChecker;
 
     /**
+     * @config
+     * Enables generation of docblocks on build
+     *
+     * @var bool
+     */
+    private static $annotate_on_build = true;
+
+    /**
      * Annotated Controllers and Extensions
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
     public function afterCallActionHandler()
     {
-        $this->annotateModules();
+        if ($this->owner->config()->annotate_on_build) {
+            $this->annotateModules();
+        }
     }
 
     /**

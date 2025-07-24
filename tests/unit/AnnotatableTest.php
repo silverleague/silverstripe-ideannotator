@@ -81,6 +81,7 @@ class AnnotatableTest extends SapphireTest
         $this->extension->getOwner()->setRequest($request);
         DataObjectAnnotator::config()->set('enabled', true);
         DataObjectAnnotator::config()->set('enabled_modules', ['mysite', 'app']);
+        $this->extension->getOwner()->config()->set('annotate_on_build', true);
 
         $this->extension->afterCallActionHandler();
 
@@ -88,6 +89,20 @@ class AnnotatableTest extends SapphireTest
         $this->assertStringContainsString("GENERATING CLASS DOCBLOCKS", $output);
         $this->assertStringContainsString("+ Page", $output);
         $this->assertStringContainsString("DOCBLOCK GENERATION FINISHED!", $output);
+    }
+
+    public function testAfterCallActionHandlerRunNoAnnotate()
+    {
+        $request = new HTTPRequest('GET', '/dev/build');
+        $this->extension->getOwner()->setRequest($request);
+        DataObjectAnnotator::config()->set('enabled', true);
+        DataObjectAnnotator::config()->set('enabled_modules', ['mysite', 'app']);
+        $this->extension->getOwner()->config()->set('annotate_on_build', false);
+
+        $this->extension->afterCallActionHandler();
+
+        $output = $this->getActualOutput();
+        $this->assertStringNotContainsString("GENERATING CLASS DOCBLOCKS", $output);
     }
 
     protected function setUp(): void
