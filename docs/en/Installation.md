@@ -97,6 +97,6 @@ SilverLeague\IDEAnnotator\DataObjectAnnotator:
 If you need to disable annotations on dev/build you can use the `annotate_on_build` parameter:
 
 ```yaml
-SilverLeague\IDEAnnotator\Extensions\Annotatable:
+SilverStripe\Dev\DevBuildController:
   annotate_on_build: false
 ```
