@@ -2,10 +2,6 @@
 
 namespace SilverLeague\IDEAnnotator\Tests;
 
-use Page;
-use PageController;
-use PHPUnit_Framework_TestCase;
-use RootTeam;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverLeague\IDEAnnotator\Extensions\Annotatable;
 use SilverLeague\IDEAnnotator\Generators\OrmTagGenerator;
@@ -16,6 +12,9 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ModuleManifest;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\DataObject;
+use Page;
+use PageController;
+use RootTeam;
 
 /**
  * Class DataObjectAnnotatorTest
@@ -260,7 +259,7 @@ class DataObjectAnnotatorTest extends SapphireTest
             'SilverStripe\CMS\Controllers\ModelAsController',
             'SilverStripe\CMS\Model\SiteTree',
             'SilverStripe\Control\Controller',
-            'SilverStripe\Dev\DevBuildController',
+            'SilverStripe\Dev\Command\DbBuild',
             'SilverStripe\Forms\Form',
             'SilverStripe\ORM\DataObject',
             'SilverStripe\Security\Group',
@@ -437,6 +436,9 @@ class DataObjectAnnotatorTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
+
+        ob_start();
+
         Config::modify()->set(DataObjectAnnotator::class, 'use_short_name', false);
 
         Config::modify()->set(DataObjectAnnotator::class, 'enabled', true);
@@ -444,5 +446,21 @@ class DataObjectAnnotatorTest extends SapphireTest
 
         $this->annotator = Injector::inst()->get(MockDataObjectAnnotator::class);
         $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        ob_end_clean();
+    }
+
+    /**
+     * Gets the current content in the output buffer
+     * @return string|false
+     */
+    public function getActualOutput()
+    {
+        return ob_get_contents();
     }
 }
