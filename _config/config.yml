@@ -1,7 +1,7 @@
 ---
 Name: ideannotator
 ---
-SilverStripe\Dev\DevBuildController:
+SilverStripe\Dev\Command\DbBuild:
   extensions:
     - SilverLeague\IDEAnnotator\Extensions\Annotatable
 SilverLeague\IDEAnnotator\DataObjectAnnotator:
