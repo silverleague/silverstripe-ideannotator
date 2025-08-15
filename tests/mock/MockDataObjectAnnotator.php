@@ -1,6 +1,6 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator\tests;
+namespace SilverLeague\IDEAnnotator\Tests;
 
 use ReflectionException;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
