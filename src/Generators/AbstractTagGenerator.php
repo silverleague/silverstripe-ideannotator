@@ -124,7 +124,7 @@ abstract class AbstractTagGenerator
      */
     protected function generateExtensionsTags()
     {
-        if ($fields = (array)$this->getClassConfig('extensions')) {
+        if ($fields = array_filter((array)$this->getClassConfig('extensions'))) {
             foreach ($fields as $fieldName) {
                 $mixinName = $this->getAnnotationClassName($fieldName);
                 $this->pushMixinTag($mixinName);
