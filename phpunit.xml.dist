@@ -1,12 +1,5 @@
-<phpunit bootstrap="vendor/silverstripe/cms/tests/bootstrap.php"
-         colors="true">
-
+<phpunit bootstrap="vendor/silverstripe/cms/tests/bootstrap.php" colors="true">
     <testsuite name="Default">
-        <directory>tests/</directory>
+        <directory>tests/unit/</directory>
     </testsuite>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/</directory>
-        </whitelist>
-    </filter>
 </phpunit>

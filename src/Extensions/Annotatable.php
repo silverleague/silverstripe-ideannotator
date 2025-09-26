@@ -2,14 +2,12 @@
 
 namespace SilverLeague\IDEAnnotator\Extensions;
 
-use Psr\Container\NotFoundExceptionInterface;
-use ReflectionException;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverLeague\IDEAnnotator\Helpers\AnnotatePermissionChecker;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\DevBuildController;
+use SilverStripe\PolyExecution\PolyOutput;
 
 /**
  * Class Annotatable
@@ -49,41 +47,44 @@ class Annotatable extends Extension
 
     /**
      * Annotated Controllers and Extensions
+     * @param PolyOutput $output Output pipe for the task
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function afterCallActionHandler()
+    public function onAfterBuild(PolyOutput $output)
     {
         if ($this->owner->config()->annotate_on_build) {
-            $this->annotateModules();
+            $this->annotateModules($output);
         }
     }
 
     /**
      * Conditionally annotate this project's modules if enabled and not skipped
-     *
+     * @param PolyOutput $output Output pipe for the task
      * @return bool Return true if annotation was successful
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function annotateModules()
+    public function annotateModules(PolyOutput $output)
     {
         $envIsAllowed = Director::isDev() && DataObjectAnnotator::config()->get('enabled');
-        $skipAnnotation = $this->owner->getRequest()->getVar('skipannotation');
 
         // Only instatiate things when we want to run it, this is for when the module is accidentally installed
         // on non-dev environments for example
-        if ($skipAnnotation === null && $envIsAllowed) {
+        if ($envIsAllowed) {
             $this->setUp();
 
-            $this->displayMessage('Generating class docblocks', true, false);
+            $output->writeln(['<options=bold>Generating class docblocks</>', '']);
+            $output->startList(PolyOutput::LIST_UNORDERED);
 
             $modules = $this->permissionChecker->enabledModules();
             foreach ($modules as $module) {
                 $this->annotator->annotateModule($module);
             }
 
-            $this->displayMessage('Docblock generation finished!', true, true);
+            $output->stopList();
+
+            $output->writeln(['<options=bold>Docblock generation finished!</>', '']);
 
             return true;
         }
@@ -94,33 +95,13 @@ class Annotatable extends Extension
     /**
      * Annotatable setup.
      * This is theoretically a constructor, but to save memory we're using setup
-     * called from {@see afterCallActionHandler}
+     * called from {@see onAfterBuild}
      * @throws NotFoundExceptionInterface
      */
     public function setUp()
     {
         $this->annotator = Injector::inst()->get(DataObjectAnnotator::class);
         $this->permissionChecker = Injector::inst()->get(AnnotatePermissionChecker::class);
-    }
-
-    /**
-     * @param string $message
-     * @param bool   $heading
-     * @param bool   $end
-     */
-    public function displayMessage($message, $heading = false, $end = false)
-    {
-        if ($heading) {
-            if (!$end) {
-                echo Director::is_cli() ?
-                    strtoupper("\n$message\n\n") :
-                    "<div class='build'><p><b>$message</b><ul>";
-            } else {
-                echo Director::is_cli() ? strtoupper("\n" . $message) : "</ul><p><b>$message</b></b></div>";
-            }
-        } else {
-            echo Director::is_cli() ? "\n$message\n\n" : "<li>$message</li>";
-        }
     }
 
     /**

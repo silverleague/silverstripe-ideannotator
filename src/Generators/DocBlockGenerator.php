@@ -4,17 +4,13 @@ namespace SilverLeague\IDEAnnotator\Generators;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Serializer;
-use phpDocumentor\Reflection\DocBlock\Tag;
-use phpDocumentor\Reflection\DocBlockFactory;
-use SilverStripe\Control\Controller;
-use InvalidArgumentException;
-use LogicException;
 use phpDocumentor\Reflection\DocBlock\Tags\BaseTag;
 use phpDocumentor\Reflection\DocBlock\Tags\Method;
 use phpDocumentor\Reflection\DocBlock\Tags\Mixin;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
+use phpDocumentor\Reflection\DocBlockFactory;
+use SilverStripe\Control\Controller;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionObject;
 
 /**

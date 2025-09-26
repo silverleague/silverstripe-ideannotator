@@ -1,7 +1,8 @@
 <?php
 
-namespace SilverLeague\IDEAnnotator\tests;
+namespace SilverLeague\IDEAnnotator\Tests;
 
+use ReflectionException;
 use SilverLeague\IDEAnnotator\DataObjectAnnotator;
 use SilverStripe\Dev\TestOnly;
 
@@ -18,7 +19,7 @@ class MockDataObjectAnnotator extends DataObjectAnnotator implements TestOnly
      * @param $className
      *
      * @return mixed
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function getGeneratedFileContent($fileContent, $className)
     {
