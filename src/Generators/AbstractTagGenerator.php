@@ -116,6 +116,7 @@ abstract class AbstractTagGenerator
      */
     public function getTags()
     {
+        asort($this->tags['mixins']);
         return (array)call_user_func_array('array_merge', array_values($this->tags));
     }
 
