@@ -9,3 +9,26 @@ jobs:
   ci:
     name: CI
     uses: silverstripe/gha-ci/.github/workflows/ci.yml@v1
+    with:
+      dynamic_matrix: false
+      extra_jobs: |
+        - name_suffix: 'SS4.10'
+          php: '8.0'
+          db: mysql57pdo
+          phpunit: true
+          installer_version: '4.10.x'
+        - name_suffix: 'SS4.11'
+          php: '8.1'
+          db: mysql80
+          phpunit: true
+          installer_version: '4.11.x'
+        - name_suffix: 'SS5.4'
+          php: '8.1'
+          db: mysql80
+          phpunit: true
+          installer_version: '5.4.x'
+        - php: '8.1'
+          db: mysql57
+          phpunit: false
+          phplinting: true
+          installer_version: '5.4.x'

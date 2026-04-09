@@ -7,6 +7,8 @@
 [![Packagist](https://img.shields.io/packagist/v/silverleague/ideannotator.svg)](https://packagist.org/packages/silverleague/ideannotator)
 [![Packagist Pre Release](https://img.shields.io/packagist/vpre/silverleague/ideannotator.svg)](https://packagist.org/packages/silverleague/ideannotator)
 
+:warning: The 3.7 branch while compatible down to Silverstripe 4.5 is not tested below 4.10
+
 
 This module generates @property, @method and @mixin tags for DataObjects, PageControllers and (Data)Extensions, so ide's like PHPStorm recognize the database and relations that are set in the $db, $has_one, $has_many and $many_many arrays.
 
